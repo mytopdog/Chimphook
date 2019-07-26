@@ -1495,7 +1495,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 					Settings::System::Unload = true;
 
 				break;
-			// i wont push to you directly
+			// i wont push to you directly I am also gay, just like you
 			}
 		}
 		ImGui::EndGroupBox();
