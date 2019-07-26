@@ -332,6 +332,7 @@
     <ClCompile Include="valve_sdk\sdk.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="changes.txt" />
     <Text Include="imgui\LICENSE.txt" />
   </ItemGroup>
   <ItemGroup>

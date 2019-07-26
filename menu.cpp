@@ -1493,8 +1493,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 
 				if (ImGui::Button("Unload"))
 					Settings::System::Unload = true;
-
-				break;
+				
 			// i promise
 			}
 		}

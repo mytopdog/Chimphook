@@ -523,6 +523,7 @@
     <Text Include="imgui\LICENSE.txt">
       <Filter>Source Files\imgui</Filter>
     </Text>
+    <Text Include="changes.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
