@@ -1490,6 +1490,10 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 				}
 				ImGui::EndGroupBox();
 				ImGui::Checkbox("FUCK", &Settings::Misc::FUCK);
+
+				if (ImGui::Button("Unload"))
+					Settings::System::Unload = true;
+
 				break;
 			}
 		}
