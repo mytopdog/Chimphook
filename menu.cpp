@@ -1495,7 +1495,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 					Settings::System::Unload = true;
 
 				break;
-			// your mom are gey ;( dawdawd
+			// i wont push to you directly
 			}
 		}
 		ImGui::EndGroupBox();
