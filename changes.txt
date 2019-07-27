@@ -1,4 +1,9 @@
 remove airstuck
+
+backtrack
+legit aimbot
+
+
 add new ray tracer
 implement the new hitchance with new ray tracer
 
