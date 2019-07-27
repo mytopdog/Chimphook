@@ -93,6 +93,26 @@ static const char* CSGOMMRanks[] = {
 	"The Global Elite"
 };
 
+class playerRecord
+{
+public:
+	playerRecord()
+	{
+		
+	}
+
+	playerRecord(const char* szName, long lSteamID64)
+	{
+		name = szName;
+		steamID64 = lSteamID64;
+	}
+
+	const char* name;
+	long steamID64;
+};
+
+static std::vector<playerRecord>    g_playerRecords;
+
 inline ILocalize*            g_Localize;
 inline ISteamClient*         g_SteamClient;
 inline ISteamFriends*        g_SteamFriends;

@@ -62,6 +62,17 @@ public:
 
 		if (strstr(ev->GetName(), "game_init") || strstr(ev->GetName(), "game_start") || strstr(ev->GetName(), "round_start") || strstr(ev->GetName(), "game_newmap"))
 			selectedP = -1;
+
+		if (strstr(ev->GetName(), "player_team"))
+		{
+			C_BasePlayer* player = C_BasePlayer::GetPlayerByUserId(ev->GetInt("userid"));
+
+			if (player) {
+				player_info_t info = player->GetPlayerInfo();
+
+				Utils::ConsolePrint(info.szName);
+			}
+		}
 	}
 
 	int GetEventDebugID() override

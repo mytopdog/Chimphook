@@ -124,7 +124,7 @@ namespace Hooks
 		engineclient_hook.hook_index(index::ClientCmd, hkClientCmd);
 		hlclient_hook.hook_index(index::DispatchUserMessage, hkDispatchUserMessage);
 
-		events = new EventListener({ "player_hurt", "game_init",  "game_start", "round_start", "game_newmap", "bullet_impact", "player_death", "round_end" });
+		events = new EventListener({ "player_hurt", "game_init",  "game_start", "round_start", "game_newmap", "bullet_impact", "player_death", "round_end", "player_team" });
 
 		RecvProp* seq = NetvarSys::Get().GetNetvarProp("DT_BaseViewModel", "m_nSequence");
 		if (seq) {
