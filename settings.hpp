@@ -55,6 +55,7 @@ namespace Settings
 	{
 		extern bool BunnyHop;
 		extern bool AutoStrafer;
+		extern bool EdgeJumper;
 		extern bool AutoCowboy;
 		extern bool ReverseCowboy;
 		extern bool BlockBot;
@@ -145,12 +146,6 @@ namespace Settings
 			extern bool Weapon;
 			extern bool Sky3D;
 			extern bool Shadows;
-		}
-
-		namespace AirStuck
-		{
-			extern bool Enabled;
-			extern int  HoldKey;
 		}
 
 		namespace ThirdPerson

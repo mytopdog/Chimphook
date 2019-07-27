@@ -411,20 +411,13 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 					ImGui::BeginGroup();
 					{
 						ImGui::Columns(2, nullptr, false);
-						ImGui::Checkbox("Airstuck", &Settings::Misc::AirStuck::Enabled); ImGui::NextColumn();
-						ImGui::Hotkey("Key##AirStuck", &Settings::Misc::AirStuck::HoldKey); ImGui::NextColumn();
-						ImGui::Columns(1, nullptr, false);
-					}
-					ImGui::EndGroup();
-					ImGui::BeginGroup();
-					{
-						ImGui::Columns(2, nullptr, false);
 						ImGui::Checkbox("Auto Cowboy", &Settings::Misc::AutoCowboy); ImGui::NextColumn();
 						ImGui::Checkbox("Reverse Cowboy", &Settings::Misc::ReverseCowboy); ImGui::NextColumn();
 						ImGui::Columns(1, nullptr, false);
 					}
 					ImGui::EndGroup();
 					ImGui::Checkbox("Block Bot", &Settings::Misc::BlockBot);
+					ImGui::Checkbox("Edge Jumper", &Settings::Misc::EdgeJumper);
 				}
 				ImGui::EndGroupBox();
 				ImGui::Text("Third Person");

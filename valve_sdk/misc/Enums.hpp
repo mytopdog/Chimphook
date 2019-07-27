@@ -543,6 +543,15 @@ enum EntityFlags
     FL_ATCONTROLS = (1 << 6),
     FL_CLIENT = (1 << 7),
     FL_FAKECLIENT = (1 << 8),
+	FL_INWATER = (1 << 9),
+	FL_FLY = (1 << 10),
+	FL_SWIM = (1 << 11),
+	FL_CONVEYOR = (1 << 12),
+	FL_NPC = (1 << 13),
+	FL_GODMODE = (1 << 14),
+	FL_NOTARGET = (1 << 15),
+	FL_AIMTARGET = (1 << 16),
+	FL_PARTIALGROUND = (1 << 17),
     MAX_ENTITYFLAGS
 };
 

@@ -40,6 +40,7 @@ public:
 	OPTION(bool, miscblockbot, &Settings::Misc::BlockBot);
 	OPTION(bool, miscinfiniteduck, &Settings::Misc::InfiniteDuck);
 	OPTION(bool, miscselfnade, &Settings::Misc::SelfNade);
+	OPTION(bool, miscedgejumper, &Settings::Misc::EdgeJumper);
 
 	OPTION(bool, miscslowwalk, &Settings::Misc::SlowWalk::Enabled);
 	OPTION(int, miscslowwalkamount, &Settings::Misc::SlowWalk::Amount);
@@ -96,8 +97,6 @@ public:
 	OPTION(bool, miscremovalsshadows, &Settings::Misc::Removals::Shadows);
 
 	OPTION(bool, miscFUCK, &Settings::Misc::FUCK);
-
-	OPTION(bool, miscairstuckenabled, &Settings::Misc::AirStuck::Enabled);
 
 	OPTION(bool, miscautodefuseenabled, &Settings::Misc::AutoDefuse::Enabled);
 

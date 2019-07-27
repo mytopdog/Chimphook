@@ -13,6 +13,7 @@ bool Settings::Misc::InverseRagdollGravity = false;
 bool Settings::Misc::RadarHack = false;
 bool Settings::Misc::ChickenTamer = false;
 bool Settings::Misc::SelfNade = false;
+bool Settings::Misc::EdgeJumper = false;
 
 bool Settings::Misc::SlowWalk::Enabled = false;
 int Settings::Misc::SlowWalk::Amount = 100;

@@ -16,7 +16,7 @@ bool ChickenTamer(CUserCmd* cmd);
 void AutoReload(CUserCmd* cmd);
 void SelfNade(CUserCmd* cmd);
 void SlowWalk(CUserCmd* cmd);
-void LedgeJump(CUserCmd* cmd);
+void EdgeJumper(CUserCmd* cmd);
 
 void RecoilCrosshair();
 void RadarHack();

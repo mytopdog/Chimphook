@@ -276,7 +276,6 @@ namespace Hooks
 		AutoDefuse(cmd);
 		BunnyHop(cmd);
 		AutoStrafer(cmd);
-		AirStuck(cmd);
 		AutoCowboy(cmd);
 		BlockBot(cmd);
 		InfiniteDuck(cmd);
@@ -284,6 +283,7 @@ namespace Hooks
 		AutoReload(cmd);
 		SelfNade(cmd);
 		SlowWalk(cmd);
+		EdgeJumper(cmd);
 
 		RadarHack();
 		RecoilCrosshair();

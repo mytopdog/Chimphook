@@ -9,9 +9,6 @@ bool Settings::Misc::ReverseCowboy = false;
 
 bool Settings::Misc::BlockBot = false;
 
-bool Settings::Misc::AirStuck::Enabled = false;
-int Settings::Misc::AirStuck::HoldKey = 0;
-
 void BunnyHop(CUserCmd* cmd)
 {
 	if (!Settings::Misc::BunnyHop)
@@ -76,18 +73,6 @@ void AutoStrafer(CUserCmd* cmd)
 			cmd->sidemove = (cmd->command_number % 2) == 0 ? -400.f : 400.f;
 		}
 	}
-}
-
-void AirStuck(CUserCmd* cmd)
-{
-	if (!Settings::Misc::AirStuck::Enabled)
-		return;
-
-	if (cmd->buttons & IN_ATTACK || cmd->buttons & IN_ATTACK2)
-		return;
-
-	if (GetAsyncKeyState(Settings::Misc::AirStuck::HoldKey))
-		cmd->tick_count = 16777216;
 }
 
 float distance(float x1, float y1, float x2, float y2)
@@ -207,4 +192,25 @@ void BlockBot(CUserCmd* cmd)
 		cmd->sidemove = -450.f;
 
 	g_EngineClient->SetViewAngles(&angles);
+}
+
+
+// EdgeJumper, not perfect as it also jumps when you're not running towards where you want to jump off, prob trace a ray 
+// and check if it hits the ground infront, if not, don't fucking jump retard.
+void EdgeJumper(CUserCmd* cmd)
+{
+	if (!Settings::Misc::EdgeJumper)
+		return;
+
+	float vel = g_LocalPlayer->m_vecVelocity().Length2D();
+
+	if (vel > 135)
+	{
+		int flags = g_LocalPlayer->m_fFlags();
+
+		if (flags & FL_PARTIALGROUND)
+		{
+			cmd->buttons |= IN_JUMP;
+		}
+	}
 }
