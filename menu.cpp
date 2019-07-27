@@ -985,13 +985,13 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 							{
 							case 0:
 								ImGui::Checkbox("Enabled##VisualsGlowEnemies", &Settings::ESP::Glow::Players::Enemies::Enabled);
-								ImGui::Checkbox("Cover##VisualsGlowEnemies", &Settings::ESP::Glow::Players::Enemies::Cover);
+								//ImGui::Checkbox("Cover##VisualsGlowEnemies", &Settings::ESP::Glow::Players::Enemies::Cover);
 								ImGui::Combo("Style##VisualsGlowEnemies", &Settings::ESP::Glow::Players::Enemies::Style, "Full Body\0Inline Flicker\0Inline Glow\0Flicker");
 								ImGuiEx::ColorEdit3("Colour##VisualsGlowEnemies", &Settings::ESP::Glow::Players::Enemies::Colour);
 								break;
 							case 1:
 								ImGui::Checkbox("Enabled##VisualsGlowTeammates", &Settings::ESP::Glow::Players::Teammates::Enabled);
-								ImGui::Checkbox("Cover##VisualsGlowTeammates", &Settings::ESP::Glow::Players::Teammates::Cover);
+								//ImGui::Checkbox("Cover##VisualsGlowTeammates", &Settings::ESP::Glow::Players::Teammates::Cover);
 								ImGui::Combo("Style##VisualsGlowTeammates", &Settings::ESP::Glow::Players::Teammates::Style, "Full Body\0Inline Flicker\0Inline Glow\0Flicker");
 								ImGuiEx::ColorEdit3("Colour##VisualsGlowTeammates", &Settings::ESP::Glow::Players::Teammates::Colour);
 								break;

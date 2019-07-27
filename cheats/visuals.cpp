@@ -2161,7 +2161,7 @@ void Glow::Run()
 			if (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum())
 			{
 				Color col = Settings::ESP::Glow::Players::Teammates::Colour;
-				glowObject.m_bFullBloomRender = Settings::ESP::Glow::Players::Enemies::Cover;
+				//glowObject.m_bFullBloomRender = Settings::ESP::Glow::Players::Teammates::Cover;
 				glowObject.m_nGlowStyle = Settings::ESP::Glow::Players::Teammates::Style;
 				glowObject.m_bRenderWhenOccluded = Settings::ESP::Glow::Players::Teammates::Enabled;
 				glowObject.m_flRed = col.r() / 255.f;
@@ -2172,6 +2172,7 @@ void Glow::Run()
 			else
 			{
 				Color col = Settings::ESP::Glow::Players::Enemies::Colour;
+				//glowObject.m_bFullBloomRender = Settings::ESP::Glow::Players::Enemies::Cover;
 				glowObject.m_nGlowStyle = Settings::ESP::Glow::Players::Enemies::Style;
 				glowObject.m_bRenderWhenOccluded = Settings::ESP::Glow::Players::Enemies::Enabled;
 				glowObject.m_flRed = col.r() / 255.f;
