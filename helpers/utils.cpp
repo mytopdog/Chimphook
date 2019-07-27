@@ -151,6 +151,11 @@ namespace Utils {
         return !!WriteConsoleA(_out, buf, static_cast<DWORD>(strlen(buf)), nullptr, nullptr);
     }
 
+	bool ConsolePrint(int num)
+	{
+		return ConsolePrint(std::to_string(num).c_str());
+	}
+
     /*
      * @brief Blocks execution until a key is pressed on the console window
      *

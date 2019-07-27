@@ -64,6 +64,7 @@ namespace Settings
 
 		extern bool AutoPistol;
 		extern bool AutoReload;
+		extern bool DeagleSpinner;
 
 		extern bool RemoveFootsteps;
 		extern bool RankReveal;
@@ -276,6 +277,24 @@ namespace Settings
 	namespace ESP
 	{
 		extern bool GrenadePrediction;
+
+		namespace Glow
+		{
+			namespace Players
+			{
+				namespace Enemies
+				{
+					extern Color Visible;
+					extern Color Occluded;
+				}
+
+				namespace Teammates
+				{
+					extern Color Visible;
+					extern Color Occluded;
+				}
+			}
+		}
 
 		namespace Others
 		{

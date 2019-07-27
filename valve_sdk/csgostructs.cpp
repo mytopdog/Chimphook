@@ -80,18 +80,18 @@ bool C_BaseCombatWeapon::HasBullets()
 
 bool C_BaseCombatWeapon::CanFire()
 {
-	static decltype(this) stored_weapon = nullptr;
-	static auto stored_tick = 0;
-	if (stored_weapon != this || stored_tick >= g_LocalPlayer->m_nTickBase()) {
-		stored_weapon = this;
-		stored_tick = g_LocalPlayer->m_nTickBase();
-		return false; //cannot shoot first tick after switch
-	}
-
-	if (IsReloading() || m_iClip1() <= 0 || !g_LocalPlayer)
+	auto owner = this->m_hOwnerEntity().Get();
+	if (!owner)
 		return false;
 
-	auto flServerTime = g_LocalPlayer->m_nTickBase() * g_GlobalVars->interval_per_tick;
+	if (IsReloading() || m_iClip1() <= 0)
+		return false;
+
+	auto flServerTime = owner->m_nTickBase() * g_GlobalVars->interval_per_tick;
+
+	if (owner->m_flNextAttack() > flServerTime)
+		return false;
+
 
 	return m_flNextPrimaryAttack() <= flServerTime;
 }

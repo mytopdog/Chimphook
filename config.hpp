@@ -47,6 +47,7 @@ public:
 
 	OPTION(bool, miscautopistol, &Settings::Misc::AutoPistol);
 	OPTION(bool, miscautoreload, &Settings::Misc::AutoReload);
+	OPTION(bool, miscdeaglespinner, &Settings::Misc::DeagleSpinner);
 
 	OPTION(bool, miscfakeduck, &Settings::Misc::FakeDuck::Enabled);
 

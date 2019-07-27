@@ -153,6 +153,8 @@ int Settings::SkinChanger::Paint::xm1014 = 0;
 int Settings::SkinChanger::Paint::m249 = 0;
 int Settings::SkinChanger::Paint::negev = 0;
 
+bool Settings::Misc::DeagleSpinner = false;
+
 RECT GetBBox(C_BaseEntity* ent)
 {
 	RECT rect{};
@@ -1770,7 +1772,7 @@ const static std::unordered_map<std::string, int(*)(int)> animation_fix_map
 		}
 	} }
 };
-/*
+
 void SkinChanger::nSequence(const CRecvProxyData* pData, void* pStruct, void* pOut)
 {
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
@@ -1791,11 +1793,20 @@ void SkinChanger::nSequence(const CRecvProxyData* pData, void* pStruct, void* pO
 			if (animation_fix_map.count(modelname))
 				proxydata->m_Value.m_Int = animation_fix_map.at(modelname)(proxydata->m_Value.m_Int);
 		}
+
+		C_BaseCombatWeapon* activeWeapon;
+
+		// Needs fixing because the animation cuts off towards the end due to csgo being gay, made a uc thread but no answers because they're all
+		// retarded. https://www.unknowncheats.me/forum/counterstrike-global-offensive/347621-deagle-spinning-cut.html
+
+		if (activeWeapon = g_LocalPlayer->m_hActiveWeapon())
+			if (Settings::Misc::DeagleSpinner && activeWeapon->GetClientClass()->m_ClassID == ClassId::ClassId_CDEagle && proxydata->m_Value.m_Int == 7)
+				proxydata->m_Value.m_Int  = 8;
 	}
 
 	Hooks::o_nSequence(proxydata, pStruct, pOut);
 }
-*/
+
 bool SkinChanger::ApplyKnifeModel(C_BaseAttributableItem* weapon, const char* model)
 {
 	if (!g_LocalPlayer)

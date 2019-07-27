@@ -126,11 +126,11 @@ namespace Hooks
 
 		events = new EventListener({ "player_hurt", "game_init",  "game_start", "round_start", "game_newmap", "bullet_impact", "player_death", "round_end" });
 
-		/*RecvProp* seq = NetvarSys::Get().GetNetvarProp("CBaseViewModel", "m_nSequence");
+		RecvProp* seq = NetvarSys::Get().GetNetvarProp("DT_BaseViewModel", "m_nSequence");
 		if (seq) {
 			o_nSequence = (RecvVarProxyFn)seq->m_ProxyFn;
 			seq->m_ProxyFn = (RecvVarProxyFn)SkinChanger::nSequence;
-		}*/
+		}
 
 		/*
 		g_MatSystem->forceBeginRenderTargetAllocation();
@@ -161,6 +161,12 @@ namespace Hooks
 		sound_hook.unhook_all();
 		sv_cheats.unhook_all();
 		bsp_query_hook.unhook_all();
+
+		RecvProp* seq = NetvarSys::Get().GetNetvarProp("DT_BaseViewModel", "m_nSequence");
+		if (seq)
+		{
+			seq->m_ProxyFn = o_nSequence;
+		}
 
 		std::remove("csgo\\materials\\mirrorcam.vmt");
 	}

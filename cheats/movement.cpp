@@ -196,7 +196,7 @@ void BlockBot(CUserCmd* cmd)
 
 
 // EdgeJumper, not perfect as it also jumps when you're not running towards where you want to jump off, prob trace a ray 
-// and check if it hits the ground infront, if not, don't fucking jump retard.
+// and check if it hits the ground infront.
 void EdgeJumper(CUserCmd* cmd)
 {
 	if (!Settings::Misc::EdgeJumper)

@@ -848,26 +848,36 @@ void SelfNade(CUserCmd* cmd)
 
 void SlowWalk(CUserCmd* cmd)
 {
-	if (!Settings::Misc::SlowWalk::Enabled)
+	if (!Settings::Misc::SlowWalk::Enabled || !GetAsyncKeyState(VK_SHIFT))
 		return;
 
-	if (!(cmd->buttons & IN_WALK))
+	C_BaseCombatWeapon * weapon_handle = g_LocalPlayer->m_hActiveWeapon().Get();
+
+	if (!weapon_handle)
 		return;
+
+	float amount = 0.0034f * Settings::Misc::SlowWalk::Amount;
 
 	Vector velocity = g_LocalPlayer->m_vecVelocity();
 	QAngle direction;
 
-	if (cmd->buttons & IN_FORWARD)
-		cmd->forwardmove = Settings::Misc::SlowWalk::Amount;
+	Math::VectorAngles(velocity, direction);
 
-	if (cmd->buttons & IN_BACK)
-		cmd->forwardmove = -Settings::Misc::SlowWalk::Amount;
+	float speed = velocity.Length2D();
 
-	if (cmd->buttons & IN_MOVERIGHT)
-		cmd->sidemove = Settings::Misc::SlowWalk::Amount;
+	direction.yaw = cmd->viewangles.yaw - direction.yaw;
 
-	if (cmd->buttons & IN_MOVELEFT)
-		cmd->sidemove = -Settings::Misc::SlowWalk::Amount;
+	Vector forward;
+
+	Math::AngleVectors(direction, forward);
+
+	Vector source = forward * -speed;
+
+	if (speed >= (weapon_handle->GetCSWeaponData()->max_speed * amount))
+	{
+		cmd->forwardmove = source.x;
+		cmd->sidemove = source.y;
+	}
 }
 
 void WorldColour()

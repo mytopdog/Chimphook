@@ -40,6 +40,7 @@ namespace Utils {
      * Replacement to printf that works with the newly created console
      */
     bool ConsolePrint(const char* fmt, ...);
+	bool ConsolePrint(int num);
     
     /*
      * @brief Blocks execution until a key is pressed on the console window

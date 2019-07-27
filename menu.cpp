@@ -1056,6 +1056,8 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 							}
 						}
 						ImGui::EndGroupBox();
+
+						ImGui::Checkbox("Force deagle spin", &Settings::Misc::DeagleSpinner);
 					}
 					ImGui::EndGroupBox();
 					ImGui::Columns(2, nullptr, false);

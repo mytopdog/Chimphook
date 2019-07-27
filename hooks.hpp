@@ -55,7 +55,7 @@ namespace Hooks
 	void Initialize();
 	void Shutdown();
 
-//	inline RecvVarProxyFn o_nSequence;
+	inline RecvVarProxyFn o_nSequence;
 
 	inline vfunc_hook hlclient_hook;
 	inline vfunc_hook direct3d_hook;
