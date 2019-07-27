@@ -168,6 +168,8 @@ namespace Hooks
 			seq->m_ProxyFn = o_nSequence;
 		}
 
+		Glow::Shutdown();
+
 		std::remove("csgo\\materials\\mirrorcam.vmt");
 	}
 	//--------------------------------------------------------------------------------
@@ -445,6 +447,7 @@ namespace Hooks
 		static auto oDoPostScreenEffects = clientmode_hook.get_original<decltype(&hkDoPostScreenEffects)>(index::DoPostScreenSpaceEffects);
 
 		RemoveSmoke();
+		Glow::Run();
 
 		return oDoPostScreenEffects(g_ClientMode, edx, a1);
 	}

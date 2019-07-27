@@ -12,6 +12,12 @@
 void BulletShots(IGameEvent* ev);
 void WallbangCrosshair();
 
+namespace Glow
+{
+	void Shutdown();
+	void Run();
+}
+
 class Visuals : public Singleton<Visuals>
 {
 	friend class Singleton<Visuals>;

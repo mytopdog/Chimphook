@@ -239,6 +239,9 @@ namespace ImGuiEx
 
 		if (ImGui::ColorEdit4(label, &clr.x, show_alpha))
 		{
+			if (!show_alpha)
+				clr.w = 1.f;
+
 			v->SetColor(clr.x * 255.f, clr.y * 255.f, clr.z * 255.f, clr.w * 255.f);
 			return true;
 		}
@@ -951,6 +954,46 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 								ImGui::Combo("Material", &Settings::Visuals::Chams::Players::Localplayer::Material, "Regular\0Flat\0Glossy");
 								ImGuiEx::ColorEdit3("Visible", &Settings::Visuals::Chams::Players::Localplayer::Visible);
 								ImGuiEx::ColorEdit3("Occluded", &Settings::Visuals::Chams::Players::Localplayer::Occluded);
+								break;
+							}
+						}
+						ImGui::EndGroupBox();
+					}
+					ImGui::EndGroupBox();
+					ImGui::BeginGroupBox("GlowPlayers", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						static int vsglowselected = 0;
+
+						ImGui::BeginGroup();
+						{
+							bool vssel = vsglowselected == 0;
+							if (ImGui::ToggleButton("Enemy##VisualsGlow", &vssel, ImVec2(ImGui::GetWindowSize().x / 2, 20)))
+							{
+								vsglowselected = 0;
+							}
+							vssel = vsglowselected == 1;
+							ImGui::SameLine(0, 0);
+							if (ImGui::ToggleButton("Ally##VisualsGlow", &vssel, ImVec2(ImGui::GetWindowSize().x / 2, 20)))
+							{
+								vsglowselected = 1;
+							}
+						}
+						ImGui::EndGroup();
+						ImGui::BeginGroupBox("VisualsGlowAll", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+						{
+							switch (vsglowselected)
+							{
+							case 0:
+								ImGui::Checkbox("Enabled##VisualsGlowEnemies", &Settings::ESP::Glow::Players::Enemies::Enabled);
+								ImGui::Checkbox("Cover##VisualsGlowEnemies", &Settings::ESP::Glow::Players::Enemies::Cover);
+								ImGui::Combo("Style##VisualsGlowEnemies", &Settings::ESP::Glow::Players::Enemies::Style, "Full Body\0Inline Flicker\0Inline Glow\0Flicker");
+								ImGuiEx::ColorEdit3("Colour##VisualsGlowEnemies", &Settings::ESP::Glow::Players::Enemies::Colour);
+								break;
+							case 1:
+								ImGui::Checkbox("Enabled##VisualsGlowTeammates", &Settings::ESP::Glow::Players::Teammates::Enabled);
+								ImGui::Checkbox("Cover##VisualsGlowTeammates", &Settings::ESP::Glow::Players::Teammates::Cover);
+								ImGui::Combo("Style##VisualsGlowTeammates", &Settings::ESP::Glow::Players::Teammates::Style, "Full Body\0Inline Flicker\0Inline Glow\0Flicker");
+								ImGuiEx::ColorEdit3("Colour##VisualsGlowTeammates", &Settings::ESP::Glow::Players::Teammates::Colour);
 								break;
 							}
 						}

@@ -284,14 +284,18 @@ namespace Settings
 			{
 				namespace Enemies
 				{
-					extern Color Visible;
-					extern Color Occluded;
+					extern bool Enabled;
+					extern bool Cover;
+					extern int Style;
+					extern Color Colour;
 				}
 
 				namespace Teammates
 				{
-					extern Color Visible;
-					extern Color Occluded;
+					extern bool Enabled;
+					extern bool Cover;
+					extern int Style;
+					extern Color Colour;
 				}
 			}
 		}

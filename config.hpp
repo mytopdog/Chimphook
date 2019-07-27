@@ -178,6 +178,16 @@ public:
 	OPTION(Color, esplocalplayercolourweapons, &Settings::ESP::Players::Localplayer::Colours::Weapons);
 	OPTION(Color, esplocalplayercolourpositions, &Settings::ESP::Players::Localplayer::Colours::Positions);
 
+	OPTION(bool, glowteammatesenabled, &Settings::ESP::Glow::Players::Teammates::Enabled);
+	OPTION(bool, glowteammatescover, &Settings::ESP::Glow::Players::Teammates::Cover);
+	OPTION(int, glowteammatesstyle, &Settings::ESP::Glow::Players::Teammates::Style);
+	OPTION(Color, glowteammatescolour, &Settings::ESP::Glow::Players::Teammates::Colour);
+
+	OPTION(bool, glowenemiesenabled, &Settings::ESP::Glow::Players::Enemies::Enabled);
+	OPTION(bool, glowenemiescover, &Settings::ESP::Glow::Players::Enemies::Cover);
+	OPTION(int, glowenemiesstyle, &Settings::ESP::Glow::Players::Enemies::Style);
+	OPTION(Color, glowenemiescolour, &Settings::ESP::Glow::Players::Enemies::Colour);
+
 	OPTION(bool, espgrenades, &Settings::ESP::Others::Grenades::Enabled);
 	OPTION(Color, espgrenadescolour, &Settings::ESP::Others::Grenades::Colour);
 
