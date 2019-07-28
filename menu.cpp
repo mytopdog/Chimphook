@@ -1802,7 +1802,10 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 									player_record_t rec;
 									rec.Init(info.steamID64, info.szName, Utils::GetEpochTime(), note);
 
-									g_playerRecords.push_back(rec);
+									AddRecord(rec);
+
+									tabSelected = 1;
+									selectedR = info.steamID64;
 								}
 							
 								ImGui::NextColumn();
