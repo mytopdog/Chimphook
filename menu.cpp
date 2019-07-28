@@ -1796,6 +1796,8 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 									_visible = false;
 								}
 
+								// test
+
 								ImGuiEx::InputText("Note", &note);
 								if (ImGui::Button("Create Record"))
 								{
