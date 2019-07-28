@@ -93,25 +93,38 @@ static const char* CSGOMMRanks[] = {
 	"The Global Elite"
 };
 
-class playerRecord
+class player_record_t
 {
 public:
-	playerRecord()
+	player_record_t()
 	{
-		
+		initialized = false;
 	}
 
-	playerRecord(const char* szName, long lSteamID64)
+	player_record_t(long long lSteamID64, char szName[128], long date, std::string sNote)
 	{
-		name = szName;
 		steamID64 = lSteamID64;
+		initDate = date;
+		strcpy(name, szName);
+		note = sNote;
+		initialized = true;
 	}
 
-	const char* name;
-	long steamID64;
-};
+	void Init(long long lSteamID64, char szName[128], long date, std::string sNote)
+	{
+		steamID64 = lSteamID64;
+		initDate = date;
+		strcpy(name, szName);
+		note = sNote;
+		initialized = true;
+	}
 
-static std::vector<playerRecord>    g_playerRecords;
+	bool initialized;
+	char name[128];
+	long initDate;
+	long long steamID64;
+	std::string note;
+};
 
 inline ILocalize*            g_Localize;
 inline ISteamClient*         g_SteamClient;

@@ -189,6 +189,7 @@ const char* const KeyNames[] = {
 };
 
 static int selectedP = -1;
+static long long selectedR = 0;
 static int fvkstge = -1;
 
 struct IDirect3DDevice9;
@@ -208,6 +209,12 @@ public:
 
 	bool IsVisible() const { return _visible; }
 
+	void AddRecord(player_record_t record)
+	{
+		g_playerRecords.push_back(record);
+	}
+
+	std::vector<player_record_t>    g_playerRecords;
 private:
 	void CreateStyle();
 

@@ -702,7 +702,7 @@ void DrawC4Damage(C_BaseEntity* c4ent)
 
 	float bombTimer = c4->m_flC4Blow() - g_GlobalVars->curtime;
 
-	if (bombTimer > 0 && c4->m_bBombTicking())
+	if (bombTimer > 0.f && c4->m_bBombTicking())
 	{
 		int SWIDTH, SHEIGHT;
 		g_EngineClient->GetScreenSize(SWIDTH, SHEIGHT);
@@ -726,11 +726,13 @@ void DrawC4Damage(C_BaseEntity* c4ent)
 			float countdown = c4->m_flDefuseCountDown() - g_GlobalVars->curtime;
 			perc = countdown / c4->m_flDefuseLength() * 100;
 
-			std::string count = std::to_string(countdown);
+			if (countdown > 0.f) {
+				std::string count = std::to_string(countdown);
 
-			Render::Get().RenderBoxFilled(startPos.x, startPos.y, endPos.x, endPos.y, Color(35, 35, 35, 200), 1, 12.f);
-			Render::Get().RenderBoxFilled(startPos.x + 3, startPos.y + 2, startPos.x + (width / 100 * perc), endPos.y - 2, Color(173, 216, 230), 1, 12.f);
-			Render::Get().RenderText(count, ImVec2(SWIDTH / 2, SHEIGHT / 48 * 9.5), 10.f, Color(255, 255, 255, 255), true, false, f_Verdana);
+				Render::Get().RenderBoxFilled(startPos.x, startPos.y, endPos.x, endPos.y, Color(35, 35, 35, 200), 1, 12.f);
+				Render::Get().RenderBoxFilled(startPos.x + 3, startPos.y + 2, startPos.x + (width / 100 * perc), endPos.y - 2, Color(173, 216, 230), 1, 12.f);
+				Render::Get().RenderText(count, ImVec2(SWIDTH / 2, SHEIGHT / 48 * 9.5), 10.f, Color(255, 255, 255, 255), true, false, f_Verdana);
+			}
 		}
 	}
 }
@@ -1810,9 +1812,12 @@ void SkinChanger::nSequence(const CRecvProxyData* pData, void* pStruct, void* pO
 		// retarded. https://www.unknowncheats.me/forum/counterstrike-global-offensive/347621-deagle-spinning-cut.html
 
 		if (activeWeapon = g_LocalPlayer->m_hActiveWeapon())
-			if (Settings::Misc::DeagleSpinner && activeWeapon->GetClientClass()->m_ClassID == ClassId::ClassId_CDEagle && proxydata->m_Value.m_Int == 7)
+			if (Settings::Misc::DeagleSpinner && activeWeapon->GetClientClass()->m_ClassID == ClassId::ClassId_CDEagle && proxydata->m_Value.m_Int == 7) {
 				proxydata->m_Value.m_Int  = 8;
+			}
 	}
+
+	viewmodel->SendViewModelMatchingSequence(proxydata->m_Value.m_Int);
 
 	Hooks::o_nSequence(proxydata, pStruct, pOut);
 }

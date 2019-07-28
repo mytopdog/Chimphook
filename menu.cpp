@@ -356,8 +356,6 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 	ImGui::SetNextWindowPos(ImVec2{ 0, 0 }, ImGuiSetCond_Once);
 	ImGui::SetNextWindowSize(ImVec2{ 750, 850 }, ImGuiSetCond_Once);
 
-	static int tabSelected = 0;
-
 	if (ImGui::Begin("Chimphook",
 		&_visible,
 		ImGuiWindowFlags_NoCollapse |
@@ -365,6 +363,8 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 		ImGuiWindowFlags_NoFocusOnAppearing |
 		ImGuiWindowFlags_NoNavFocus ))
 	{
+		static int tabSelected = 0;
+
 		bool thisSel = tabSelected == 0;
 		if (ImGui::ToggleButton("Misc", &thisSel, ImVec2(ImGui::GetWindowSize().x / 5 - 1, 20)))
 		{
@@ -1545,6 +1545,8 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 	ImGui::SetNextWindowPos(ImVec2{ 750, 0 }, ImGuiSetCond_Once);
 	ImGui::SetNextWindowSize(ImVec2{ 800, 600 }, ImGuiSetCond_Once);
 
+	static std::string note;
+
 	if (ImGui::Begin("Player List",
 		&_visible,
 		ImGuiWindowFlags_NoCollapse |
@@ -1552,71 +1554,357 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 	{
 		ImGui::BeginGroupBox("PlayerListBody", ImVec2(0, 0));
 		{
-			ImGui::Checkbox("Localplayer", &Settings::System::PlayerList::ShowLocalplayer); ImGui::SameLine();
-			ImGui::Checkbox("Enemies", &Settings::System::PlayerList::ShowEnemies); ImGui::SameLine();
-			ImGui::Checkbox("Bots", &Settings::System::PlayerList::ShowBots);
-			ImGui::Checkbox("Name Stealer", &Settings::System::PlayerList::NameStealer::Enabled); ImGui::SameLine();
-			ImGui::Checkbox("Enemies##NS", &Settings::System::PlayerList::NameStealer::Enemies); ImGui::SameLine();
-			ImGui::SliderInt("Delay", &Settings::System::PlayerList::NameStealer::Delay, 150, 600);
+			static int tabSelected = 0;
 
-			static char searcher[128];
-			static char term[128];
-
-			if (ImGui::InputText("Search##PlayerList", searcher, 128, ImGuiInputTextFlags_CtrlEnterForNewLine)) {
-				strcpy(term, searcher);
-			}
-			ImGui::SameLine();
-			if (ImGui::Button("Search"))
+			bool thisSel = tabSelected == 0;
+			if (ImGui::ToggleButton("List", &thisSel, ImVec2(ImGui::GetWindowSize().x / 2 - 1, 20)))
 			{
-				strcpy(term, searcher);
+				tabSelected = 0;
 			}
-
-			if (!g_LocalPlayer || !g_EngineClient->IsInGame() || !g_PlayerResource) {
-				selectedP = -1;
-			}
-
-			ImGui::BeginGroupBox("PlayerListArray", ImVec2(0, ImGui::GetWindowSize().y / 2));
+			thisSel = tabSelected == 1;
+			ImGui::SameLine(0, 0);
+			if (ImGui::ToggleButton("Records", &thisSel, ImVec2(ImGui::GetWindowSize().x / 2 - 1, 20)))
 			{
-				ImGui::BeginGroup();
+				tabSelected = 1;
+			}
+
+			switch (tabSelected)
+			{
+			case 0:
+				ImGui::Checkbox("Localplayer", &Settings::System::PlayerList::ShowLocalplayer); ImGui::SameLine();
+				ImGui::Checkbox("Enemies", &Settings::System::PlayerList::ShowEnemies); ImGui::SameLine();
+				ImGui::Checkbox("Bots", &Settings::System::PlayerList::ShowBots);
+				ImGui::Checkbox("Name Stealer", &Settings::System::PlayerList::NameStealer::Enabled); ImGui::SameLine();
+				ImGui::Checkbox("Enemies##NS", &Settings::System::PlayerList::NameStealer::Enemies); ImGui::SameLine();
+				ImGui::SliderInt("Delay", &Settings::System::PlayerList::NameStealer::Delay, 150, 600);
+
+				static char searcher[128];
+				static char term[128];
+
+				static int oldSel;
+
+				if (ImGui::InputText("Search##PlayerList", searcher, 128)) {
+					strcpy(term, searcher);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Search"))
 				{
+					strcpy(term, searcher);
+				}
+
+				if (!g_LocalPlayer || !g_EngineClient->IsInGame() || !g_PlayerResource) {
+					selectedP = -1;
+				}
+
+				if (oldSel != selectedP) {
+					note = "";
+					oldSel = selectedP;
+				}
+
+				ImGui::BeginGroupBox("PlayerListArray", ImVec2(0, ImGui::GetWindowSize().y / 2.25));
+				{
+					ImGui::BeginGroup();
+					{
+						ImGui::Columns(4, nullptr, false);
+						ImGui::Text("#entid"); ImGui::NextColumn();
+						ImGui::Text("Name"); ImGui::NextColumn();
+						ImGui::Text("SteamID"); ImGui::NextColumn();
+						ImGui::Text("Flags"); ImGui::NextColumn();
+						ImGui::Columns(1, nullptr, false);
+					}
+					ImGui::EndGroup();
+					ImGui::Separator();
 					ImGui::Columns(4, nullptr, false);
-					ImGui::Text("#entid"); ImGui::NextColumn();
-					ImGui::Text("Name"); ImGui::NextColumn();
-					ImGui::Text("SteamID"); ImGui::NextColumn();
-					ImGui::Text("Flags"); ImGui::NextColumn();
+				
+					if (g_LocalPlayer && g_EngineClient->IsInGame()) 
+					{
+						for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
+						{
+							C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
+
+							if (!player)
+								continue;
+
+							player_info_t info = player->GetPlayerInfo();
+
+							if (player->m_iTeamNum() != g_LocalPlayer->m_iTeamNum() && !Settings::System::PlayerList::ShowEnemies)
+								continue;
+
+							if ((info.fakeplayer && !Settings::System::PlayerList::ShowBots) || (info.fakeplayer && strstr(info.szName, "GOTV")))
+								continue;
+
+							if (player == g_LocalPlayer && !Settings::System::PlayerList::ShowLocalplayer)
+								continue;
+
+							if (term[0]) {
+								char szName[128];
+								for (int i = 0; i < 128; i++)
+									szName[i] = tolower(info.szName[i]);
+
+								char szTerm[128];
+								for (int i = 0; i < 128; i++)
+									szTerm[i] = tolower(term[i]);
+
+								if (!strstr(szName, szTerm))
+								{
+									continue;
+								}
+							}
+
+							std::string text;
+							text += std::to_string(player->EntIndex());
+							if (!player->notfriend && player != g_LocalPlayer) text += "*";
+
+							if (ImGui::Selectable(text.c_str(), (bool)(selectedP == player->EntIndex()), ImGuiSelectableFlags_SpanAllColumns)) {
+								selectedP = player->EntIndex();
+							}
+							ImGui::NextColumn();
+
+							if (info.szName) ImGui::Text(info.szName);
+							ImGui::NextColumn();
+					
+							if (info.iSteamID) ImGui::Text(std::to_string(info.iSteamID).c_str());
+							ImGui::NextColumn();
+
+							std::string flags;
+							if (player->m_iTeamNum() == g_LocalPlayer->m_iTeamNum())
+								flags += "Teammate ";
+							else
+								flags += "Enemy ";
+
+							if (info.fakeplayer)
+								flags += "Bot ";
+
+							if (player == g_LocalPlayer)
+								flags += "Localplayer ";
+
+							ImGui::Text(flags.c_str());
+							ImGui::NextColumn();
+						}
+					}
 					ImGui::Columns(1, nullptr, false);
 				}
-				ImGui::EndGroup();
-				ImGui::Columns(4, nullptr, false);
-				
-				if (g_LocalPlayer && g_EngineClient->IsInGame()) 
+				ImGui::EndGroupBox();
+				ImGui::BeginGroupBox("PlayerListOptions", ImVec2(0, 0));
 				{
-					for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
+					ImGui::Columns(2, nullptr, false);
+					ImGui::BeginGroupBox("PlayerListOptionsInfo", ImVec2(0, 0));
 					{
-						C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(i);
+						if (selectedP > -1) {
+							C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(selectedP);
 
-						if (!player)
+							if (player)
+							{
+								player_info_t info = player->GetPlayerInfo();
+								const char* clantag = (*g_PlayerResource)->GetClan(player->EntIndex());
+								int* rank = (*g_PlayerResource)->GetCompetitiveRanking(player->EntIndex());
+								int* wins = (*g_PlayerResource)->GetCompetitiveWins(player->EntIndex());
+								int ping = (int)((*g_PlayerResource)->GetPing(player->EntIndex()));
+
+								std::string temp = "";
+								temp += "EntID: ";
+								temp += std::to_string(player->EntIndex()).c_str();
+								ImGui::Text(temp.c_str());
+
+								temp = "";
+								temp += "Ping: ";
+								temp += std::to_string(ping);
+								ImGui::Text(temp.c_str());
+
+								temp = "";
+								temp  += "Name: ";
+								temp += info.szName;
+								ImGui::Text(temp.c_str());
+
+								temp = "";
+								temp += "Clan: ";
+								temp += clantag;
+								ImGui::Text(temp.c_str());
+
+								temp = "";
+								temp += "Rank: ";
+								temp += CSGOMMRanks[*rank];
+								ImGui::Text(temp.c_str());
+
+								temp = "";
+								temp += "Wins: ";
+								temp += std::to_string(*wins);
+								ImGui::Text(temp.c_str());
+							}
+						}
+					}
+					ImGui::EndGroupBox();
+					ImGui::NextColumn();
+
+					ImGui::BeginGroupBox("PlayerListOptionsActions", ImVec2(0, 0));
+					{
+						ImGui::Columns(2, nullptr, false);
+						if (selectedP > -1)
+						{
+							C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(selectedP);
+
+							if (player)
+							{
+								player_info_t info = player->GetPlayerInfo();
+								
+								if (ImGui::Button("Steal Name"))
+								{
+									char* endl = " ";
+									std::string f;
+									f += info.szName;
+									f += endl;
+									Utils::SetName(f.c_str());
+								}
+
+								if (ImGui::Button("Steal Clan"))
+								{
+									const char* clantag = (const char*)((*g_PlayerResource)->GetClan(player->EntIndex()));
+
+									Utils::SetClantag(clantag);
+								}
+
+								if (player != g_LocalPlayer)
+								{
+									if (ImGui::Button("Vote Kick"))
+									{
+										std::string votekick;
+										votekick += "callvote kick ";
+										votekick += std::to_string(info.userId);
+										g_EngineClient->ClientCmd(votekick.c_str());
+									}
+
+									if (player->notfriend)
+									{
+										if (ImGui::Button("Add Friend"))
+										{
+											player->notfriend = false;
+										}
+									}
+									else
+									{
+										if (ImGui::Button("Remove  Friend"))
+										{
+											player->notfriend = true;
+										}
+									}
+								}
+
+								if (ImGui::Button("Open Profile"))
+								{
+									g_SteamFriends->ActivateGameOverlayToUser("steamid", (CSteamID)(uint64)info.steamID64);
+
+									_visible = false;
+								}
+
+								ImGuiEx::InputText("Note", &note);
+								if (ImGui::Button("Create Record"))
+								{
+									player_record_t rec;
+									rec.Init(info.steamID64, info.szName, Utils::GetEpochTime(), note);
+
+									g_playerRecords.push_back(rec);
+								}
+							
+								ImGui::NextColumn();
+
+								int AvatarImage = g_SteamFriends->GetLargeFriendAvatar((CSteamID)(uint64)info.steamID64);
+
+								if (AvatarImage > 0)
+								{
+									uint32 WIDTH = 0, HEIGHT = 0;
+									g_SteamUtils->GetImageSize(AvatarImage, &WIDTH, &HEIGHT);
+
+									if (WIDTH > 0 && HEIGHT > 0) {
+										int sz = WIDTH * HEIGHT * 4; 
+
+										uint8* dest = (uint8*)malloc(sz);
+
+										if (dest) {
+											if (g_SteamUtils->GetImageRGBA(AvatarImage, dest, sz))
+											{
+												LPDIRECT3DTEXTURE9 texture;
+												D3DXCreateTexture(pDevice, WIDTH, HEIGHT, 0, D3DUSAGE_DYNAMIC, D3DFORMAT::D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture);
+
+												if (texture) {
+													CopyImageToTexture(dest, WIDTH, HEIGHT, texture, 0, 0);
+
+													ImGui::Image((void*)(uintptr_t)texture, ImVec2(128, 128));
+
+													texturesToRelease.push_back((ImTextureID)(void*)(uintptr_t)texture);
+												}
+											}
+
+											free(dest);
+										}
+									}
+								}
+							}
+						}
+						ImGui::Columns(1, nullptr, false);
+					}
+					ImGui::EndGroupBox();
+					ImGui::NextColumn();
+					ImGui::Columns(1, nullptr, false);
+				}
+				ImGui::EndGroupBox();
+				break;
+			case 1:
+				// records
+
+				static char searchRec[128];
+				static char termRec[128];
+
+				if (ImGui::InputText("Search##PlayerRecords", searchRec, 128))
+				{
+					strcpy(termRec, searchRec);
+				}
+				ImGui::SameLine();
+				if (ImGui::Button("Search"))
+				{
+					strcpy(termRec, searchRec);
+				}
+
+				if (!g_LocalPlayer || !g_EngineClient->IsInGame() || !g_PlayerResource)
+				{
+					selectedR = 0;
+				}
+
+				int realSelected = 0;
+				for (int i = 0; i < g_playerRecords.size(); i++)
+				{
+					if (g_playerRecords.at(i).steamID64 == selectedR)
+						realSelected = i;
+				}
+
+				ImGui::BeginGroupBox("PlayerRecordsArray", ImVec2(0, ImGui::GetWindowSize().y / 2));
+				{
+					ImGui::BeginGroup();
+					{
+						ImGui::Columns(4, nullptr, false);
+						ImGui::Text("#recordid"); ImGui::NextColumn();
+						ImGui::Text("First known name"); ImGui::NextColumn();
+						ImGui::Text("SteamID64"); ImGui::NextColumn();
+						ImGui::Text("Date"); ImGui::NextColumn();
+						ImGui::Columns(1, nullptr, false);
+					}
+					ImGui::EndGroup();
+					ImGui::Separator();
+					ImGui::Columns(4, nullptr, false);
+
+					for (int i = 1; i < g_playerRecords.size(); i++)
+					{
+						if (!g_playerRecords.at(i).initialized)
 							continue;
 
-						player_info_t info = player->GetPlayerInfo();
-
-						if (player->m_iTeamNum() != g_LocalPlayer->m_iTeamNum() && !Settings::System::PlayerList::ShowEnemies)
-							continue;
-
-						if ((info.fakeplayer && !Settings::System::PlayerList::ShowBots) || (info.fakeplayer && strstr(info.szName, "GOTV")))
-							continue;
-
-						if (player == g_LocalPlayer && !Settings::System::PlayerList::ShowLocalplayer)
-							continue;
-
-						if (term[0]) {
+						if (term[0])
+						{
 							char szName[128];
 							for (int i = 0; i < 128; i++)
-								szName[i] = tolower(info.szName[i]);
+								szName[i] = tolower(termRec[i]);
 
 							char szTerm[128];
 							for (int i = 0; i < 128; i++)
-								szTerm[i] = tolower(term[i]);
+								szTerm[i] = tolower(termRec[i]);
 
 							if (!strstr(szName, szTerm))
 							{
@@ -1624,193 +1912,29 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 							}
 						}
 
-						std::string text;
-						text += std::to_string(player->EntIndex());
-						if (!player->notfriend && player != g_LocalPlayer) text += "*";
-
-						if (ImGui::Selectable(text.c_str(), (bool)(selectedP == player->EntIndex()), ImGuiSelectableFlags_SpanAllColumns)) {
-							selectedP = player->EntIndex();
-						}
-						ImGui::NextColumn();
-
-						if (info.szName) ImGui::Text(info.szName);
-						ImGui::NextColumn();
-					
-						if (info.iSteamID) ImGui::Text(std::to_string(info.iSteamID).c_str());
-						ImGui::NextColumn();
-
-						std::string flags;
-						if (player->m_iTeamNum() == g_LocalPlayer->m_iTeamNum())
-							flags += "Teammate ";
-						else
-							flags += "Enemy ";
-
-						if (info.fakeplayer)
-							flags += "Bot ";
-
-						if (player == g_LocalPlayer)
-							flags += "Localplayer ";
-
-						ImGui::Text(flags.c_str());
-						ImGui::NextColumn();
-					}
-				}
-				ImGui::Columns(1, nullptr, false);
-			}
-			ImGui::EndGroupBox();
-			ImGui::BeginGroupBox("PlayerListOptions", ImVec2(0, 0));
-			{
-				ImGui::Columns(2, nullptr, false);
-				ImGui::BeginGroupBox("PlayerListOptionsInfo", ImVec2(0, 0));
-				{
-					if (selectedP > -1) {
-						C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(selectedP);
-
-						if (player)
+						if (ImGui::Selectable(std::to_string(i).c_str(), (bool)(realSelected = i), ImGuiSelectableFlags_SpanAllColumns))
 						{
-							player_info_t info = player->GetPlayerInfo();
-							const char* clantag = (*g_PlayerResource)->GetClan(player->EntIndex());
-							int* rank = (*g_PlayerResource)->GetCompetitiveRanking(player->EntIndex());
-							int* wins = (*g_PlayerResource)->GetCompetitiveWins(player->EntIndex());
-							int ping = (int)((*g_PlayerResource)->GetPing(player->EntIndex()));
-
-							std::string temp = "";
-							temp += "EntID: ";
-							temp += std::to_string(player->EntIndex()).c_str();
-							ImGui::Text(temp.c_str());
-
-							temp = "";
-							temp += "Ping: ";
-							temp += std::to_string(ping);
-							ImGui::Text(temp.c_str());
-
-							temp = "";
-							temp  += "Name: ";
-							temp += info.szName;
-							ImGui::Text(temp.c_str());
-
-							temp = "";
-							temp += "Clan: ";
-							temp += clantag;
-							ImGui::Text(temp.c_str());
-
-							temp = "";
-							temp += "Rank: ";
-							temp += CSGOMMRanks[*rank];
-							ImGui::Text(temp.c_str());
-
-							temp = "";
-							temp += "Wins: ";
-							temp += std::to_string(*wins);
-							ImGui::Text(temp.c_str());
+							selectedR = g_playerRecords.at(i).steamID64;
 						}
-					}
-				}
-				ImGui::EndGroupBox();
-				ImGui::NextColumn();
+						ImGui::NextColumn();
 
-				ImGui::BeginGroupBox("PlayerListOptionsActions", ImVec2(0, 0));
-				{
-					ImGui::Columns(2, nullptr, false);
-					if (selectedP > -1)
-					{
-						C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(selectedP);
+						if (g_playerRecords.at(i).name) ImGui::Text(g_playerRecords.at(i).name);
+						ImGui::NextColumn();
 
-						if (player)
-						{
-							player_info_t info = player->GetPlayerInfo();
-								
-							if (ImGui::Button("Steal Name"))
-							{
-								char* endl = " ";
-								std::string f;
-								f += info.szName;
-								f += endl;
-								Utils::SetName(f.c_str());
-							}
+						if (g_playerRecords.at(i).steamID64) ImGui::Text(std::to_string(g_playerRecords.at(i).steamID64).c_str());
+						ImGui::NextColumn();
 
-							if (ImGui::Button("Steal Clan"))
-							{
-								const char* clantag = (const char*)((*g_PlayerResource)->GetClan(player->EntIndex()));
-
-								Utils::SetClantag(clantag);
-							}
-
-							if (player != g_LocalPlayer)
-							{
-								if (ImGui::Button("Vote Kick"))
-								{
-									std::string votekick;
-									votekick += "callvote kick ";
-									votekick += std::to_string(info.userId);
-									g_EngineClient->ClientCmd(votekick.c_str());
-								}
-
-								if (player->notfriend)
-								{
-									if (ImGui::Button("Add Friend"))
-									{
-										player->notfriend = false;
-									}
-								}
-								else
-								{
-									if (ImGui::Button("Remove  Friend"))
-									{
-										player->notfriend = true;
-									}
-								}
-							}
-
-							if (ImGui::Button("Open Profile"))
-							{
-								g_SteamFriends->ActivateGameOverlayToUser("steamid", (CSteamID)(uint64)info.steamID64);
-
-								_visible = false;
-							}
-							
-							ImGui::NextColumn();
-
-							int AvatarImage = g_SteamFriends->GetLargeFriendAvatar((CSteamID)(uint64)info.steamID64);
-
-							if (AvatarImage > 0)
-							{
-								uint32 WIDTH = 0, HEIGHT = 0;
-								g_SteamUtils->GetImageSize(AvatarImage, &WIDTH, &HEIGHT);
-
-								if (WIDTH > 0 && HEIGHT > 0) {
-									int sz = WIDTH * HEIGHT * 4; 
-
-									uint8* dest = (uint8*)malloc(sz);
-
-									if (dest) {
-										if (g_SteamUtils->GetImageRGBA(AvatarImage, dest, sz))
-										{
-											LPDIRECT3DTEXTURE9 texture;
-											D3DXCreateTexture(pDevice, WIDTH, HEIGHT, 0, D3DUSAGE_DYNAMIC, D3DFORMAT::D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture);
-
-											if (texture) {
-												CopyImageToTexture(dest, WIDTH, HEIGHT, texture, 0, 0);
-
-												ImGui::Image((void*)(uintptr_t)texture, ImVec2(128, 128));
-
-												texturesToRelease.push_back((ImTextureID)(void*)(uintptr_t)texture);
-											}
-										}
-
-										free(dest);
-									}
-								}
-							}
-						}
+						long date = g_playerRecords.at(i).initDate;
+						std::tm* local = std::localtime((time_t*)date);
+						std::string time = std::asctime(local);
+						if (g_playerRecords.at(i).initDate) ImGui::Text(time.c_str());
+						ImGui::NextColumn();
 					}
 					ImGui::Columns(1, nullptr, false);
 				}
 				ImGui::EndGroupBox();
-				ImGui::NextColumn();
-				ImGui::Columns(1, nullptr, false);
+				break;
 			}
-			ImGui::EndGroupBox();
 		}
 		ImGui::EndGroupBox();
 	}

@@ -511,6 +511,8 @@ namespace Hooks
 			}
 		}
 
+		static int lastseq = -1;
+
 		if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
 		{
 			SkinChanger::Run();
