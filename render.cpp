@@ -73,6 +73,7 @@ void Render::BeginScene()
 
 	SniperCrosshair();
 	WallbangCrosshair();
+	DrawSmokeHelperSpots();
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer)
 		Visuals::Get().AddToDrawList();
@@ -124,7 +125,7 @@ float Render::RenderText(const std::string& text, ImVec2 pos, float size, Color 
 	return pos.y + textSize.y;
 }
 
-void Render::RenderCircle3D(Vector position, float points, float radius, Color color)
+void Render::RenderCircle3D(Vector position, float points, float radius, Color color, int thickness)
 {
 	float step = (float)M_PI * 2.0f / points;
 
@@ -137,7 +138,7 @@ void Render::RenderCircle3D(Vector position, float points, float radius, Color c
 		if (g_DebugOverlay->ScreenPosition(start, start2d) || g_DebugOverlay->ScreenPosition(end, end2d))
 			return;
 
-		RenderLine(start2d.x, start2d.y, end2d.x, end2d.y, color);
+		RenderLine(start2d.x, start2d.y, end2d.x, end2d.y, color, thickness);
 	}
 }
 

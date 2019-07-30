@@ -36,10 +36,12 @@ namespace Interfaces
 		CreateInterfaceFn steamapiFactory   = get_module_factory(GetModuleHandleW(L"steam_api.dll"));
 		CreateInterfaceFn steamclientFactory= get_module_factory(GetModuleHandleW(L"steamclient.dll"));
 		CreateInterfaceFn localizeFactory   = get_module_factory(GetModuleHandleW(L"localize.dll"));
+		CreateInterfaceFn studioRender      = get_module_factory(GetModuleHandleW(L"studiorender.dll"));
 
 
 		g_HUDChat             = FindHudElement<CHudChat>           ("CHudChat");
 		g_MatchFramework      = get_interface<IMatchFramework>     (matchmakingFactory, "MATCHFRAMEWORK_001");
+		g_StudioRender        = get_interface<IStudioRender>       (studioRender      , "VStudioRender026");
         g_CHLClient           = get_interface<IBaseClientDLL>      (clientFactory     , "VClient018");
         g_EntityList          = get_interface<IClientEntityList>   (clientFactory     , "VClientEntityList003");
 		g_SteamClient         = get_interface<ISteamClient>        (steamclientFactory, "SteamClient017");
@@ -76,7 +78,7 @@ namespace Interfaces
 		g_D3DDevice9 = **(IDirect3DDevice9 * **)(Utils::PatternScan(dx9api, "A1 ? ? ? ? 50 8B 08 FF 51 0C") + 1);
 		g_ClientState     =     **(CClientState***)(Utils::PatternScan(engine, "A1 ? ? ? ? 8B 80 ? ? ? ? C3") + 1);
 		g_LocalPlayer = *(C_LocalPlayer*)(Utils::PatternScan(client, "8B 0D ? ? ? ? 83 FF FF 74 07") + 2);
-		g_AlertSystem = *(IAlertSystem**)(Utils::PatternScan(client, "A1 ? ? ? ? B9 ? ? ? ? FF 50 1C E8") + 6);
+		g_CenterPrint = *(CCenterPrint**)(Utils::PatternScan(client, "A1 ? ? ? ? B9 ? ? ? ? FF 50 1C E8") + 6);
 		g_RenderBeams = *(IViewRenderBeams**)(Utils::PatternScan(client, "A1 ? ? ? ? FF 10 A1 ? ? ? ? B9") + 1);
 
 		g_PlayerResource = (C_CSPlayerResource**)((uint32_t)client + 0x313553C);

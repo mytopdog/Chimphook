@@ -171,6 +171,7 @@
     <ClInclude Include="cheats\aimsett.h" />
     <ClInclude Include="cheats\autowall.hpp" />
     <ClInclude Include="cheats\chattranslator.h" />
+    <ClInclude Include="cheats\grenadedata.hpp" />
     <ClInclude Include="cheats\hotkeys.hpp" />
     <ClInclude Include="cheats\misc.hpp" />
     <ClInclude Include="cheats\movement.hpp" />
@@ -207,7 +208,7 @@
     <ClInclude Include="valve_sdk\interfaces\CClientState.hpp" />
     <ClInclude Include="valve_sdk\interfaces\CInput.hpp" />
     <ClInclude Include="valve_sdk\interfaces\CSPlayerResources.hpp" />
-    <ClInclude Include="valve_sdk\interfaces\IAlertSystem.hpp" />
+    <ClInclude Include="valve_sdk\interfaces\CCenterPrint.hpp" />
     <ClInclude Include="valve_sdk\interfaces\IAppSystem.hpp" />
     <ClInclude Include="valve_sdk\interfaces\IBaseClientDll.hpp" />
     <ClInclude Include="valve_sdk\interfaces\IClientEntity.hpp" />
@@ -238,6 +239,7 @@
     <ClInclude Include="valve_sdk\interfaces\ISteamClient.hpp" />
     <ClInclude Include="valve_sdk\interfaces\ISteamFriends.hpp" />
     <ClInclude Include="valve_sdk\interfaces\ISteamUtils.hpp" />
+    <ClInclude Include="valve_sdk\interfaces\IStudioRender.hpp" />
     <ClInclude Include="valve_sdk\interfaces\ISurface.hpp" />
     <ClInclude Include="valve_sdk\interfaces\IVDebugOverlay.hpp" />
     <ClInclude Include="valve_sdk\interfaces\IVEngineClient.hpp" />

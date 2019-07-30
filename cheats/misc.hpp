@@ -78,3 +78,5 @@ namespace NameStealer
 	void OnCreateMove();
 	void FireGameEvent(IGameEvent* ev);
 }
+
+void draw_test();

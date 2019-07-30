@@ -1299,7 +1299,7 @@ void grenade_prediction::Setup(C_BasePlayer* pl, Vector& vecSrc, Vector& vecThro
 	vecThrow += vForward * flVel;
 }
 
-void grenade_prediction::Simulate(QAngle & Angles, C_BasePlayer * pLocal)
+void grenade_prediction::Simulate(QAngle & Angles, C_BasePlayer* pLocal)
 {
 	Vector vecSrc, vecThrow;
 	Setup(pLocal, vecSrc, vecThrow, Angles);
@@ -2184,6 +2184,102 @@ void Glow::Run()
 				glowObject.m_flGreen = col.g() / 255.f;
 				glowObject.m_flBlue = col.b() / 255.f;
 				glowObject.m_flAlpha = col.a() / 255.f;
+			}
+		}
+	}
+}
+
+constexpr unsigned int str2int(const char* str, int h = 0)
+{
+	return !str[h] ? 5381 : (str2int(str, h + 1) * 33) ^ str[h];
+}
+
+void DrawSmokeHelperSpots()
+{
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !g_LocalPlayer->m_hActiveWeapon())
+		return;
+	const char* levelname = g_ClientState->m_szLevelNameShort;
+	std::vector<GrenadeData> spots;
+
+	switch (str2int(levelname))
+	{
+	case str2int("de_cbble"):
+		spots = Data_cbble;
+		break;
+	case str2int("de_mirage"):
+		spots = Data_mirage;
+		break;
+	case str2int("de_dust2"):
+		spots = Data_dust2;
+		break;
+	case str2int("de_inferno"):
+		spots = Data_inferno;
+		break;
+	case str2int("de_nuke"):
+		spots = Data_nuke;
+		break;
+	case str2int("de_overpass"):
+		spots = Data_overpass;
+		break;
+	case str2int("de_train"):
+		spots = Data_train;
+		break;
+	case str2int("de_cache"):
+		spots = Data_cache;
+		break;
+	}
+
+	if (!g_LocalPlayer->m_hActiveWeapon()->IsGrenade())
+		return;
+
+	ClassId id = g_LocalPlayer->m_hActiveWeapon()->GetClientClass()->m_ClassID;
+
+	for (GrenadeData spot : spots)
+	{
+		if ((id == ClassId_CSmokeGrenade && spot.Weapon == "Smoke")
+			|| (id == ClassId_CFlashbang && spot.Weapon == "Flashbang")
+			|| (id == ClassId_CMolotovGrenade && spot.Weapon == "Molotov")
+			|| (id == ClassId_CIncendiaryGrenade && spot.Weapon == "Molotov"))
+		{
+			Vector pos = Vector(spot.XPos, spot.YPos, spot.ZPos);
+			Vector ph;
+
+			/*Ray_t ray;
+			ray.Init(g_LocalPlayer->GetEyePos(), pos);
+			CTraceFilter filter;
+			filter.pSkip = g_LocalPlayer;
+			trace_t tr;
+			g_EngineTrace->TraceRay(ray, MASK_SHOT, &filter, &tr);*/
+			// todo, don't show ones that you can't see. Trace line from eye to pos to see if you can actually see it or not.
+			
+			Render::Get().RenderCircle3D(pos, 36, 10, Color(255, 255, 255, 255), 2.f);
+
+			if (pos.DistTo(g_LocalPlayer->m_vecOrigin()) < 10) {
+				QAngle dir = QAngle(spot.XAng, spot.YAng, 0);
+				Vector va;
+
+				Math::AngleVectors(dir, va);
+
+				Vector po = g_LocalPlayer->GetEyePos() + va * 5;
+				Vector scre;
+
+				if (!Math::WorldToScreen(po, scre))
+					continue;
+
+				Render::Get().RenderCircle(scre.x, scre.y, 5, 36, Color(255, 0, 0, 255), 1.f);
+
+				float cr = scre.y;
+				Render::Get().RenderText(spot.Name, ImVec2(scre.x + 10, cr), 14.f, Color(255, 0, 0, 255), false, true, f_AndaleMono);
+				ImVec2 sz = f_AndaleMono->CalcTextSizeA(14.f, FLT_MAX, 0.f, spot.Name.c_str());
+				cr += sz.y + 5;
+
+				Render::Get().RenderText(spot.Desc, ImVec2(scre.x + 10, cr), 14.f, Color(255, 0, 0, 255), false, true, f_AndaleMono);
+				sz = f_AndaleMono->CalcTextSizeA(14.f, FLT_MAX, 0.f, spot.Desc.c_str());
+				cr += sz.y + 5;
+
+				Render::Get().RenderText(spot.Weapon, ImVec2(scre.x + 10, cr), 14.f, Color(255, 0, 0, 255), false, true, f_AndaleMono);
+				sz = f_AndaleMono->CalcTextSizeA(14.f, FLT_MAX, 0.f, spot.Weapon.c_str());
+				cr += sz.y + 5;
 			}
 		}
 	}

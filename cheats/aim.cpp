@@ -474,7 +474,7 @@ C_BasePlayer* FindPlayer(bool& found, float& bestDamage, Bone& bestBone)
 		{
 			C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-			if (!pl || !pl->IsAlive() || pl->IsDormant() || !pl->IsPlayer() || !pl->notfriend || (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum() && !Settings::Aim::TestAimbot::TargetTeammates))
+			if (!pl || !pl->IsAlive() || pl->m_bGunGameImmunity() || pl->IsDormant() || !pl->IsPlayer() || !pl->notfriend || (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum() && !Settings::Aim::TestAimbot::TargetTeammates))
 				continue;
 
 			Bone bone;
@@ -505,7 +505,7 @@ C_BasePlayer* FindPlayer(bool& found, float& bestDamage, Bone& bestBone)
 		{
 			C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-			if (!pl || !pl->IsAlive() || pl->IsDormant() || !pl->IsPlayer() || !pl->notfriend || (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum() && !Settings::Aim::TestAimbot::TargetTeammates))
+			if (!pl || !pl->IsAlive() || pl->m_bGunGameImmunity() || pl->IsDormant() || !pl->IsPlayer() || !pl->notfriend || (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum() && !Settings::Aim::TestAimbot::TargetTeammates))
 				continue;
 
 			Bone bone;
@@ -529,7 +529,7 @@ C_BasePlayer* FindPlayer(bool& found, float& bestDamage, Bone& bestBone)
 		{
 			C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-			if (!pl || !pl->IsAlive() || pl->IsDormant() || !pl->IsPlayer() || !pl->notfriend || (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum() && !Settings::Aim::TestAimbot::TargetTeammates))
+			if (!pl || !pl->IsAlive() || pl->m_bGunGameImmunity() || pl->IsDormant() || !pl->IsPlayer() || !pl->notfriend || (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum() && !Settings::Aim::TestAimbot::TargetTeammates))
 				continue;
 
 			Bone bone;
@@ -562,7 +562,7 @@ C_BasePlayer* FindPlayer(bool& found, float& bestDamage, Bone& bestBone)
 		{
 			C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-			if (!pl || !pl->IsAlive() || pl->IsDormant() || !pl->IsPlayer() || !pl->notfriend || (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum() && !Settings::Aim::TestAimbot::TargetTeammates))
+			if (!pl || !pl->IsAlive() || pl->m_bGunGameImmunity() || pl->IsDormant() || !pl->IsPlayer() || !pl->notfriend || (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum() && !Settings::Aim::TestAimbot::TargetTeammates))
 				continue;
 
 			Bone bone;
@@ -584,7 +584,7 @@ C_BasePlayer* FindPlayer(bool& found, float& bestDamage, Bone& bestBone)
 		{
 			C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-			if (!pl || !pl->IsAlive() || pl->IsDormant() || !pl->IsPlayer() || !pl->notfriend || (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum() && !Settings::Aim::TestAimbot::TargetTeammates))
+			if (!pl || !pl->IsAlive() || pl->m_bGunGameImmunity() || pl->IsDormant() || !pl->IsPlayer() || !pl->notfriend || (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum() && !Settings::Aim::TestAimbot::TargetTeammates))
 				continue;
 
 			Bone bone;

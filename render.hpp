@@ -52,7 +52,7 @@ public:
 
 	void Render3DCube(float scalar, QAngle angles, Vector middle_origin, Color outline);
 
-	void RenderCircle3D(Vector position, float points, float radius, Color color);
+	void RenderCircle3D(Vector position, float points, float radius, Color color, int thickness = 1.f);
 
 	void RenderImage(ImTextureID user_texture_id, const ImVec2 & a, const ImVec2 & b, const ImVec2 & uv_a = ImVec2(0, 0), const ImVec2 & uv_b = ImVec2(1, 1), ImU32 col = 0xFFFFFFFF)
 	{

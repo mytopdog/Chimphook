@@ -41,7 +41,8 @@ namespace Utils {
      */
     bool ConsolePrint(const char* fmt, ...);
 	bool ConsolePrint(int num);
-    
+	bool ConsolePrint(float num);
+
     /*
      * @brief Blocks execution until a key is pressed on the console window
      *

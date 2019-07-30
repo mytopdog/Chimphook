@@ -321,9 +321,6 @@
     <ClInclude Include="imgui\pfd.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="valve_sdk\interfaces\IAlertSystem.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="valve_sdk\interfaces\IViewRenderBeams.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -403,6 +400,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="valve_sdk\interfaces\ILocalize.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\CCenterPrint.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\IStudioRender.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\grenadedata.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -370,6 +370,21 @@ public:
 		return (UINT*)((uintptr_t)this + NetvarSys::Get().GetNetvarProp("DT_CSPlayer", "m_hMyWeapons"));
 	}
 
+	void SetAbsOrigin(const Vector& origin)
+	{
+
+		using SetAbsOriginFn = void(__thiscall*)(void*, const Vector & origin);
+		static SetAbsOriginFn SetAbsOrigin = (SetAbsOriginFn)Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "55 8B EC 83 E4 F8 51 53 56 57 8B F1 E8");
+		SetAbsOrigin(this, origin);
+	}
+
+	void SetAbsAngles(QAngle angles)
+	{
+		using SetAbsAngles_t = void(__thiscall*)(C_BaseEntity*, const QAngle & angle);
+		static SetAbsAngles_t SetAbsAnglesFn = (SetAbsAngles_t)Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8");
+		SetAbsAnglesFn(this, angles);
+	}
+
 	NETVAR(bool, m_bHasDefuser, "DT_CSPlayer", "m_bHasDefuser");
 	NETVAR(bool, m_bInBombZone, "DT_CSPlayer", "m_bInBombZone");
 	NETVAR(bool, m_bGunGameImmunity, "DT_CSPlayer", "m_bGunGameImmunity");

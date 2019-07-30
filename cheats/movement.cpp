@@ -59,7 +59,7 @@ void AutoStrafer(CUserCmd* cmd)
 	if (!Settings::Misc::AutoStrafer)
 		return;
 
-	if (!g_EngineClient->IsInGame() || !g_LocalPlayer->IsAlive())
+	if (!g_EngineClient->IsInGame() || !g_LocalPlayer->IsAlive() || g_LocalPlayer->m_nMoveType() & MOVETYPE_NOCLIP)
 		return;
 
 	if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND)) {

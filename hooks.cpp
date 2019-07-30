@@ -247,6 +247,7 @@ namespace Hooks
 		static auto oSceneEnd = viewrender_hook.get_original<decltype(&hkSceneEnd)>(index::SceneEnd);
 
 		Chams::SceneEnd();
+		draw_test();
 
 		oSceneEnd(thisptr, edx);
 	}

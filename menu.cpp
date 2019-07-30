@@ -401,9 +401,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 			case 0:
 				ImGui::Columns(2, nullptr, false);
 				ImGui::Checkbox("Anti Untrust", &Settings::System::AntiUntrust);
-				/*if (ImGui::Button("Queue Dust2"))
+			/*	if (ImGui::Button("Test Button"))
 				{
-					Utils::QueueDust2();
+					g_CenterPrint->Print("Test Alert");
 				}*/
 				ImGui::Text("Movement");
 				ImGui::BeginGroupBox("MiscMovement", ImVec2(0, -ImGui::GetContentRegionAvail().y));
@@ -1809,7 +1809,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 									tabSelected = 1;
 									selectedR = info.steamID64;
 								}
-							
+
 								ImGui::NextColumn();
 
 								int AvatarImage = g_SteamFriends->GetLargeFriendAvatar((CSteamID)(uint64)info.steamID64);

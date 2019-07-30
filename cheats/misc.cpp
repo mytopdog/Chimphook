@@ -900,3 +900,77 @@ void WorldColour()
 
 	}
 }
+
+static ITexture* buffer;
+
+void draw_test()
+{
+	/*
+	CMatRenderContextPtr render_ctx(g_MatSystem);
+
+	if (!buffer)
+		buffer = g_MatSystem->CreateNamedRenderTargetTextureEx(
+			"esp_preview", 1, 1, RT_SIZE_FULL_FRAME_BUFFER, g_MatSystem->GetBackBufferFormat(),
+			MATERIAL_RT_DEPTH_SHARED, TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT,
+			CREATERENDERTARGETFLAGS_HDR);
+
+	int vp_x, vp_y, vp_w, vp_h;
+	render_ctx->GetViewport(vp_x, vp_y, vp_w, vp_h);
+	CViewSetup view;
+
+	view.x = 50 + vp_x;
+	view.y = 50 + vp_y;
+	view.width = vp_w;
+	view.height = vp_h;
+	view.m_bOrtho = false;
+
+	view.fov = 20;
+	view.origin = Vector (-220, -4, 35);
+	view.angles.Init();
+	view.zNear = 8;
+	view.zFar = 1000;
+	view.m_flAspectRatio = 1.f;
+	static ITexture* pCubemapTexture = g_MatSystem->FindTexture("editor/cubemap.hdr", NULL, true);
+	//render_ctx->BindLocalCubemap(pCubemapTexture);
+	//render_ctx->SetLightingOrigin(0, 0, 0);
+
+	static Vector white[6] =
+	{
+		Vector(0.4, 0.4, 0.4),
+		Vector(0.4, 0.4, 0.4),
+		Vector(0.4, 0.4, 0.4),
+		Vector(0.4, 0.4, 0.4),
+		Vector(0.4, 0.4, 0.4),
+		Vector(0.4, 0.4, 0.4),
+	};
+
+	static Vector4D whites[6] =
+	{
+		Vector4D(0.4, 0.4, 0.4, 1.f),
+		Vector4D(0.4, 0.4, 0.4, 1.f),
+		Vector4D(0.4, 0.4, 0.4, 1.f),
+		Vector4D(0.4, 0.4, 0.4, 1.f),
+		Vector4D(0.4, 0.4, 0.4, 1.f),
+		Vector4D(0.4, 0.4, 0.4, 1.f),
+	};
+
+	render_ctx->SetAmbientLightCube(whites);
+	g_StudioRender->SetAmbientLightColors(white);
+	g_StudioRender->SetLocalLights(0, NULL);
+
+	Frustum dummyFrustum;
+	g_RenderView->Push3DView(view, 0, buffer, dummyFrustum);
+	render_ctx->ClearColor4ub(0, 0, 0, 0);
+	render_ctx->ClearBuffers(true, false, false);
+	g_MdlRender->SuppressEngineLighting(true);
+
+	float color[3] = { 1.f, 1.f, 1.f };
+	g_RenderView->SetColorModulation(color);
+	g_RenderView->SetBlend(1.f);
+	g_LocalPlayer->SetAbsOrigin(Vector(0, 0, 0));
+	g_LocalPlayer->SetAbsAngles(QAngle(0, -90, 0));
+	g_LocalPlayer->DrawModel(1, 255);
+	g_MdlRender->SuppressEngineLighting(false);
+	g_RenderView->PopView(dummyFrustum);
+	render_ctx->BindLocalCubemap(NULL);*/
+}

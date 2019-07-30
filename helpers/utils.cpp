@@ -156,6 +156,11 @@ namespace Utils {
 		return ConsolePrint(std::to_string(num).c_str());
 	}
 
+	bool ConsolePrint(float num)
+	{
+		return ConsolePrint(std::to_string(num).c_str());
+	}
+
     /*
      * @brief Blocks execution until a key is pressed on the console window
      *
