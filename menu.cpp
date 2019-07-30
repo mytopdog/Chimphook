@@ -401,9 +401,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 			case 0:
 				ImGui::Columns(2, nullptr, false);
 				ImGui::Checkbox("Anti Untrust", &Settings::System::AntiUntrust);
-			/*	if (ImGui::Button("Test Button"))
+			/*	if (ImGui::Button("Queue Dust2"))
 				{
-					g_CenterPrint->Print("Test Alert");
+					Utils::QueueDust2();
 				}*/
 				ImGui::Text("Movement");
 				ImGui::BeginGroupBox("MiscMovement", ImVec2(0, -ImGui::GetContentRegionAvail().y));
