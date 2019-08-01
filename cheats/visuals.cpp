@@ -2213,33 +2213,35 @@ void SmokeHelper::Draw()
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !g_LocalPlayer->m_hActiveWeapon())
 		return;
 
-	const char* levelname = g_ClientState->m_szLevelNameShort;
+	const char* levelname = g_ClientState->szLevelName;
 	std::vector<GrenadeData> spots;
+
+	Utils::ConsolePrint(levelname);
 
 	switch (str2int(levelname))
 	{
-	case str2int("de_cbble"):
+	case str2int("\\de_cbble.bsp"):
 		spots = Data_cbble;
 		break;
-	case str2int("de_mirage"):
+	case str2int("\\de_mirage.bsp"):
 		spots = Data_mirage;
 		break;
-	case str2int("de_dust2"):
+	case str2int("\\de_dust2.bsp"):
 		spots = Data_dust2;
 		break;
-	case str2int("de_inferno"):
+	case str2int("\\de_inferno.bsp"):
 		spots = Data_inferno;
 		break;
-	case str2int("de_nuke"):
+	case str2int("\\de_nuke.bsp"):
 		spots = Data_nuke;
 		break;
-	case str2int("de_overpass"):
+	case str2int("\\de_overpass.bsp"):
 		spots = Data_overpass;
 		break;
-	case str2int("de_train"):
+	case str2int("\\de_train.bsp"):
 		spots = Data_train;
 		break;
-	case str2int("de_cache"):
+	case str2int("\\de_cache.bsp"):
 		spots = Data_cache;
 		break;
 	}
