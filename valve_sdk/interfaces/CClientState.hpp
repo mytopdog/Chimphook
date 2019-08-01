@@ -209,35 +209,51 @@ public:
 class CClientState
 {
 public:
-	void ForceFullUpdate()
-	{
-		m_nDeltaTick = -1;
-	}
+	char pad_0000[156];
+	uint32_t net_channel;
+	uint32_t challenge_count;
+	double reconnect_time;
+	int32_t retry_count;
+	char pad_00A8[88];
+	int32_t signon_state_count;
+	char pad_0104[8];
+	float next_cmd_time;
+	int32_t server_count;
+	uint32_t current_sequence;
+	char pad_0118[8];
+	char pad_0120[0x4C];
+	int32_t delta_tick;
+	bool is_paused;
+	char pad_0171[3];
+	int32_t view_entity;
+	int32_t player_slot;
+	char pad_017C[4];
+	char szLevelName[260];
+	char szLevelNameShort[40];
+	char pad_02AC[92];
+	int32_t max_clients;
+	char pad_030C[4083];
+	uint32_t string_table_container;
+	char pad_1303[14737];
+	float last_server_tick_time;
+	bool is_in_simulation;
+	char pad_4C99[3];
+	uint32_t old_tick_count;
+	float tick_remainder;
+	float frame_time;
+	int32_t last_outgoing_command;
+	int32_t choked_commands;
+	int32_t last_command_ack;
+	int32_t command_ack;
+	int32_t sound_sequence;
+	char pad_4CBC[80];
+	Vector view_angles;
 
-	char pad_0000[156];             //0x0000
-	uint32_t m_NetChannel;          //0x009C
-	uint32_t m_nChallengeNr;        //0x00A0
-	char pad_00A4[100];             //0x00A4
-	uint32_t m_nSignonState;        //0x0108
-	char pad_010C[8];               //0x010C
-	float m_flNextCmdTime;          //0x0114
-	uint32_t m_nServerCount;        //0x0118
-	uint32_t m_nCurrentSequence;    //0x011C
-	char pad_0120[8];               //0x0120
-	CClockDriftMgr m_ClockDriftMgr; //0x0128
-	uint32_t m_nDeltaTick;          //0x0178
-	bool m_bPaused;                 //0x017C
-	char pad_017D[3];               //0x017D
-	uint32_t m_nViewEntity;         //0x0180
-	uint32_t m_nPlayerSlot;         //0x0184
-	char m_szLevelName[260];        //0x0188
-	char m_szLevelNameShort[40];    //0x028C
-	char m_szGroupName[40];         //0x02B4
-	char pad_02DC[56];              //0x02DC
-	uint32_t m_nMaxClients;         //0x0310
-	char pad_0314[18940];           //0x0314
-	Vector viewangles;              //0x4D10
-}; //Size: 0x4D1C
+	void full_update()
+	{
+		delta_tick = -1;
+	}
+};
 
 class INetMessage
 {
