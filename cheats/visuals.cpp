@@ -1642,7 +1642,7 @@ void WallbangCrosshair()
 	if (!g_LocalPlayer)
 		return;
 
-	float damage = 0.f;
+		float damage = 0.f;
 
 	INT SWIDTH, SHEIGHT;
 	g_EngineClient->GetScreenSize(SWIDTH, SHEIGHT);
