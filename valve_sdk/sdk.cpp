@@ -65,9 +65,9 @@ namespace Interfaces
         g_PhysSurface         = get_interface<IPhysicsSurfaceProps>(vphysicsFactory   , "VPhysicsSurfaceProps001");
         g_InputSystem         = get_interface<IInputSystem>        (inputSysFactory   , "InputSystemVersion001");
 
-        auto client = GetModuleHandleW(L"client_panorama.dll");
-        auto engine = GetModuleHandleW(L"engine.dll");
-        auto dx9api = GetModuleHandleW(L"shaderapidx9.dll");
+        HMODULE client = GetModuleHandleW(L"client_panorama.dll");
+		HMODULE engine = GetModuleHandleW(L"engine.dll");
+        HMODULE dx9api = GetModuleHandleW(L"shaderapidx9.dll");
 
         g_GlobalVars = **(CGlobalVarsBase * **)((*(DWORD * *)g_CHLClient)[0] + 0x1B);
         g_ClientMode = **(IClientMode * **)((*(DWORD * *)g_CHLClient)[10] + 0x5);
@@ -93,10 +93,9 @@ namespace Interfaces
 
     void Dump()
     {
-        // Ugly macros ugh
-        #define STRINGIFY_IMPL(s) #s
-        #define STRINGIFY(s)      STRINGIFY_IMPL(s)
-        #define PRINT_INTERFACE(name) Utils::ConsolePrint("%-20s: %p\n", STRINGIFY(name), name)
+		#define STRINGIFY_IMPL(s) #s
+		#define STRINGIFY(s)      STRINGIFY_IMPL(s)
+		#define PRINT_INTERFACE(name) Utils::ConsolePrint("%-20s: %p\n", STRINGIFY(name), name)
 
 		PRINT_INTERFACE(g_HUDChat       );
         PRINT_INTERFACE(g_CHLClient     );

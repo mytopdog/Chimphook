@@ -88,6 +88,9 @@ void AutoCowboy(CUserCmd* cmd)
 	if (!g_LocalPlayer->IsAlive() || !g_LocalPlayer)
 		return;
 
+	if (cmd->buttons & IN_FORWARD || cmd->buttons & IN_BACK || cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_MOVERIGHT)
+		return;
+
 	C_BaseEntity* GroundEntity = g_LocalPlayer->m_hGroundEntity();
 	Vector ownPos = g_LocalPlayer->m_vecOrigin();
 

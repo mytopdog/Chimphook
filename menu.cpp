@@ -1159,6 +1159,14 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 						}
 						ImGui::EndGroup();
 						ImGui::Checkbox("Wallbang Crosshair", &Settings::Misc::WallbangCrosshair);
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							ImGui::Checkbox("Smoke Assist", &Settings::Misc::SmokeHelper::Enabled); ImGui::NextColumn();
+							ImGui::Combo("Type", &Settings::Misc::SmokeHelper::TypeHelp, "Visuals\0Visuals + Assist\0Visuals + Aimbot\0Visuals + Smoke Bot");
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
 					}
 					ImGui::EndGroupBox();
 					ImGui::Columns(1, nullptr, false);
@@ -1528,6 +1536,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 				}
 				ImGui::EndGroupBox();
 				ImGui::Checkbox("FUCK", &Settings::Misc::FUCK);
+				ImGui::Checkbox("Debug Mode", &Settings::Misc::DebugMode);
 
 				if (ImGui::Button("Unload"))
 					Settings::System::Unload = true;

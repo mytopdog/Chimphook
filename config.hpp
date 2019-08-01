@@ -120,6 +120,9 @@ public:
 
 	OPTION(bool, espgrenadeprediction, &Settings::ESP::GrenadePrediction);
 
+	OPTION(bool, miscsmokehelper, &Settings::Misc::SmokeHelper::Enabled);
+	OPTION(int, miscsmokehelpertype, &Settings::Misc::SmokeHelper::TypeHelp);
+
 	OPTION(bool, espplayermaster, &Settings::ESP::Players::Enabled);
 
 	OPTION(bool, espenemiesenabled, &Settings::ESP::Players::Enemies::Enabled);

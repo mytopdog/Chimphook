@@ -83,8 +83,15 @@ namespace Settings
 		extern bool AutoAccept;
 		extern bool TranslateBot;
 		extern bool SpectatorList;
-
+		
 		extern bool FUCK;
+		extern bool DebugMode;
+
+		namespace SmokeHelper
+		{
+			extern bool Enabled;
+			extern int TypeHelp;
+		}
 
 		namespace CameraFOV
 		{

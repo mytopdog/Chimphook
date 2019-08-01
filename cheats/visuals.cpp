@@ -165,6 +165,11 @@ bool Settings::ESP::Glow::Players::Enemies::Cover = false;
 int Settings::ESP::Glow::Players::Enemies::Style = 0;
 Color Settings::ESP::Glow::Players::Enemies::Colour = Color(0, 0, 0);
 
+bool Settings::Misc::SmokeHelper::Enabled = false;
+int Settings::Misc::SmokeHelper::TypeHelp = 0;
+
+bool Settings::Misc::DebugMode = false;
+
 RECT GetBBox(C_BaseEntity* ent)
 {
 	RECT rect{};
@@ -1634,6 +1639,9 @@ void WallbangCrosshair()
 	if (!Settings::Misc::WallbangCrosshair)
 		return;
 
+	if (!g_LocalPlayer)
+		return;
+
 	float damage = 0.f;
 
 	INT SWIDTH, SHEIGHT;
@@ -2122,8 +2130,9 @@ void SkinChanger::Run()
 			break;
 		}
 
-		weapon->m_OriginalOwnerXuidLow() = 0;
-		weapon->m_OriginalOwnerXuidHigh() = 0;
+		weapon->m_OriginalOwnerXuidLow() = -1;
+		weapon->m_OriginalOwnerXuid() = g_LocalPlayer->GetPlayerInfo().xuid_low;
+		weapon->m_OriginalOwnerXuidHigh() = -1;
 		weapon->m_nFallbackSeed() = 661;
 		weapon->m_iItemIDHigh() = -1;
 	}
@@ -2194,10 +2203,16 @@ constexpr unsigned int str2int(const char* str, int h = 0)
 	return !str[h] ? 5381 : (str2int(str, h + 1) * 33) ^ str[h];
 }
 
-void DrawSmokeHelperSpots()
+void SmokeHelper::Draw()
 {
+	Found = false;
+
+	if (!Settings::Misc::SmokeHelper::Enabled)
+		return;
+
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !g_LocalPlayer->m_hActiveWeapon())
 		return;
+
 	const char* levelname = g_ClientState->m_szLevelNameShort;
 	std::vector<GrenadeData> spots;
 
@@ -2255,6 +2270,9 @@ void DrawSmokeHelperSpots()
 			Render::Get().RenderCircle3D(pos, 36, 10, Color(255, 255, 255, 255), 2.f);
 
 			if (pos.DistTo(g_LocalPlayer->m_vecOrigin()) < 10) {
+				selData = spot;
+				Found = true;
+
 				QAngle dir = QAngle(spot.XAng, spot.YAng, 0);
 				Vector va;
 
@@ -2282,5 +2300,203 @@ void DrawSmokeHelperSpots()
 				cr += sz.y + 5;
 			}
 		}
+	}
+}
+
+void SmokeHelper::OnCreateMove(CUserCmd* cmd)
+{
+	if (!Settings::Misc::SmokeHelper::Enabled)
+		return;
+
+	if (!Found)
+		return;
+
+	if (cmd->buttons & IN_FORWARD || cmd->buttons & IN_BACK || cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_MOVERIGHT || cmd->buttons & IN_JUMP)
+		return;
+
+	switch (Settings::Misc::SmokeHelper::TypeHelp)
+	{
+	case 1: {
+		float yaw = cmd->viewangles.yaw;
+		Vector VecForward = g_LocalPlayer->m_vecOrigin() - Vector(selData.XPos, selData.YPos, selData.ZPos);
+
+		Vector translatedVelocity = Vector(
+			(float)(VecForward.x * cos(yaw / 180 * PI_F) + VecForward.y * sin(yaw / 180 * PI_F)),
+			(float)(VecForward.y * cos(yaw / 180 * PI_F) - VecForward.x * sin(yaw / 180 * PI_F)),
+			VecForward.z
+		);
+
+		cmd->forwardmove = -translatedVelocity.x * 10.f;
+		cmd->sidemove = translatedVelocity.y * 10.f;
+
+		if (Math::GetFOV(cmd->viewangles, QAngle(selData.XAng, selData.YAng, 0)) < 1.5)
+		{
+			cmd->viewangles -= (cmd->viewangles - QAngle(selData.XAng, selData.YAng, 0)) / 3.5;
+			g_EngineClient->SetViewAngles(&cmd->viewangles);
+		}
+		break;
+	}
+	case 2: {
+		float yaw = cmd->viewangles.yaw;
+		Vector VecForward = g_LocalPlayer->m_vecOrigin() - Vector(selData.XPos, selData.YPos, selData.ZPos);
+
+		Vector translatedVelocity = Vector(
+			(float)(VecForward.x * cos(yaw / 180 * PI_F) + VecForward.y * sin(yaw / 180 * PI_F)),
+			(float)(VecForward.y * cos(yaw / 180 * PI_F) - VecForward.x * sin(yaw / 180 * PI_F)),
+			VecForward.z
+		);
+
+		cmd->forwardmove = -translatedVelocity.x * 10.f;
+		cmd->sidemove = translatedVelocity.y * 10.f;
+
+		cmd->viewangles =  QAngle(selData.XAng, selData.YAng, 0);
+		g_EngineClient->SetViewAngles(&cmd->viewangles);
+		break;
+	}
+	case 3: {
+		float yaw = cmd->viewangles.yaw;
+		Vector VecForward = g_LocalPlayer->m_vecOrigin() - Vector(selData.XPos, selData.YPos, selData.ZPos);
+
+		Vector translatedVelocity = Vector(
+			(float)(VecForward.x * cos(yaw / 180 * PI_F) + VecForward.y * sin(yaw / 180 * PI_F)),
+			(float)(VecForward.y * cos(yaw / 180 * PI_F) - VecForward.x * sin(yaw / 180 * PI_F)),
+			VecForward.z
+		);
+
+		cmd->forwardmove = -translatedVelocity.x * 10.f;
+		cmd->sidemove = translatedVelocity.y * 10.f;
+
+		cmd->viewangles = QAngle(selData.XAng, selData.YAng, 0);
+		g_EngineClient->SetViewAngles(&cmd->viewangles);
+
+		if (g_LocalPlayer->m_vecVelocity().Length() <= 0.05f && Math::GetFOV(cmd->viewangles, QAngle(selData.XAng, selData.YAng, 0)) < .05f)
+		{
+			if (selData.Desc == "Throw")
+			{
+				const auto grenade = (C_BaseCSGrenade*)C_BaseEntity::get_entity_from_handle(g_LocalPlayer->m_hActiveWeapon());
+			
+				if (grenade->m_bPinPulled() && grenade->m_flThrowStrength() >= 1.00000f)
+				{
+					cmd->buttons &= ~IN_ATTACK;
+					cmd->buttons &= ~IN_ATTACK2;
+				}
+				else
+				{
+					cmd->buttons |= IN_ATTACK;
+				}
+			}
+			else if (selData.Desc == "Jump / Throw")
+			{
+				const auto grenade = (C_BaseCSGrenade*)C_BaseEntity::get_entity_from_handle(g_LocalPlayer->m_hActiveWeapon());
+
+				if (grenade->m_bPinPulled() && grenade->m_flThrowStrength() >= 1.00000f)
+				{
+					cmd->buttons |= IN_JUMP;
+
+					if (g_LocalPlayer->m_vecVelocity().z > 240)
+					{
+						cmd->buttons &= ~IN_ATTACK;
+						cmd->buttons &= ~IN_ATTACK2;
+					}
+				}
+				else
+				{
+					cmd->buttons |= IN_ATTACK;
+				}
+			}
+		}
+
+		break;
+	}
+	}
+}
+
+void DebugMode()
+{
+	if (!Settings::Misc::DebugMode)
+		return;
+
+	if (!g_LocalPlayer)
+		return;
+
+	INT SWIDTH, SHEIGHT;
+	g_EngineClient->GetScreenSize(SWIDTH, SHEIGHT);
+
+	ImVec2 cr = ImVec2(SWIDTH / 1.75, SHEIGHT / 2);
+
+	std::string s;
+	s += "LOCALPLAYER 0x";
+	s += std::to_string(g_LocalPlayer);
+	ImVec2 sz = f_AndaleMono->CalcTextSizeA(12.f, FLT_MAX, 0.f, s.c_str());
+	Render::Get().RenderText(s, cr, 12.f, Color(255, 255, 0, 255), false, true, f_AndaleMono);
+	cr.y += sz.y + 2;
+
+	s = "";
+	s += "ORIGIN V(";
+	s += std::to_string(g_LocalPlayer->m_vecOrigin().x);
+	s += ", ";
+	s += std::to_string(g_LocalPlayer->m_vecOrigin().y);
+	s += ", ";
+	s += std::to_string(g_LocalPlayer->m_vecOrigin().z);
+	s += ")";
+	sz = f_AndaleMono->CalcTextSizeA(12.f, FLT_MAX, 0.f, s.c_str());
+	Render::Get().RenderText(s, cr, 12.f, Color(255, 255, 0, 255), false, true, f_AndaleMono);
+	cr.y += sz.y + 2;
+
+	s = "";
+	s += "VELOCITY V(";
+	s += std::to_string(g_LocalPlayer->m_vecVelocity().x);
+	s += ", ";
+	s += std::to_string(g_LocalPlayer->m_vecVelocity().y);
+	s += ", ";
+	s += std::to_string(g_LocalPlayer->m_vecVelocity().z);
+	s += ")";
+	sz = f_AndaleMono->CalcTextSizeA(12.f, FLT_MAX, 0.f, s.c_str());
+	Render::Get().RenderText(s, cr, 12.f, Color(255, 255, 0, 255), false, true, f_AndaleMono);
+	cr.y += sz.y + 2;
+
+	s = "";
+	s += "FLVELOCITY ";
+	s += std::to_string(g_LocalPlayer->m_vecVelocity().Length());
+	s += "f";
+	sz = f_AndaleMono->CalcTextSizeA(12.f, FLT_MAX, 0.f, s.c_str());
+	Render::Get().RenderText(s, cr, 12.f, Color(255, 255, 0, 255), false, true, f_AndaleMono);
+	cr.y += sz.y + 2;
+
+	s = "";
+	s += "EYEPOS V(";
+	s += std::to_string(g_LocalPlayer->GetEyePos().x);
+	s += ", ";
+	s += std::to_string(g_LocalPlayer->GetEyePos().y);
+	s += ", ";
+	s += std::to_string(g_LocalPlayer->GetEyePos().z);
+	s += ")";
+	sz = f_AndaleMono->CalcTextSizeA(12.f, FLT_MAX, 0.f, s.c_str());
+	Render::Get().RenderText(s, cr, 12.f, Color(255, 255, 0, 255), false, true, f_AndaleMono);
+	cr.y += sz.y + 2;
+
+	QAngle angles;
+	g_EngineClient->GetViewAngles(&angles);
+	s = "";
+	s += "EYEANGLES Q(";
+	s += std::to_string(angles.yaw);
+	s += ", ";
+	s += std::to_string(angles.pitch);
+	s += ", ";
+	s += std::to_string(angles.roll);
+	s += ")";
+	sz = f_AndaleMono->CalcTextSizeA(12.f, FLT_MAX, 0.f, s.c_str());
+	Render::Get().RenderText(s, cr, 12.f, Color(255, 255, 0, 255), false, true, f_AndaleMono);
+	cr.y += sz.y + 2;
+
+	const auto weapon = g_LocalPlayer->m_hActiveWeapon();
+	if (weapon && weapon->IsGrenade()) {
+		s = "";
+		const auto grenade = (C_BaseCSGrenade*)C_BaseEntity::get_entity_from_handle(weapon);
+		s += "THROWSTRENGTH ";
+		s += std::to_string(grenade->m_flThrowStrength());
+		sz = f_AndaleMono->CalcTextSizeA(12.f, FLT_MAX, 0.f, s.c_str());
+		Render::Get().RenderText(s, cr, 12.f, Color(255, 255, 0, 255), false, true, f_AndaleMono);
+		cr.y += sz.y + 2;
 	}
 }

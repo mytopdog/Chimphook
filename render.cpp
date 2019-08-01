@@ -73,7 +73,8 @@ void Render::BeginScene()
 
 	SniperCrosshair();
 	WallbangCrosshair();
-	DrawSmokeHelperSpots();
+	DebugMode();
+	SmokeHelper::Get().Draw();
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer)
 		Visuals::Get().AddToDrawList();

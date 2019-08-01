@@ -323,6 +323,9 @@ namespace Hooks
 			DoAim(cmd, bSendPacket);
 		}
 
+
+		SmokeHelper::Get().OnCreateMove(cmd);
+
 		if (Settings::System::AntiUntrust)
 		{
 			FastLargeNormaliseMove(cmd->viewangles);

@@ -119,4 +119,14 @@ namespace SkinChanger
 	void Run();
 }
 
-void DrawSmokeHelperSpots();
+class SmokeHelper : public Singleton<SmokeHelper>
+{
+public:
+	void Draw();
+	void OnCreateMove(CUserCmd* cmd);
+
+	GrenadeData selData;
+	bool Found;
+};
+
+void DebugMode();
