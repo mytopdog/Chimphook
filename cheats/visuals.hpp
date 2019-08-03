@@ -10,6 +10,21 @@
 #include "../menu.hpp"
 #include "grenadedata.hpp";
 
+struct grenadedata
+{
+	grenadedata()
+	{
+		grenadeType = 0;
+		predictedPath = std::vector<Vector>();
+		predictedOtherCollisions = std::vector<std::pair<Vector, QAngle>>();
+	}
+	int grenadeType;
+	std::vector<Vector> predictedPath;
+	std::vector<std::pair<Vector, QAngle>> predictedOtherCollisions;
+};
+
+static std::vector<grenadedata> grendat(65);
+
 void BulletShots(IGameEvent* ev);
 void WallbangCrosshair();
 
@@ -86,6 +101,8 @@ enum
 	ACT_DROP
 };
 
+void setupgrendat();
+
 class grenade_prediction : public Singleton<grenade_prediction>
 {
 public:
@@ -95,8 +112,8 @@ public:
 
 	void Setup(C_BasePlayer* pl, Vector& vecSrc, Vector& vecThrow, const QAngle& angEyeAngles);
 	void Simulate(QAngle& Angles, C_BasePlayer* pLocal);
-	int Step(Vector& vecSrc, Vector& vecThrow, int tick, float interval);
-	bool CheckDetonate(const Vector& vecThrow, const trace_t& tr, int tick, float interval);
+	int Step(Vector& vecSrc, Vector& vecThrow, int tick, float interval, C_BasePlayer* player);
+	bool CheckDetonate(const Vector& vecThrow, const trace_t& tr, int tick, float interval, C_BasePlayer* pl);
 	void TraceHull(Vector& src, Vector& end, trace_t& tr);
 	void AddGravityMove(Vector& move, Vector& vel, float frametime, bool onground);
 	void PushEntity(Vector& src, const Vector& move, trace_t& tr);

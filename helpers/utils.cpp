@@ -421,6 +421,6 @@ namespace Utils {
 		for (std::int32_t i = 0; i < *hud_weapons->get_weapon_count(); i++)
 			i = fn(hud_weapons, i);
 
-		g_EngineClient->ClientCmd_Unrestricted("cl_fullupdate");
+		g_ClientState->full_update();
 	}
 }
