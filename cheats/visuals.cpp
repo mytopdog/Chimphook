@@ -1089,6 +1089,25 @@ void Chams::OnDME(
 	}
 }
 
+void setupgrendat()
+{
+	grendat.reserve(65);
+	for (int i = 0; i < 65; i++)
+	{
+		grendat.push_back(grenadedata());
+	}
+}
+
+grenadedata& getlocal()
+{
+	return grendat.at(g_LocalPlayer->EntIndex());
+}
+
+grenadedata& getpl(C_BasePlayer* pl)
+{
+	return grendat.at(pl->EntIndex());
+}
+
 void grenade_prediction::Tick(int buttons)
 {
 	if (!Settings::ESP::GrenadePrediction)
@@ -1116,12 +1135,36 @@ void grenade_prediction::View()
 			QAngle Angles;
 			g_EngineClient->GetViewAngles(&Angles);
 
-			type = weapon->m_iItemDefinitionIndex();
+			getlocal().grenadeType = weapon->m_iItemDefinitionIndex();
 			Simulate(Angles, g_LocalPlayer);
 		}
 		else
 		{
-			type = 0;
+			getlocal().grenadeType = 0;
+		}
+	}
+
+	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
+	{
+		C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
+
+		if (pl && pl->IsAlive() && pl != g_LocalPlayer)
+		{
+			C_BaseCombatWeapon* weapon = pl->m_hActiveWeapon();
+
+			if (weapon && weapon->IsGrenade())
+			{
+				QAngle angles = pl->m_angEyeAngles();
+
+				Utils::ConsolePrint(pl->EntIndex());
+
+				grendat[pl->EntIndex()].grenadeType = weapon->m_iItemDefinitionIndex();
+				Simulate(angles, pl);
+			}
+			else
+			{
+				grendat[pl->EntIndex()].grenadeType = 0;
+			}
 		}
 	}
 }
@@ -1138,11 +1181,11 @@ void grenade_prediction::Paint()
 	if (!weapon)
 		return;
 
-	if ((type) && path.size() > 1 && act != ACT_NONE && weapon->IsGrenade())
+	if ((getlocal().grenadeType) && getlocal().predictedPath.size() > 1 && act != ACT_NONE && weapon->IsGrenade())
 	{
 		Vector ab, cd;
-		Vector prev = path[0];
-		for (auto it = path.begin(), end = path.end(); it != end; ++it)
+		Vector prev = getlocal().predictedPath[0];
+		for (auto it = getlocal().predictedPath.begin(), end = getlocal().predictedPath.end(); it != end; ++it)
 		{
 			if (Math::WorldToScreen(prev, ab) && Math::WorldToScreen(*it, cd))
 			{
@@ -1151,12 +1194,12 @@ void grenade_prediction::Paint()
 			prev = *it;
 		}
 
-		for (auto it = OtherCollisions.begin(), end = OtherCollisions.end(); it != end; ++it)
+		for (auto it = getlocal().predictedOtherCollisions.begin(), end = getlocal().predictedOtherCollisions.end(); it != end; ++it)
 		{
 			Render::Get().Render3DCube(2.f, it->second, it->first, Color(0, 255, 0, 200));
 		}
 
-		Render::Get().Render3DCube(2.f, OtherCollisions.rbegin()->second, OtherCollisions.rbegin()->first, Color(255, 0, 0, 200));
+		Render::Get().Render3DCube(2.f, getlocal().predictedOtherCollisions.rbegin()->second, getlocal().predictedOtherCollisions.rbegin()->first, Color(255, 0, 0, 200));
 
 		std::string EntName;
 		auto bestdmg = 0;
@@ -1167,7 +1210,7 @@ void grenade_prediction::Paint()
 		static Color orangecol = { 255, 128, 0, 255 };
 		Color* BestColor = &redcol;
 
-		Vector endpos = path[path.size() - 1];
+		Vector endpos = getlocal().predictedPath[getlocal().predictedPath.size() - 1];
 		Vector absendpos = endpos;
 
 		float totaladded = 0.0f;
@@ -1189,7 +1232,7 @@ void grenade_prediction::Paint()
 			weap_id == WEAPON_MOLOTOV ||
 			weap_id == WEAPON_INCGRENADE)
 		{
-			for (int i = 1; i < 64; i++)
+			for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
 			{
 				C_BasePlayer* pEntity = (C_BasePlayer*)g_EntityList->GetClientEntity(i);
 
@@ -1224,11 +1267,11 @@ void grenade_prediction::Paint()
 						float d = ((((pEntity->m_vecOrigin()) - prev).Length() - b) / c);
 						float flDamage = a * exp(-d * d);
 						int dmg = 0;
-						
+
 						if (CSGO_Armor(flDamage, pEntity->m_ArmorValue()))
 							dmg = CSGO_Armor(flDamage, pEntity->m_ArmorValue());
 
-						Color* destcolor = dmg >= 65 ? &redcol : dmg >= 40.0f ? &orangecol : dmg >= 20.0f ? &yellowgreencol : &greencol;
+						Color * destcolor = dmg >= 65 ? &redcol : dmg >= 40.0f ? &orangecol : dmg >= 20.0f ? &yellowgreencol : &greencol;
 
 						if (dmg > bestdmg)
 						{
@@ -1252,6 +1295,62 @@ void grenade_prediction::Paint()
 			{
 				if (Math::WorldToScreen(*path.begin(), cd))
 					Render::Get().RenderText(("Most damage dealt to: " + EntName + " -" + std::to_string(bestdmg)).c_str(), ImVec2(cd[0], cd[1]), 12.f, *BestColor, true, false, f_AndaleMono);
+			}
+		}
+	}
+
+	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
+	{
+		C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
+
+		if (!pl || !pl->IsAlive() || pl == g_LocalPlayer)
+			return;
+
+		C_BaseCombatWeapon* weapon = pl->m_hActiveWeapon();
+		if (!weapon)
+			return;
+
+		if ((getpl(pl).grenadeType) && getpl(pl).predictedPath.size() > 1 && act != ACT_NONE && weapon->IsGrenade())
+		{
+			Vector ab, cd;
+			Vector prev = getpl(pl).predictedPath[0];
+			for (auto it = getpl(pl).predictedPath.begin(), end = getpl(pl).predictedPath.end(); it != end; ++it)
+			{
+				if (Math::WorldToScreen(prev, ab) && Math::WorldToScreen(*it, cd))
+				{
+					Render::Get().RenderLine(ab[0], ab[1], cd[0], cd[1], TracerColor);
+				}
+				prev = *it;
+			}
+
+			for (auto it = getpl(pl).predictedOtherCollisions.begin(), end = getpl(pl).predictedOtherCollisions.end(); it != end; ++it)
+			{
+				Render::Get().Render3DCube(2.f, it->second, it->first, Color(0, 255, 0, 200));
+			}
+
+			Render::Get().Render3DCube(2.f, getpl(pl).predictedOtherCollisions.rbegin()->second, getpl(pl).predictedOtherCollisions.rbegin()->first, Color(255, 0, 0, 200));
+
+			std::string EntName;
+			auto bestdmg = 0;
+			static Color redcol = { 255, 0, 0, 255 };
+			static Color greencol = { 25, 255, 25, 255 };
+			static Color yellowgreencol = { 177, 253, 2, 255 };
+			static Color yellowcol = { 255, 255, 0, 255 };
+			static Color orangecol = { 255, 128, 0, 255 };
+			Color* BestColor = &redcol;
+
+			Vector endpos = getpl(pl).predictedPath[getpl(pl).predictedPath.size() - 1];
+			Vector absendpos = endpos;
+
+			float totaladded = 0.0f;
+
+			while (totaladded < 30.0f)
+			{
+				if (g_EngineTrace->GetPointContents(endpos) == CONTENTS_EMPTY)
+					break;
+
+				totaladded += 2.0f;
+				endpos.z += 2.0f;
 			}
 		}
 	}
@@ -1279,15 +1378,16 @@ void grenade_prediction::Setup(C_BasePlayer* pl, Vector& vecSrc, Vector& vecThro
 	float flVel = 750.0f * 0.9f;
 
 	static const float power[] = { 1.0f, 1.0f, 0.5f, 0.0f };
-	float b = power[act];
+	float o = ((C_BaseCSGrenade*) &*pl->m_hActiveWeapon())->m_flThrowStrength();
+	float b = o;
 	b = b * 0.7f;
 	b = b + 0.3f;
 	flVel *= b;
 
 	Vector vForward, vRight, vUp;
 	Math::AngleVectors(angThrow, vForward, vRight, vUp);
-	vecSrc = g_LocalPlayer->GetEyePos();
-	float off = (power[act] * 12.0f) - 12.0f;
+	vecSrc = pl->GetEyePos();
+	float off = (o * 12.0f) - 12.0f;
 	vecSrc.z += off;
 
 	trace_t tr;
@@ -1300,7 +1400,7 @@ void grenade_prediction::Setup(C_BasePlayer* pl, Vector& vecSrc, Vector& vecThro
 	vecSrc = tr.endpos;
 	vecSrc -= vecBack;
 
-	vecThrow = g_LocalPlayer->m_vecVelocity(); vecThrow *= 1.25f;
+	vecThrow = pl->m_vecVelocity(); vecThrow *= 1.25f;
 	vecThrow += vForward * flVel;
 }
 
@@ -1315,16 +1415,16 @@ void grenade_prediction::Simulate(QAngle & Angles, C_BasePlayer* pLocal)
 	int logstep = static_cast<int>(0.05f / interval);
 	int logtimer = 0;
 
-	path.clear();
-	OtherCollisions.clear();
+	getpl(pLocal).predictedPath.clear();
+	getpl(pLocal).predictedOtherCollisions.clear();
 	// TracerColor = Color(255, 255, 0, 255);
 	TracerColor = Color(255, 255, 255, 255);
-	for (unsigned int i = 0; i < path.max_size() - 1; ++i)
+	for (unsigned int i = 0; i < getpl(pLocal).predictedPath.max_size() - 1; ++i)
 	{
 		if (!logtimer)
-			path.push_back(vecSrc);
+			getpl(pLocal).predictedPath.push_back(vecSrc);
 
-		int s = Step(vecSrc, vecThrow, i, interval);
+		int s = Step(vecSrc, vecThrow, i, interval, pLocal);
 		if ((s & 1) || vecThrow == Vector(0, 0, 0))
 			break;
 
@@ -1332,10 +1432,11 @@ void grenade_prediction::Simulate(QAngle & Angles, C_BasePlayer* pLocal)
 		if ((s & 2) || logtimer >= logstep) logtimer = 0;
 		else ++logtimer;
 	}
-	path.push_back(vecSrc);
+
+	getpl(pLocal).predictedPath.push_back(vecSrc);
 }
 
-int grenade_prediction::Step(Vector & vecSrc, Vector & vecThrow, int tick, float interval)
+int grenade_prediction::Step(Vector & vecSrc, Vector & vecThrow, int tick, float interval, C_BasePlayer* player)
 {
 	// Apply gravity
 	Vector move;
@@ -1347,7 +1448,7 @@ int grenade_prediction::Step(Vector & vecSrc, Vector & vecThrow, int tick, float
 
 	int result = 0;
 	// Check ending conditions
-	if (CheckDetonate(vecThrow, tr, tick, interval))
+	if (CheckDetonate(vecThrow, tr, tick, interval, player))
 	{
 		result |= 1;
 	}
@@ -1369,7 +1470,7 @@ int grenade_prediction::Step(Vector & vecSrc, Vector & vecThrow, int tick, float
 	{
 		QAngle angles;
 		Math::VectorAngles((tr.endpos - tr.startpos).Normalized(), angles);
-		OtherCollisions.push_back(std::make_pair(tr.endpos, angles));
+		getpl(player).predictedOtherCollisions.push_back(std::make_pair(tr.endpos, angles));
 	}
 
 	// Set new position
@@ -1378,10 +1479,10 @@ int grenade_prediction::Step(Vector & vecSrc, Vector & vecThrow, int tick, float
 	return result;
 }
 
-bool grenade_prediction::CheckDetonate(const Vector & vecThrow, const trace_t & tr, int tick, float interval)
+bool grenade_prediction::CheckDetonate(const Vector & vecThrow, const trace_t & tr, int tick, float interval, C_BasePlayer* pl)
 {
 	firegrenade_didnt_hit = false;
-	switch (type)
+	switch (getpl(pl).grenadeType)
 	{
 	case ClassId_CSmokeGrenade:
 	case ClassId_CDecoyGrenade:

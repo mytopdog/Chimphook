@@ -106,6 +106,7 @@ namespace Hooks
 
 		direct3d_hook.hook_index(index::EndScene, hkEndScene);
 		direct3d_hook.hook_index(index::Reset, hkReset);
+		direct3d_hook.hook_index(index::Present, hkPresent);
 		hlclient_hook.hook_index(index::FrameStageNotify, hkFrameStageNotify);
 		hlclient_hook.hook_index(index::CreateMove, hkCreateMove_Proxy);
 		vguipanel_hook.hook_index(index::PaintTraverse, hkPaintTraverse);
@@ -171,6 +172,8 @@ namespace Hooks
 		Glow::Shutdown();
 
 		std::remove("csgo\\materials\\mirrorcam.vmt");
+
+		setupgrendat();
 	}
 	//--------------------------------------------------------------------------------
 	void __fastcall hkRenderView(IViewRender* this0, void* EDX, CViewSetup& view, CViewSetup& hudViewSetup, ClearFlags_t nClearFlags, RenderViewInfo_t whatToDraw)
@@ -266,6 +269,17 @@ namespace Hooks
 		return hr;
 	}
 	//--------------------------------------------------------------------------------
+	long __stdcall hkPresent(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
+	{
+		auto oPresent = direct3d_hook.get_original<decltype(&hkPresent)>(index::Present);
+		oPresent(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+		if (Menu::Get().shouldupdate)
+			Utils::ForceUpdate();
+
+		Menu::Get().shouldupdate = false;
+		return oPresent(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
+	}
+	//--------------------------------------------------------------------------------
 	void __stdcall hkCreateMove(int sequence_number, float input_sample_frametime, bool active, bool& bSendPacket)
 	{
 		static auto oCreateMove = hlclient_hook.get_original<decltype(&hkCreateMove_Proxy)>(index::CreateMove);
@@ -310,6 +324,7 @@ namespace Hooks
 
 		ChatSpammer::Get().OnCreateMove();
 		ClantagScroller::Get().OnCreateMove();
+		grenade_prediction::Get().View();
 
 		grenade_prediction::Get().Tick(cmd->buttons);
 
@@ -543,7 +558,6 @@ namespace Hooks
 		if (!lcl || !vsView)
 			return ofunc(g_ClientMode, edx, vsView);
 
-		grenade_prediction::Get().View();
 		FreeLook::OverrideView(vsView);
 		ThirdPerson::OverrideView();
 		CameraFOV(vsView);

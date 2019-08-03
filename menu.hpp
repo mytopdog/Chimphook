@@ -215,6 +215,8 @@ public:
 	}
 
 	std::vector<player_record_t>    g_playerRecords;
+
+	bool shouldupdate = false;
 private:
 	void CreateStyle();
 

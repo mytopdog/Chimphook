@@ -42,6 +42,7 @@ namespace index
 	constexpr int LockCursor = 67;
 	constexpr int ListLeavesInBox = 6;
 	constexpr int ClientCmd = 7;
+	constexpr int Present = 17;
 }
 
 static int tickBaseShift = 0;
@@ -75,6 +76,7 @@ namespace Hooks
 
 	long __stdcall hkEndScene(IDirect3DDevice9* device);
 	long __stdcall hkReset(IDirect3DDevice9* device, D3DPRESENT_PARAMETERS* pPresentationParameters);
+	long __stdcall hkPresent(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion);
 	void __stdcall hkCreateMove(int sequence_number, float input_sample_frametime, bool active, bool& bSendPacket);
 	void __fastcall hkRenderView(IViewRender* this0, void* EDX, CViewSetup& view, CViewSetup& hudViewSetup, ClearFlags_t nClearFlags, RenderViewInfo_t whatToDraw);
 	void __fastcall hkSceneEnd(void* thisptr, void* edx);
