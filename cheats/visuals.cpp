@@ -2486,6 +2486,7 @@ void SmokeHelper::OnCreateMove(CUserCmd* cmd)
 				else
 				{
 					cmd->buttons |= IN_ATTACK;
+					cmd->buttons &= ~IN_ATTACK2;
 				}
 			}
 			else if (selData.Desc == "Jump / Throw")
@@ -2505,6 +2506,23 @@ void SmokeHelper::OnCreateMove(CUserCmd* cmd)
 				else
 				{
 					cmd->buttons |= IN_ATTACK;
+					cmd->buttons &= ~IN_ATTACK2;
+				}
+			}
+			else if (selData.Desc == "Right Click")
+			{
+				const auto grenade = (C_BaseCSGrenade*)C_BaseEntity::get_entity_from_handle(g_LocalPlayer->m_hActiveWeapon());
+
+				if (grenade->m_bPinPulled() && grenade->m_flThrowStrength() <= 0.00000f)
+				{
+					
+					cmd->buttons &= ~IN_ATTACK;
+					cmd->buttons &= ~IN_ATTACK2;
+				}
+				else
+				{
+					cmd->buttons &= ~IN_ATTACK;
+					cmd->buttons |= IN_ATTACK2;
 				}
 			}
 		}
