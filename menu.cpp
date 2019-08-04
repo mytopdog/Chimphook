@@ -1670,6 +1670,11 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 									if (ImGui::Selectable(text.c_str(), (bool)(selectedP == player->EntIndex()), ImGuiSelectableFlags_SpanAllColumns)) {
 										selectedP = player->EntIndex();
 									}
+									Utils::ConsolePrint(ImGui::GetIO().MouseClicked[1] ? "true" : "false");
+
+									if (ImGui::IsItemHovered() && ImGui::GetIO().MouseClicked[1])
+										selectedP = player->EntIndex();
+
 									ImGui::NextColumn();
 
 									if (info.szName) ImGui::Text(info.szName);
@@ -1694,53 +1699,97 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 
 									ImGui::NextColumn();
 									ImGui::Columns(1, nullptr, false);
-								}
-								ImGui::EndGroup();
-								ImGui::BeginPopupContextItem();
-								{
-									C_BasePlayer* player = C_BasePlayer::GetPlayerByIndex(selectedP);
 
-									if (player)
+									if (ImGui::BeginPopupContextWindow("ContextMenuPlayerlist", 1))
 									{
-										player_info_t info = player->GetPlayerInfo();
-										const char* clantag = (*g_PlayerResource)->GetClan(player->EntIndex());
-										
-										if (ImGui::Button("Steal Name"))
+										ImGui::BeginGroupBox("##ContextMenuNigger", ImVec2(200, 100));
 										{
-											char* endl = " ";
-											std::string f;
-											f += info.szName;
-											f += endl;
-											Utils::SetName(f.c_str());
+											if (player && selectedP == player->EntIndex())
+											{
+												ImGui::Columns(2, nullptr, false);
+												player_info_t info = player->GetPlayerInfo();
+												const char* clantag = (*g_PlayerResource)->GetClan(player->EntIndex());
+
+												if (ImGui::Button("Steal Name"))
+												{
+													char* endl = " ";
+													std::string f;
+													f += info.szName;
+													f += endl;
+													Utils::SetName(f.c_str());
+													ImGui::CloseCurrentPopup();
+												}
+
+												if (ImGui::Button("Steal Clan"))
+												{
+													const char* clantag = (const char*)((*g_PlayerResource)->GetClan(player->EntIndex()));
+
+													Utils::SetClantag(clantag);
+													ImGui::CloseCurrentPopup();
+												}
+
+												if (ImGui::Button("Open Profile"))
+												{
+													g_SteamFriends->ActivateGameOverlayToUser("steamid", (CSteamID)(uint64)info.steamID64);
+
+													ImGui::CloseCurrentPopup();
+													_visible = false;
+												}
+
+												if (ImGui::Button("Create Record"))
+												{
+													player_record_t rec;
+													rec.Init(info.steamID64, info.szName, Utils::GetEpochTime(), "");
+
+													AddRecord(rec);
+
+													tabSelected = 1;
+													selectedR = info.steamID64;
+													ImGui::CloseCurrentPopup();
+												}
+												ImGui::NextColumn();
+												int AvatarImage = g_SteamFriends->GetLargeFriendAvatar((CSteamID)(uint64)info.steamID64);
+
+												if (AvatarImage > 0)
+												{
+													uint32 WIDTH = 0, HEIGHT = 0;
+													g_SteamUtils->GetImageSize(AvatarImage, &WIDTH, &HEIGHT);
+
+													if (WIDTH > 0 && HEIGHT > 0)
+													{
+														int sz = WIDTH * HEIGHT * 4;
+
+														uint8* dest = (uint8*)malloc(sz);
+
+														if (dest)
+														{
+															if (g_SteamUtils->GetImageRGBA(AvatarImage, dest, sz))
+															{
+																LPDIRECT3DTEXTURE9 texture;
+																D3DXCreateTexture(pDevice, WIDTH, HEIGHT, 0, D3DUSAGE_DYNAMIC, D3DFORMAT::D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture);
+
+																if (texture)
+																{
+																	CopyImageToTexture(dest, WIDTH, HEIGHT, texture, 0, 0);
+
+																	ImGui::Image((void*)(uintptr_t)texture, ImVec2(84, 84));
+
+																	texturesToRelease.push_back((ImTextureID)(void*)(uintptr_t)texture);
+																}
+															}
+
+															free(dest);
+														}
+													}
+												}
+												ImGui::Columns(1, nullptr, false);
+											}
 										}
-
-										if (ImGui::Button("Steal Clan"))
-										{
-											const char* clantag = (const char*)((*g_PlayerResource)->GetClan(player->EntIndex()));
-
-											Utils::SetClantag(clantag);
-										}
-
-										if (ImGui::Button("Open Profile"))
-										{
-											g_SteamFriends->ActivateGameOverlayToUser("steamid", (CSteamID)(uint64)info.steamID64);
-
-											_visible = false;
-										}
-
-										if (ImGui::Button("Create Record"))
-										{
-											player_record_t rec;
-											rec.Init(info.steamID64, info.szName, Utils::GetEpochTime(), "");
-
-											AddRecord(rec);
-
-											tabSelected = 1;
-											selectedR = info.steamID64;
-										}
+										ImGui::EndGroupBox();
+										ImGui::EndPopup();
 									}
 								}
-								ImGui::EndPopup();
+								ImGui::EndGroup();
 							}
 						}
 					}
