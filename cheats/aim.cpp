@@ -163,7 +163,7 @@ bool CanFire(CUserCmd* cmd)
 	return false;
 }
 
-void AntiAim(CUserCmd* cmd, bool& bSendPacket)
+void AntiAim(CUserCmd* cmd, bool bSendPacket)
 {
 	if (!g_EngineClient->IsInGame() || !g_LocalPlayer->IsAlive())
 		return;
@@ -703,7 +703,7 @@ bool CanTrigger(CUserCmd* cmd, QAngle viewAngles)
 	return true;
 }
 
-void DoAim(CUserCmd* cmd, bool& bSendPacket)
+void DoAim(CUserCmd* cmd, bool bSendPacket)
 {
 	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !g_EngineClient->IsInGame() || !g_LocalPlayer->m_hActiveWeapon())
 		return;

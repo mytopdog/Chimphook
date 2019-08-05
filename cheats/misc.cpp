@@ -448,9 +448,9 @@ void ThirdPerson::OverrideView()
 			ray.Init(g_LocalPlayer->SelfOrObs()->GetEyePos(), g_LocalPlayer->SelfOrObs()->GetEyePos() + (direction * ideal_distance));
 
 			if (Settings::Misc::ThirdPerson::IgnorePlayers) {
-				g_EngineTrace->TraceRay(ray, MASK_SHOT | ~CONTENTS_PLAYERCLIP, &filter, &trace);
+				g_EngineTrace->TraceRay(ray, MASK_SOLID | ~CONTENTS_PLAYERCLIP, &filter, &trace);
 			} else {
-				g_EngineTrace->TraceRay(ray, MASK_SHOT, &filter, &trace);
+				g_EngineTrace->TraceRay(ray, MASK_ALL, &filter, &trace);
 			}
 
 			return (ideal_distance * trace.fraction) - 10.f;
