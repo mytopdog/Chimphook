@@ -2317,8 +2317,6 @@ void SmokeHelper::Draw()
 	const char* levelname = g_ClientState->szLevelName;
 	std::vector<GrenadeData> spots;
 
-	Utils::ConsolePrint(levelname);
-
 	switch (str2int(levelname))
 	{
 	case str2int("\\de_cbble.bsp"):
