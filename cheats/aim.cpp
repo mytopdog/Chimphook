@@ -13,7 +13,7 @@ bool Settings::Aim::RCS::Silent = false;
 float Settings::Aim::RCS::ScaleX = 2;
 float Settings::Aim::RCS::ScaleY = 2;
 
-bool Settings::Misc::Triggerbot::Enabled = true;
+bool Settings::Misc::Triggerbot::Enabled = false;
 int Settings::Misc::Triggerbot::Delay = 0;
 
 static QAngle RCSLastPunch;
