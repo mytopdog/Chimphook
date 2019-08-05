@@ -16,7 +16,7 @@ struct IntHash
 };
 
 void RCS(CUserCmd* cmd);
-void DoAim(CUserCmd* cmd, bool bSendPacket);
-void AntiAim(CUserCmd* cmd, bool bSendPacket);
+void DoAim(CUserCmd* cmd, bool& bSendPacket);
+void AntiAim(CUserCmd* cmd, bool& bSendPacket);
 
 void Triggerbot(CUserCmd* pCmd);

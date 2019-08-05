@@ -399,367 +399,405 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 			switch (tabSelected)
 			{
 			case 0:
+			{
+				static int vsmscselected = 0;
+
+				ImGui::BeginGroup();
+				{
+					bool vsmsc = vsmscselected == 0;
+					if (ImGui::ToggleButton("Page 1##MiscPages", &vsmsc, ImVec2(ImGui::GetWindowSize().x / 2, 20)))
+					{
+						vsmscselected = 0;
+					}
+					vsmsc = vsmscselected == 1;
+					ImGui::SameLine(0, 0);
+					if (ImGui::ToggleButton("Page 2##MiscPages", &vsmsc, ImVec2(ImGui::GetWindowSize().x / 2, 20)))
+					{
+						vsmscselected = 1;
+					}
+				}
+				ImGui::EndGroup();
+				ImGui::Separator();
 				ImGui::Columns(2, nullptr, false);
-				ImGui::Checkbox("Anti Untrust", &Settings::System::AntiUntrust);
-			/*	if (ImGui::Button("Queue Dust2"))
+				switch (vsmscselected)
 				{
-					Utils::QueueDust2();
-				}*/
-				ImGui::Text("Movement");
-				ImGui::BeginGroupBox("MiscMovement", ImVec2(0, -ImGui::GetContentRegionAvail().y));
-				{
-					ImGui::Checkbox("Auto Bunnyhop", &Settings::Misc::BunnyHop);
-					ImGui::Checkbox("Autostrafer", &Settings::Misc::AutoStrafer);
-					ImGui::PushItemWidth(100);
-					ImGui::BeginGroup();
+				case 0:
+					ImGui::Checkbox("Anti Untrust", &Settings::System::AntiUntrust);
+				/*	if (ImGui::Button("Queue Dust2"))
 					{
-						ImGui::Columns(2, nullptr, false);
-						ImGui::Checkbox("Auto Cowboy", &Settings::Misc::AutoCowboy); ImGui::NextColumn();
-						ImGui::Checkbox("Reverse Cowboy", &Settings::Misc::ReverseCowboy); ImGui::NextColumn();
-						ImGui::Columns(1, nullptr, false);
-					}
-					ImGui::EndGroup();
-					ImGui::Checkbox("Block Bot", &Settings::Misc::BlockBot);
-					ImGui::Checkbox("Edge Jumper", &Settings::Misc::EdgeJumper);
-				}
-				ImGui::EndGroupBox();
-				ImGui::Text("Third Person");
-				ImGui::BeginGroupBox("MiscThirdPerson", ImVec2(0, -ImGui::GetContentRegionAvail().y));
-				{
-					ImGui::PushItemWidth(100);
-					ImGui::BeginGroup();
+						Utils::QueueDust2();
+					}*/
+					ImGui::Text("Movement");
+					ImGui::BeginGroupBox("MiscMovement", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
-						ImGui::Columns(2, nullptr, false);
-						ImGui::Checkbox("Enabled", &Settings::Misc::ThirdPerson::Enabled); ImGui::NextColumn();
-						ImGui::SliderInt("Offset", &Settings::Misc::ThirdPerson::CameraOffset, 30, 250);
-						ImGui::Columns(1, nullptr, false);
-					}
-					ImGui::EndGroup();
-					// ImGui::Checkbox("Ignore Players", &Settings::Misc::ThirdPerson::IgnorePlayers);
-					ImGui::Checkbox("Ignore Walls", &Settings::Misc::ThirdPerson::IgnoreWalls);
-					ImGui::Checkbox("Ignore Scope", &Settings::Misc::ThirdPerson::IgnoreScope);
-					// ImGui::Checkbox("Ignore Spectating", &Settings::Misc::ThirdPerson::IgnoreSpectating);
-					ImGui::Checkbox("Real Angles", &Settings::Misc::ThirdPerson::RealAngles);
-				}
-				ImGui::EndGroupBox();
-				ImGui::Text("Server");
-				ImGui::BeginGroupBox("ServerSettings", ImVec2(0, -ImGui::GetContentRegionAvail().y));
-				{
-					static char sname[64] = "";
-					static char sclantag[32] = "";
-					static char fk[80] = "Valve Announcement: CSGO maintenance at 3pm tomorrow. Press F1 to close.";
-					static char fakemsg[128] = "";
-
-					ImGui::BeginGroup();
-					{
-						ImGui::Columns(2, nullptr, false);
-						if (ImGui::Button("Patch Name"))
-						{
-							Utils::SetName("\n\xAD\xAD\xAD");
-						} ImGui::NextColumn(); ImGui::NewLine(); ImGui::NextColumn();
-						ImGui::InputText("Name##ServerSettings", sname, 64); ImGui::NextColumn();
-						if (ImGui::Button("Set Name##ServerSettings"))
-						{
-							Utils::SetName(sname);
-						}
-						ImGui::NextColumn();
-						ImGui::InputText("Clantag##ServerSettings", sclantag, 32); ImGui::NextColumn();
-						if (ImGui::Button("Set Clantag##ServerSettings"))
-						{
-							Utils::SetClantag(sclantag);
-						}
-						ImGui::NextColumn();
-						ImGui::InputText("Fake Kick", fk, 80); ImGui::NextColumn();
-						if (ImGui::Button("Set Name##fkk"))
-						{
-							if (g_EngineClient->IsInGame() && g_LocalPlayer) {
-								std::string fk_s = fk;
-								replaceAll(fk_s, "\\n", "\n");
-								std::string n = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-								n += fk_s;
-								n += "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
-								Utils::SetName(n.c_str());
-							}
-						}
-						ImGui::NextColumn();
-						// ImGui::InputText("Fake Message", fakemsg, 128); ImGui::NextColumn();
-					/*	if (ImGui::Button("Set Name##fkn"))
-						{
-							if (g_EngineClient->IsInGame() && g_LocalPlayer)
-							{
-								std::string fk_s = fakemsg;
-								/*
-								&W  - White,
-								&R  - Red,
-								&P  - Purple,
-								&G  - Green,
-								&LG - Light Green,
-								&T  - Turqouise,
-								&LR - Light Red,
-								&Y  - Yellow,
-								&GR - Gray,
-								&LB - Light Blue,
-								&B  - Blue,
-								&P  - Pink,
-								&DO - Dark Orange,
-								&O  - Orange
-								
-								replaceAll(fk_s, "&W", "\x01");
-								replaceAll(fk_s, "&R", "\x02");
-								replaceAll(fk_s, "&P", "\x03");
-								replaceAll(fk_s, "&G", "\x04");
-								replaceAll(fk_s, "&LG", "\x05");
-								replaceAll(fk_s, "&T", "\x06");
-								replaceAll(fk_s, "&LR", "\x07");
-								replaceAll(fk_s, "&GR", "\x08");
-								replaceAll(fk_s, "&Y", "\x09");
-								replaceAll(fk_s, "&LB", "\x0B");
-								replaceAll(fk_s, "&B", "\x0D");
-								replaceAll(fk_s, "&P", "\x0E");
-								replaceAll(fk_s, "&DO", "\x0F");
-								replaceAll(fk_s, "&O", "\x10");
-								std::string n;
-								n += fk_s;
-								n += "                             ";
-								Utils::ConsolePrint("Set Name");
-								Utils::SetName(n.c_str());
-							}
-						}*/
-					}
-					ImGui::EndGroup();
-					ImGui::Columns(1, nullptr, false);
-					ImGui::Text("(Make sure to patch name first. Max 80 chars.)");
-					ImGui::Text("Fake message: attack a teammate after setting name for this to work.");
-				}
-				ImGui::EndGroupBox();
-				ImGui::Text("Convar Editor");
-				ImGui::BeginGroupBox("MiscConvarEditor", ImVec2(0, -ImGui::GetContentRegionAvail().y));
-				{
-					static char convarName[64];
-					static char convarNameS[64];
-					static char convarNVal[64];
-
-					ImGui::BeginGroup();
-					{
-						ImGui::Columns(2, nullptr, false);
-						ImGui::InputText("Name##ConvarEditorName", convarName, 64); ImGui::NextColumn();
-						if (ImGui::Button("Find Convar"))
-						{
-							memset(convarNVal, 0, sizeof convarNVal);
-							strcpy(convarNameS, convarName);
-						}
-						ImGui::Columns(1, nullptr, false);
-					}
-					ImGui::EndGroup();
-
-					ConVar* selc = g_CVar->FindVar(convarNameS);
-
-					if (selc)
-					{
+						ImGui::Checkbox("Auto Bunnyhop", &Settings::Misc::BunnyHop);
+						ImGui::Checkbox("Autostrafer", &Settings::Misc::AutoStrafer);
+						ImGui::PushItemWidth(100);
 						ImGui::BeginGroup();
 						{
 							ImGui::Columns(2, nullptr, false);
-							ImGui::InputText("Value##ConvarEditorNewValue", convarNVal, 64); ImGui::NextColumn();
-							if (ImGui::Button("Set Value"))
+							ImGui::Checkbox("Auto Cowboy", &Settings::Misc::AutoCowboy); ImGui::NextColumn();
+							ImGui::Checkbox("Reverse Cowboy", &Settings::Misc::ReverseCowboy); ImGui::NextColumn();
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
+						ImGui::Checkbox("Block Bot", &Settings::Misc::BlockBot);
+						ImGui::Checkbox("Edge Jumper", &Settings::Misc::EdgeJumper);
+					}
+					ImGui::EndGroupBox();
+					ImGui::Text("Third Person");
+					ImGui::BeginGroupBox("MiscThirdPerson", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						ImGui::PushItemWidth(100);
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							ImGui::Checkbox("Enabled", &Settings::Misc::ThirdPerson::Enabled); ImGui::NextColumn();
+							ImGui::SliderInt("Offset", &Settings::Misc::ThirdPerson::CameraOffset, 30, 250);
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
+						// ImGui::Checkbox("Ignore Players", &Settings::Misc::ThirdPerson::IgnorePlayers);
+						ImGui::Checkbox("Ignore Walls", &Settings::Misc::ThirdPerson::IgnoreWalls);
+						ImGui::Checkbox("Ignore Scope", &Settings::Misc::ThirdPerson::IgnoreScope);
+						// ImGui::Checkbox("Ignore Spectating", &Settings::Misc::ThirdPerson::IgnoreSpectating);
+						ImGui::Checkbox("Real Angles", &Settings::Misc::ThirdPerson::RealAngles);
+					}
+					ImGui::EndGroupBox();
+					ImGui::Text("Server");
+					ImGui::BeginGroupBox("ServerSettings", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						static char sname[64] = "";
+						static char sclantag[32] = "";
+						static char fk[80] = "Valve Announcement: CSGO maintenance at 3pm tomorrow. Press F1 to close.";
+						static char fakemsg[128] = "";
+
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							if (ImGui::Button("Patch Name"))
 							{
-								selc->SetValue(convarNVal);
+								Utils::SetName("\n\xAD\xAD\xAD");
+							} ImGui::NextColumn(); ImGui::NewLine(); ImGui::NextColumn();
+							ImGui::InputText("Name##ServerSettings", sname, 64); ImGui::NextColumn();
+							if (ImGui::Button("Set Name##ServerSettings"))
+							{
+								Utils::SetName(sname);
+							}
+							ImGui::NextColumn();
+							ImGui::InputText("Clantag##ServerSettings", sclantag, 32); ImGui::NextColumn();
+							if (ImGui::Button("Set Clantag##ServerSettings"))
+							{
+								Utils::SetClantag(sclantag);
+							}
+							ImGui::NextColumn();
+							ImGui::InputText("Fake Kick", fk, 80); ImGui::NextColumn();
+							if (ImGui::Button("Set Name##fkk"))
+							{
+								if (g_EngineClient->IsInGame() && g_LocalPlayer) {
+									std::string fk_s = fk;
+									replaceAll(fk_s, "\\n", "\n");
+									std::string n = "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+									n += fk_s;
+									n += "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n";
+									Utils::SetName(n.c_str());
+								}
+							}
+							ImGui::NextColumn();
+							// ImGui::InputText("Fake Message", fakemsg, 128); ImGui::NextColumn();
+						/*	if (ImGui::Button("Set Name##fkn"))
+							{
+								if (g_EngineClient->IsInGame() && g_LocalPlayer)
+								{
+									std::string fk_s = fakemsg;
+									/*
+									&W  - White,
+									&R  - Red,
+									&P  - Purple,
+									&G  - Green,
+									&LG - Light Green,
+									&T  - Turqouise,
+									&LR - Light Red,
+									&Y  - Yellow,
+									&GR - Gray,
+									&LB - Light Blue,
+									&B  - Blue,
+									&P  - Pink,
+									&DO - Dark Orange,
+									&O  - Orange
+								
+									replaceAll(fk_s, "&W", "\x01");
+									replaceAll(fk_s, "&R", "\x02");
+									replaceAll(fk_s, "&P", "\x03");
+									replaceAll(fk_s, "&G", "\x04");
+									replaceAll(fk_s, "&LG", "\x05");
+									replaceAll(fk_s, "&T", "\x06");
+									replaceAll(fk_s, "&LR", "\x07");
+									replaceAll(fk_s, "&GR", "\x08");
+									replaceAll(fk_s, "&Y", "\x09");
+									replaceAll(fk_s, "&LB", "\x0B");
+									replaceAll(fk_s, "&B", "\x0D");
+									replaceAll(fk_s, "&P", "\x0E");
+									replaceAll(fk_s, "&DO", "\x0F");
+									replaceAll(fk_s, "&O", "\x10");
+									std::string n;
+									n += fk_s;
+									n += "                             ";
+									Utils::ConsolePrint("Set Name");
+									Utils::SetName(n.c_str());
+								}
+							}*/
+						}
+						ImGui::EndGroup();
+						ImGui::Columns(1, nullptr, false);
+						ImGui::Text("(Make sure to patch name first. Max 80 chars.)");
+						ImGui::Text("Fake message: attack a teammate after setting name for this to work.");
+					}
+					ImGui::EndGroupBox();
+					ImGui::Text("Convar Editor");
+					ImGui::BeginGroupBox("MiscConvarEditor", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						static char convarName[64];
+						static char convarNameS[64];
+						static char convarNVal[64];
+
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							ImGui::InputText("Name##ConvarEditorName", convarName, 64); ImGui::NextColumn();
+							if (ImGui::Button("Find Convar"))
+							{
 								memset(convarNVal, 0, sizeof convarNVal);
+								strcpy(convarNameS, convarName);
 							}
 							ImGui::Columns(1, nullptr, false);
 						}
 						ImGui::EndGroup();
 
-						std::stringstream selectedss;
-						selectedss << "Name: '";
-						selectedss << selc->GetName();
-						selectedss << "'";
-						ImGui::Text(selectedss.str().c_str());
+						ConVar* selc = g_CVar->FindVar(convarNameS);
 
-						std::stringstream selectedcurrentvalue;
-						selectedcurrentvalue << "Current Value: '";
-						selectedcurrentvalue << selc->GetString();
-						selectedcurrentvalue << "'";
-						ImGui::Text(selectedcurrentvalue.str().c_str());
-
-						std::stringstream selecteddefaultvalue;
-						selecteddefaultvalue << "Default Value: '";
-						selecteddefaultvalue << selc->GetDefault();
-						selecteddefaultvalue << "'";
-						ImGui::Text(selecteddefaultvalue.str().c_str());
-
-						std::stringstream selectedischecked;
-						selectedischecked << "Is Checked: '";
-						if (IsChecked(selc->GetName()))
+						if (selc)
 						{
-							selectedischecked << "true";
+							ImGui::BeginGroup();
+							{
+								ImGui::Columns(2, nullptr, false);
+								ImGui::InputText("Value##ConvarEditorNewValue", convarNVal, 64); ImGui::NextColumn();
+								if (ImGui::Button("Set Value"))
+								{
+									selc->SetValue(convarNVal);
+									memset(convarNVal, 0, sizeof convarNVal);
+								}
+								ImGui::Columns(1, nullptr, false);
+							}
+							ImGui::EndGroup();
+
+							std::stringstream selectedss;
+							selectedss << "Name: '";
+							selectedss << selc->GetName();
+							selectedss << "'";
+							ImGui::Text(selectedss.str().c_str());
+
+							std::stringstream selectedcurrentvalue;
+							selectedcurrentvalue << "Current Value: '";
+							selectedcurrentvalue << selc->GetString();
+							selectedcurrentvalue << "'";
+							ImGui::Text(selectedcurrentvalue.str().c_str());
+
+							std::stringstream selecteddefaultvalue;
+							selecteddefaultvalue << "Default Value: '";
+							selecteddefaultvalue << selc->GetDefault();
+							selecteddefaultvalue << "'";
+							ImGui::Text(selecteddefaultvalue.str().c_str());
+
+							std::stringstream selectedischecked;
+							selectedischecked << "Is Checked: '";
+							if (IsChecked(selc->GetName()))
+							{
+								selectedischecked << "true";
+							}
+							else
+							{
+								selectedischecked << "false";
+							}
+							selectedischecked << "'";
+							ImGui::Text(selectedischecked.str().c_str());
 						}
 						else
 						{
-							selectedischecked << "false";
+							ImGui::BeginGroup();
+							{
+								ImGui::Columns(2, nullptr, false);
+								ImGui::InputText("Value##ConvarEditorNewValue", convarNVal, 64); ImGui::NextColumn();
+								if (ImGui::Button("Set Value"))
+								{
+									memset(convarNVal, 0, sizeof convarNVal);
+								}
+								ImGui::Columns(1, nullptr, false);
+							}
+							ImGui::EndGroup();
+
+							ImGui::Text("Name: N/A");
+							ImGui::Text("Current Value: N/A");
+							ImGui::Text("Default Value: N/A");
+							ImGui::Text("Is Safe: N/A");
 						}
-						selectedischecked << "'";
-						ImGui::Text(selectedischecked.str().c_str());
 					}
-					else
+					ImGui::EndGroupBox();
+					ImGui::Text("Clantag Scroll");
+					ImGui::BeginGroupBox("ClantagScroll", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
+						ImGui::Checkbox("Enabled", &Settings::Misc::ClantagScroller::Enabled); ImGui::NextColumn();
 						ImGui::BeginGroup();
 						{
 							ImGui::Columns(2, nullptr, false);
-							ImGui::InputText("Value##ConvarEditorNewValue", convarNVal, 64); ImGui::NextColumn();
-							if (ImGui::Button("Set Value"))
+							ImGuiEx::InputText("Clantag", &Settings::Misc::ClantagScroller::Clantag); ImGui::NextColumn();
+							if (ImGui::Button("Refresh"))
 							{
-								memset(convarNVal, 0, sizeof convarNVal);
+								ClantagScroller::Get().tag = Settings::Misc::ClantagScroller::Clantag;
+								ClantagScroller::Get().tag += " ";
 							}
+							ImGui::NextColumn();
 							ImGui::Columns(1, nullptr, false);
 						}
 						ImGui::EndGroup();
-
-						ImGui::Text("Name: N/A");
-						ImGui::Text("Current Value: N/A");
-						ImGui::Text("Default Value: N/A");
-						ImGui::Text("Is Safe: N/A");
+						ImGui::SliderInt("Delay", &Settings::Misc::ClantagScroller::Delay, 250, 1000);
 					}
-				}
-				ImGui::EndGroupBox();
-				ImGui::Text("Clantag Scroll");
-				ImGui::BeginGroupBox("ClantagScroll", ImVec2(0, -ImGui::GetContentRegionAvail().y));
-				{
-					ImGui::Checkbox("Enabled", &Settings::Misc::ClantagScroller::Enabled); ImGui::NextColumn();
-					ImGui::BeginGroup();
+					ImGui::EndGroupBox();
+					ImGui::NextColumn();
+					ImGui::Text("Combat");
+					ImGui::BeginGroupBox("MiscCombat", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
-						ImGui::Columns(2, nullptr, false);
-						ImGuiEx::InputText("Clantag", &Settings::Misc::ClantagScroller::Clantag); ImGui::NextColumn();
-						if (ImGui::Button("Refresh"))
+						ImGui::Checkbox("Auto Pistol", &Settings::Misc::AutoPistol);
+						ImGui::Checkbox("Auto Reload", &Settings::Misc::AutoReload);
+
+						ImGui::BeginGroup();
 						{
-							ClantagScroller::Get().tag = Settings::Misc::ClantagScroller::Clantag;
-							ClantagScroller::Get().tag += " ";
+							ImGui::Columns(2, nullptr, false);
+							ImGui::Checkbox("Feedback Hitsound", &Settings::Misc::Sounds::HitSound::Enabled); ImGui::NextColumn();
+							ImGui::Combo("Sound##Hitsound", &Settings::Misc::Sounds::HitSound::Sound, "Metal\0Arena Switch\0Timer Bell\0Glass"); ImGui::NextColumn();
+							ImGui::Columns(1, nullptr, false);
 						}
-						ImGui::NextColumn();
-						ImGui::Columns(1, nullptr, false);
+						ImGui::EndGroup();
 					}
-					ImGui::EndGroup();
-					ImGui::SliderInt("Delay", &Settings::Misc::ClantagScroller::Delay, 250, 1000);
-				}
-				ImGui::EndGroupBox();
-				ImGui::NextColumn();
-				ImGui::Text("Others");
-				ImGui::BeginGroupBox("MiscOthers", ImVec2(0, -ImGui::GetContentRegionAvail().y));
-				{
-					ImGui::Checkbox("Rank Reveal", &Settings::Misc::RankReveal);
-					ImGui::Checkbox("Auto Pistol", &Settings::Misc::AutoPistol);
-					ImGui::Checkbox("Auto Reload", &Settings::Misc::AutoReload);
-					ImGui::Checkbox("Infinite Duck", &Settings::Misc::InfiniteDuck);
-					ImGui::Checkbox("Recoil Crosshair", &Settings::Misc::RecoilCrosshair);
-					ImGui::Checkbox("Sniper Crosshair", &Settings::Misc::SniperCrosshair);
-					ImGui::Checkbox("Auto Defuse", &Settings::Misc::AutoDefuse::Enabled);
-					ImGui::Checkbox("Spectator List", &Settings::Misc::SpectatorList);
-					ImGui::BeginGroup();
+					ImGui::EndGroupBox();
+					ImGui::Text("Visuals");
+					ImGui::BeginGroupBox("MiscVisuals", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
-						ImGui::Columns(2, nullptr, false);
-						
-						ImGui::Checkbox("Adjust Brightness", &Settings::Misc::Brightness::Enabled); ImGui::NextColumn();
-						ImGui::SliderInt("%##Brightness", &Settings::Misc::Brightness::Perc, 1, 100); ImGui::NextColumn();
-						ImGui::Columns(1, nullptr, false);
-					}
-					ImGui::EndGroup();
-					ImGui::Checkbox("Radar Hack", &Settings::Misc::RadarHack);
-					ImGui::Checkbox("Bullet Impacts", &Settings::Misc::BulletImpacts);
-					ImGui::BeginGroup();
-					{
-						ImGui::Columns(2, nullptr, false);
-						ImGui::Checkbox("Slow Walk", &Settings::Misc::SlowWalk::Enabled); ImGui::NextColumn();
-						ImGui::SliderInt("Amount##SlowWalkAmount", &Settings::Misc::SlowWalk::Amount, 0, 100); ImGui::NextColumn();
-						ImGui::Columns(1, nullptr, false);
-					}
-					ImGui::EndGroup();
-					ImGui::Checkbox("No Decals", &Settings::Misc::NoDecals);
-					ImGui::Checkbox("Auto Accept", &Settings::Misc::AutoAccept);
-					ImGui::Checkbox("Anti Kick", &Settings::Misc::AntiKick);
-					ImGui::Checkbox("Translate Bot", &Settings::Misc::TranslateBot);
-					ImGui::Checkbox("Fake Duck", &Settings::Misc::FakeDuck::Enabled);
-					ImGui::BeginGroup();
-					{
-						ImGui::Columns(2, nullptr, false);
-						ImGui::Checkbox("World Colour", &Settings::Misc::WorldColour::Enabled); ImGui::NextColumn();
-						ImGuiEx::ColorEdit4("Colour##World", &Settings::Misc::WorldColour::Colour); ImGui::NextColumn();
-
-						ImGui::Checkbox("Camera FOV", &Settings::Misc::CameraFOV::Enabled); ImGui::NextColumn();
-						ImGui::SliderInt("CameraFOVInt", &Settings::Misc::CameraFOV::FOV, 0, 70); ImGui::NextColumn();
-
-						ImGui::Checkbox("Viewmodel FOV", &Settings::Misc::ViewmodelFOV::Enabled); ImGui::NextColumn();
-						ImGui::SliderInt("FOV##ViewmodelFOVInt", &Settings::Misc::ViewmodelFOV::FOV, 60, 160); ImGui::NextColumn();
-						ImGui::Columns(1, nullptr, false);
-					}
-					ImGui::EndGroup();
-					ImGui::Checkbox("Self Nade helper", &Settings::Misc::SelfNade);
-					ImGui::Checkbox("Free Look", &Settings::Misc::FreeLook::Enabled);
-					ImGui::Checkbox("Fake Zoom", &Settings::Misc::FakeZoom::Enabled);
-					ImGui::BeginGroup();
-					{
-						ImGui::Columns(2, nullptr, false);
-						ImGui::Checkbox("Feedback Hitsound", &Settings::Misc::Sounds::HitSound::Enabled); ImGui::NextColumn();
-						ImGui::Combo("Sound##Hitsound", &Settings::Misc::Sounds::HitSound::Sound, "Metal\0Arena Switch\0Timer Bell\0Glass"); ImGui::NextColumn();
-						ImGui::Columns(1, nullptr, false);
-					}
-					ImGui::EndGroup();
-				}
-				ImGui::EndGroupBox();
-				ImGui::Text("Fun");
-				ImGui::BeginGroupBox("MiscFun", ImVec2(0, -ImGui::GetContentRegionAvail().y));
-				{
-					ImGui::Checkbox("Inverse Ragdoll Gravity", &Settings::Misc::InverseRagdollGravity);
-					ImGui::Checkbox("Chicken Tamer", &Settings::Misc::ChickenTamer);
-					ImGui::BeginGroup();
-					{
-						ImGui::Columns(2, nullptr, false);
-						ImGui::Checkbox("Chat Mimic", &Settings::Misc::ChatMimic::Enabled); ImGui::NextColumn();
-						ImGui::Checkbox("##CustomMessageEnabled", &Settings::Misc::ChatMimic::CustomMsg); ImGui::SameLine();
-						ImGui::InputText("Message", Settings::Misc::ChatMimic::Msg, 256);
-						ImGui::Columns(1, nullptr, false);
-					}
-					ImGui::EndGroup();
-					ImGui::BeginGroup();
-					{
-						ImGui::Columns(2, nullptr, false);
-						ImGui::Checkbox("Chat Spammer##CS", &Settings::Misc::ChatSpammer::Enabled); ImGui::NextColumn();
-						static std::shared_ptr<pfd::open_file> open_file;
-						if (ImGui::Button("Choose File"))
+						ImGui::Checkbox("Rank Reveal", &Settings::Misc::RankReveal);
+						ImGui::Checkbox("Recoil Crosshair", &Settings::Misc::RecoilCrosshair);
+						ImGui::Checkbox("Sniper Crosshair", &Settings::Misc::SniperCrosshair);
+						ImGui::Checkbox("Spectator List", &Settings::Misc::SpectatorList);
+						ImGui::BeginGroup();
 						{
-							std::vector<std::string> filters = {"*.txt"};
-							open_file = std::make_shared<pfd::open_file>("Select Chatspammer File", "", filters, false);
+							ImGui::Columns(2, nullptr, false);
+
+							ImGui::Checkbox("Adjust Brightness", &Settings::Misc::Brightness::Enabled); ImGui::NextColumn();
+							ImGui::SliderInt("%##Brightness", &Settings::Misc::Brightness::Perc, 1, 100); ImGui::NextColumn();
+							ImGui::Columns(1, nullptr, false);
 						}
-						if (open_file && open_file->ready())
+						ImGui::EndGroup();
+						ImGui::Checkbox("No Decals", &Settings::Misc::NoDecals);
+						ImGui::Checkbox("Free Look", &Settings::Misc::FreeLook::Enabled);
+						ImGui::Checkbox("Fake Zoom", &Settings::Misc::FakeZoom::Enabled);
+						ImGui::BeginGroup();
 						{
-							Settings::Misc::ChatSpammer::Filename = open_file->result()[0];
+							ImGui::Columns(2, nullptr, false);
+							ImGui::Checkbox("World Colour", &Settings::Misc::WorldColour::Enabled); ImGui::NextColumn();
+							ImGuiEx::ColorEdit4("Colour##World", &Settings::Misc::WorldColour::Colour); ImGui::NextColumn();
 
-							std::ifstream fin(Settings::Misc::ChatSpammer::Filename.c_str(), std::ios::binary);
-							std::stringstream ss;
-							ss << fin.rdbuf();
+							ImGui::Checkbox("Camera FOV", &Settings::Misc::CameraFOV::Enabled); ImGui::NextColumn();
+							ImGui::SliderInt("CameraFOVInt", &Settings::Misc::CameraFOV::FOV, 0, 70); ImGui::NextColumn();
 
-							ChatSpammer::Get().filedata = ss.str();
-
-							fin.close();
-
-							Config::Get().SaveUser();
+							ImGui::Checkbox("Viewmodel FOV", &Settings::Misc::ViewmodelFOV::Enabled); ImGui::NextColumn();
+							ImGui::SliderInt("FOV##ViewmodelFOVInt", &Settings::Misc::ViewmodelFOV::FOV, 60, 160); ImGui::NextColumn();
+							ImGui::Columns(1, nullptr, false);
 						}
-						ImGui::Columns(1, nullptr, false);
-						ImGui::Text("Selected: "); ImGui::SameLine();
-						ImGui::Text(Settings::Misc::ChatSpammer::Filename.c_str());
+						ImGui::EndGroup();
 					}
-					ImGui::EndGroup();
+					ImGui::EndGroupBox();
+					ImGui::Text("Others");
+					ImGui::BeginGroupBox("MiscOthers", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						ImGui::Checkbox("Infinite Duck", &Settings::Misc::InfiniteDuck);
+						ImGui::Checkbox("Auto Defuse", &Settings::Misc::AutoDefuse::Enabled);
+						ImGui::Checkbox("Radar Hack", &Settings::Misc::RadarHack);
+						ImGui::Checkbox("Bullet Impacts", &Settings::Misc::BulletImpacts);
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							ImGui::Checkbox("Slow Walk", &Settings::Misc::SlowWalk::Enabled); ImGui::NextColumn();
+							ImGui::SliderInt("Amount##SlowWalkAmount", &Settings::Misc::SlowWalk::Amount, 0, 100); ImGui::NextColumn();
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
+						ImGui::Checkbox("Auto Accept", &Settings::Misc::AutoAccept);
+						ImGui::Checkbox("Anti Kick", &Settings::Misc::AntiKick);
+						ImGui::Checkbox("Translate Bot", &Settings::Misc::TranslateBot);
+						ImGui::Checkbox("Fake Duck", &Settings::Misc::FakeDuck::Enabled);
+						ImGui::Checkbox("Self Nade helper", &Settings::Misc::SelfNade);
+					}
+					ImGui::EndGroupBox();
+					ImGui::Text("Fake Lag");
+					ImGui::BeginGroupBox("Fake Lag", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						ImGui::Columns(2, nullptr, false);
+						ImGui::Checkbox("Enabled", &Settings::Misc::FakeLag::Enabled); ImGui::NextColumn();
+						ImGui::SliderInt("Choke", &Settings::Misc::FakeLag::Choke, 0, 62); ImGui::NextColumn();
+						ImGui::Columns(1, nullptr, false);
+					}
+					ImGui::EndGroupBox();
+					break;
+				case 1:
+					ImGui::Text("Fun");
+					ImGui::BeginGroupBox("MiscFun", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						ImGui::Checkbox("Inverse Ragdoll Gravity", &Settings::Misc::InverseRagdollGravity);
+						ImGui::Checkbox("Chicken Tamer", &Settings::Misc::ChickenTamer);
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							ImGui::Checkbox("Chat Mimic", &Settings::Misc::ChatMimic::Enabled); ImGui::NextColumn();
+							ImGui::Checkbox("##CustomMessageEnabled", &Settings::Misc::ChatMimic::CustomMsg); ImGui::SameLine();
+							ImGui::InputText("Message", Settings::Misc::ChatMimic::Msg, 256);
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							ImGui::Checkbox("Chat Spammer##CS", &Settings::Misc::ChatSpammer::Enabled); ImGui::NextColumn();
+							static std::shared_ptr<pfd::open_file> open_file;
+							if (ImGui::Button("Choose File"))
+							{
+								std::vector<std::string> filters = { "*.txt" };
+								open_file = std::make_shared<pfd::open_file>("Select Chatspammer File", "", filters, false);
+							}
+							if (open_file && open_file->ready())
+							{
+								Settings::Misc::ChatSpammer::Filename = open_file->result()[0];
+
+								std::ifstream fin(Settings::Misc::ChatSpammer::Filename.c_str(), std::ios::binary);
+								std::stringstream ss;
+								ss << fin.rdbuf();
+
+								ChatSpammer::Get().filedata = ss.str();
+
+								fin.close();
+
+								Config::Get().SaveUser();
+							}
+							ImGui::Columns(1, nullptr, false);
+							ImGui::Text("Selected: "); ImGui::SameLine();
+							ImGui::Text(Settings::Misc::ChatSpammer::Filename.c_str());
+						}
+						ImGui::EndGroup();
+					}
+					ImGui::EndGroupBox();
+					break;
 				}
-				ImGui::EndGroupBox();
-				ImGui::Text("Fake Lag");
-				ImGui::BeginGroupBox("Fake Lag", ImVec2(0, -ImGui::GetContentRegionAvail().y));
-				{
-					ImGui::Columns(2, nullptr, false);
-					ImGui::Checkbox("Enabled", &Settings::Misc::FakeLag::Enabled); ImGui::NextColumn();
-					ImGui::SliderInt("Choke", &Settings::Misc::FakeLag::Choke, 0, 62); ImGui::NextColumn();
-					ImGui::Columns(1, nullptr, false);
-				}
-				ImGui::EndGroupBox();
 				ImGui::Columns(1, nullptr, false);
 				break;
+			}
 			case 1:
 			{
 				static int vstabselected = 0;
@@ -823,6 +861,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 							}
 						}
 						ImGui::EndGroup();
+						ImGui::Separator();
 						ImGui::BeginGroupBox("ESPAll", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 						{
 							switch (vsespselected)
@@ -904,6 +943,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 					}
 					ImGui::EndGroupBox();
 					ImGui::NextColumn();
+					ImGui::Text("Chams");
 					ImGui::BeginGroupBox("ChamsPlayers", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
 						ImGui::Checkbox("Master", &Settings::Visuals::Chams::Players::Enabled);
@@ -1545,7 +1585,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 								Config::Get().SaveUser();
 							break;
 						case 6:
-							if (ImGui::Combo("Enabled##Triggerbot", &Settings::KeyBinds::Triggerbot::Type, "Hold\0Toggle"))
+							if (ImGui::Combo("Type##Triggerbot", &Settings::KeyBinds::Triggerbot::Type, "Hold\0Toggle"))
 								Config::Get().SaveUser();
 
 							ImGui::Text("Key"); ImGui::SameLine();
