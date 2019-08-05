@@ -339,7 +339,7 @@ float hit_chance(Vector dest) {
 	return totalhits;
 }*/
 
-bool hit_chance(CUserCmd* cmd, C_BasePlayer* target)
+bool hit_chance(CUserCmd* cmd, C_BasePlayer* target, Vector pos)
 {
 	Vector forward, right, up;
 
@@ -348,7 +348,7 @@ bool hit_chance(CUserCmd* cmd, C_BasePlayer* target)
 
 	constexpr auto max_traces = 100;
 
-	Math::AngleVectors(cmd->viewangles, forward, right, up);
+	Math::AngleVectors(Math::CalcAngle(g_LocalPlayer->GetEyePos(), pos), forward, right, up);
 
 	int total_hits = 0;
 	float needed_hitchance = GetWeaponHitChance(weapon);
@@ -393,24 +393,21 @@ bool hit_chance(CUserCmd* cmd, C_BasePlayer* target)
 		if (tr.hit_entity == target)
 			total_hits++;
 
-		if (total_hits >= needed_hits)
+		float current_hitchance = ((float)total_hits / (float)max_traces) * 100.f;
+
+		if (current_hitchance >= needed_hitchance)
 			return true;
 
-		if ((max_traces - i) < total_hits + i)
-			return false;
+		//if ((max_traces - i) < total_hits + i)
+		//	return false;
 	}
 
-	float current_hitchance = (total_hits / max_traces) * 100;
-
-	Utils::ConsolePrint("Hits: ");
-	Utils::ConsolePrint(total_hits);
-	Utils::ConsolePrint("\n");
-	Utils::ConsolePrint("Needed hits: ");
-	Utils::ConsolePrint(needed_hitchance);
-
+	float current_hitchance = ((float)total_hits / (float)max_traces) * 100.f;
 
 	if (current_hitchance >= needed_hitchance)
 		return true;
+
+	return false;
 }
 
 
@@ -649,10 +646,7 @@ bool IsViable(CUserCmd* cmd, C_BasePlayer* target, bool found, float dmg, Bone b
 	if (!g_LocalPlayer->m_hActiveWeapon()->CanFire())
 		return false;
 		
-	if (hit_chance(cmd, target))
-		return false;
-
-	return true;
+	return hit_chance(cmd, target, target->GetBonePos((int)bone));
 }
 
 bool CanTrigger(CUserCmd* cmd, QAngle viewAngles)
@@ -879,7 +873,7 @@ void Triggerbot(CUserCmd* pCmd)
 	if (!pl->IsAlive())
 		return;
 	C_BasePlayer* test;
-	if (hit_chance(pCmd, test ))
+	if (hit_chance(pCmd, test, pl->GetHitboxPos(HITBOX_CHEST)))
 		return;
 
 	if (Settings::Misc::Triggerbot::Delay > 0)
