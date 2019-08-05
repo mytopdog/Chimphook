@@ -1670,7 +1670,6 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 									if (ImGui::Selectable(text.c_str(), (bool)(selectedP == player->EntIndex()), ImGuiSelectableFlags_SpanAllColumns)) {
 										selectedP = player->EntIndex();
 									}
-									Utils::ConsolePrint(ImGui::GetIO().MouseClicked[1] ? "true" : "false");
 
 									if (ImGui::IsItemHovered() && ImGui::GetIO().MouseClicked[1])
 										selectedP = player->EntIndex();
