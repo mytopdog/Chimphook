@@ -49,6 +49,12 @@ namespace Settings
 			extern int Type;
 			extern int Key;
 		}
+
+		namespace Triggerbot
+		{
+			extern int Type;
+			extern int Key;
+		}
 	}
 
 	namespace Misc
@@ -177,6 +183,13 @@ namespace Settings
 		namespace AutoDefuse
 		{
 			extern bool Enabled;
+			extern bool _enabled;
+		}
+
+		namespace Triggerbot
+		{
+			extern bool Enabled;
+			extern int Delay;
 			extern bool _enabled;
 		}
 

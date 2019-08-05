@@ -163,6 +163,10 @@ bool C_BaseCombatWeapon::IsSniper()
 	return GetCSWeaponData()->iWeaponType == WEAPONTYPE_SNIPER_RIFLE && !IsAuto();
 }
 
+bool C_BaseCombatWeapon::IsAutomatic() {
+	return IsAuto() || IsRifle() || IsHeavy() || IsSMG();
+}
+
 bool C_BaseCombatWeapon::IsReloading()
 {
 	static auto inReload = *(uint32_t*)(Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "C6 87 ? ? ? ? ? 8B 06 8B CE FF 90") + 2);

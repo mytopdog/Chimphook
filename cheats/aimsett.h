@@ -8,7 +8,6 @@ bool Settings::Aim::TestAimbot::Silent = false;
 bool Settings::Aim::TestAimbot::WeaponMove = false;
 int Settings::Aim::TestAimbot::TargetPriority = 0;
 
-
 bool Settings::Aim::TestAimbot::Scout::AutoStop = false;
 bool Settings::Aim::TestAimbot::Scout::AutoCrouch = false;
 bool Settings::Aim::TestAimbot::Scout::AutoScope = false;
@@ -67,6 +66,7 @@ int Settings::Aim::TestAimbot::Other::MinDamage = 0;
 float Settings::Aim::TestAimbot::Other::HitChance = 0.f;
 bool Settings::Aim::TestAimbot::Other::Prioritise = false;
 int Settings::Aim::TestAimbot::Other::Prioritised = 0;
+
 
 float GetWeaponHitChance(C_BaseCombatWeapon* weapon)
 {
