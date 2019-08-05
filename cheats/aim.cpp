@@ -339,9 +339,9 @@ float hit_chance(Vector dest) {
 	return totalhits;
 }*/
 
-bool hit_chance(CUserCmd* cmd)//, C_BasePlayer* target)
+bool hit_chance(CUserCmd* cmd, C_BasePlayer* target)
 {
-	/*Vector forward, right, up;
+	Vector forward, right, up;
 
 	C_BasePlayer* local = g_LocalPlayer;
 	C_BaseCombatWeapon* weapon = local->m_hActiveWeapon();
@@ -351,9 +351,8 @@ bool hit_chance(CUserCmd* cmd)//, C_BasePlayer* target)
 	Math::AngleVectors(cmd->viewangles, forward, right, up);
 
 	int total_hits = 0;
-	int needed_hits = static_cast<int>(max_traces * (GetWeaponHitChance(weapon) / 100.f));
-
-	weapon->UpdateAccuracyPenalty();
+	float needed_hitchance = GetWeaponHitChance(weapon);
+	int needed_hits = (max_traces / 100) * needed_hitchance;
 
 	auto eyes = local->GetEyePos();
 	auto flRange = weapon->GetCSWeaponData()->flRange;
@@ -394,24 +393,26 @@ bool hit_chance(CUserCmd* cmd)//, C_BasePlayer* target)
 		if (tr.hit_entity == target)
 			total_hits++;
 
-		//if (total_hits >= needed_hits)
-		//	return true;
+		if (total_hits >= needed_hits)
+			return true;
 
-		//if ((max_traces - i + total_hits) < needed_hits)
-		//	return false;
+		if ((max_traces - i) < total_hits + i)
+			return false;
 	}
 
-	if (total_hits >= needed_hits)
+	float current_hitchance = (total_hits / max_traces) * 100;
+
+	Utils::ConsolePrint("Hits: ");
+	Utils::ConsolePrint(total_hits);
+	Utils::ConsolePrint("\n");
+	Utils::ConsolePrint("Needed hits: ");
+	Utils::ConsolePrint(needed_hitchance);
+
+
+	if (current_hitchance >= needed_hitchance)
 		return true;
-
-	return false;*/
-
-	if (GetWeaponHitChance(g_LocalPlayer->m_hActiveWeapon()) == 0)
-		return false;
-		
-	float hitchance = 75.f + (GetWeaponHitChance(g_LocalPlayer->m_hActiveWeapon()) / 4);
-	return ((0.998f - g_LocalPlayer->m_hActiveWeapon()->GetInaccuracy()) * 100.f < hitchance);
 }
+
 
 template<class T, class U>
 T clamp(T in, U low, U high)
@@ -648,7 +649,7 @@ bool IsViable(CUserCmd* cmd, C_BasePlayer* target, bool found, float dmg, Bone b
 	if (!g_LocalPlayer->m_hActiveWeapon()->CanFire())
 		return false;
 		
-	if (hit_chance(cmd))//, target))
+	if (hit_chance(cmd, target))
 		return false;
 
 	return true;
@@ -877,8 +878,8 @@ void Triggerbot(CUserCmd* pCmd)
 
 	if (!pl->IsAlive())
 		return;
-
-	if (hit_chance(pCmd))
+	C_BasePlayer* test;
+	if (hit_chance(pCmd, test ))
 		return;
 
 	if (Settings::Misc::Triggerbot::Delay > 0)
