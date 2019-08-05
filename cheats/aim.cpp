@@ -13,6 +13,9 @@ bool Settings::Aim::RCS::Silent = false;
 float Settings::Aim::RCS::ScaleX = 2;
 float Settings::Aim::RCS::ScaleY = 2;
 
+bool Settings::Misc::Triggerbot::Enabled = true;
+int Settings::Misc::Triggerbot::Delay = 0;
+
 static QAngle RCSLastPunch;
 
 inline void RandomSeed(int seed)
@@ -336,7 +339,7 @@ float hit_chance(Vector dest) {
 	return totalhits;
 }*/
 
-bool hit_chance(CUserCmd* cmd, C_BasePlayer* target)
+bool hit_chance(CUserCmd* cmd)//, C_BasePlayer* target)
 {
 	/*Vector forward, right, up;
 
@@ -645,7 +648,7 @@ bool IsViable(CUserCmd* cmd, C_BasePlayer* target, bool found, float dmg, Bone b
 	if (!g_LocalPlayer->m_hActiveWeapon()->CanFire())
 		return false;
 		
-	if (hit_chance(cmd, target))
+	if (hit_chance(cmd))//, target))
 		return false;
 
 	return true;
@@ -833,5 +836,76 @@ void DoAim(CUserCmd* cmd, bool bSendPacket)
 		}
 
 		RCS(cmd);
+	}
+}
+
+
+void Triggerbot(CUserCmd* pCmd)
+{
+	static size_t tDelay = 0;
+
+	if (!Settings::Misc::Triggerbot::Enabled || !Settings::Misc::Triggerbot::_enabled)
+		return;
+
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !g_LocalPlayer->m_hActiveWeapon() || g_LocalPlayer->m_hActiveWeapon()->IsKnife())
+		return;
+
+	Vector vStart, vEnd, vAngles;
+	vStart = g_LocalPlayer->GetEyePos();
+
+	ConVar* recoil_scale = g_CVar->FindVar("weapon_recoil_scale");
+
+	QAngle angle = pCmd->viewangles;
+	angle -= g_LocalPlayer->m_aimPunchAngle() * recoil_scale->GetFloat();
+
+	Math::AngleVectors(angle, vAngles);
+
+	vAngles *= g_LocalPlayer->m_hActiveWeapon()->GetCSWeaponData()->flRange;
+	vEnd = vStart + vAngles;
+	Ray_t ray;
+	ray.Init(vStart, vEnd);
+	trace_t tr;
+	CTraceFilter pTraceFilter;
+	pTraceFilter.pSkip = g_LocalPlayer;
+
+	g_EngineTrace->TraceRay(ray, MASK_SHOT, &pTraceFilter, &tr);
+
+	C_BasePlayer * pl = (C_BasePlayer*)tr.hit_entity;
+
+	if (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum())
+		return;
+
+	if (!pl->IsAlive())
+		return;
+
+	if (hit_chance(pCmd))
+		return;
+
+	if (Settings::Misc::Triggerbot::Delay > 0)
+	{
+		if (GetTickCount() > tDelay)
+		{
+			if ((tr.hitgroup <= 7 && tr.hitgroup > 0))
+				if (!g_LocalPlayer->m_hActiveWeapon()->IsAutomatic())
+					if (g_LocalPlayer->m_hActiveWeapon()->CanFire())
+						pCmd->buttons |= IN_ATTACK;
+					else
+						pCmd->buttons &= ~IN_ATTACK;
+				else
+					pCmd->buttons |= IN_ATTACK;
+
+			tDelay = GetTickCount() + Settings::Misc::Triggerbot::Delay * 35;
+		}
+	}
+	else
+	{
+		if ((tr.hitgroup <= 7 && tr.hitgroup > 0))
+			if (!g_LocalPlayer->m_hActiveWeapon()->IsAutomatic())
+				if (g_LocalPlayer->m_hActiveWeapon()->CanFire())
+					pCmd->buttons |= IN_ATTACK;
+				else
+					pCmd->buttons &= ~IN_ATTACK;
+			else
+				pCmd->buttons |= IN_ATTACK;
 	}
 }

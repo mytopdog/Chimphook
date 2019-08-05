@@ -8,6 +8,7 @@
 bool Settings::System::ChimpHookNotifications = true;
 
 bool Settings::Misc::FreeLook::_enabled = false;
+bool Settings::Misc::Triggerbot::_enabled = false;
 bool Settings::Misc::ThirdPerson::_enabled = false;
 bool Settings::Misc::FakeDuck::_enabled = false;
 bool Settings::Misc::AutoDefuse::_enabled = false;
@@ -30,6 +31,9 @@ int Settings::KeyBinds::FakeDuck::Type = 0;
 
 int Settings::KeyBinds::AutoDefuse::Key = 0;
 int Settings::KeyBinds::AutoDefuse::Type = 0;
+
+int Settings::KeyBinds::Triggerbot::Key = 0;
+int Settings::KeyBinds::Triggerbot::Type = 0;
 
 int Settings::KeyBinds::FakeZoom::Key = 0;
 int Settings::KeyBinds::FakeZoom::Type = 0;
@@ -120,6 +124,9 @@ void Hotkeys::Begin()
 
 	if (Settings::Misc::AutoDefuse::Enabled)
 		Hotkeys::Run("AutoDefuse", Settings::KeyBinds::AutoDefuse::Key, &Settings::Misc::AutoDefuse::_enabled, (bool)(Settings::KeyBinds::AutoDefuse::Type == 1), &kb_autodefuse_storage, true);
+
+	if (Settings::Misc::Triggerbot::Enabled)
+		Hotkeys::Run("Triggerbot", Settings::KeyBinds::Triggerbot::Key, &Settings::Misc::Triggerbot::_enabled, (bool)(Settings::KeyBinds::Triggerbot::Type == 1), &kb_triggerbot_storage, true);
 
 	if (Settings::Misc::FakeZoom::Enabled)
 		Hotkeys::Run("FakeZoom", Settings::KeyBinds::FakeZoom::Key, &Settings::Misc::FakeZoom::_enabled, (bool)(Settings::KeyBinds::FakeZoom::Type == 1), &kb_fakezoom_storage, false);

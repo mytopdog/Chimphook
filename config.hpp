@@ -336,6 +336,8 @@ public:
 	OPTION(int, fakeducktype, &Settings::KeyBinds::FakeDuck::Type);
 	OPTION(int, autodefusekey, &Settings::KeyBinds::AutoDefuse::Key);
 	OPTION(int, autodefusetype, &Settings::KeyBinds::AutoDefuse::Type);
+	OPTION(int, triggerbottype, &Settings::KeyBinds::Triggerbot::Type);
+	OPTION(int, triggerbotkey, &Settings::KeyBinds::Triggerbot::Key);
 	OPTION(int, fakezoomkey, &Settings::KeyBinds::FakeZoom::Key);
 	OPTION(int, fakezoomtype, &Settings::KeyBinds::FakeZoom::Type);
 	OPTION(bool, aimbotkeyenabled, &Settings::KeyBinds::Aimbot::Enabled);

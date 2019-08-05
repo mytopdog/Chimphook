@@ -17,6 +17,7 @@
 #include "cheats/aim.hpp"
 #include "cheats/chattranslator.h"
 
+
 #include "helpers/skinchangerparser.hpp"
 #include "cheats/chamsPreview/test.cpp"
 
@@ -297,6 +298,7 @@ namespace Hooks
 			return;
 
 		AutoDefuse(cmd);
+		Triggerbot(cmd);
 		BunnyHop(cmd);
 		AutoStrafer(cmd);
 		AutoCowboy(cmd);

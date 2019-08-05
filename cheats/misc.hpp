@@ -9,6 +9,7 @@
 #include <Psapi.h>
 
 void AutoDefuse(CUserCmd* cmd);
+void Triggerbot(CUserCmd* cmd);
 void InfiniteDuck(CUserCmd* cmd);
 void AutoPistol(CUserCmd* cmd);
 void AutoReload(CUserCmd* cmd);

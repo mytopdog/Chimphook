@@ -278,6 +278,8 @@ public:
 	void UpdateAccuracyPenalty();
 	CUtlVector<IRefCounted*>& m_CustomMaterials();
 	bool* m_bCustomMaterialInitialized();
+
+	bool IsAutomatic();
 };
 
 class C_WeaponCSBase : public C_BaseCombatWeapon {};

@@ -1189,23 +1189,30 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 							ImGui::SliderFloat("ScaleY", &Settings::Aim::RCS::ScaleY, 0, 2, "%.2f");
 						}
 						ImGui::EndGroupBox();
-						ImGui::Text("Test Aimbot");
-						ImGui::BeginGroupBox("TestAimbot", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+						ImGui::Text("Triggerbot");
+						ImGui::BeginGroupBox("LegitAimTriggerbot", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 						{
-							ImGui::Checkbox("Enabled##TestAimbot", &Settings::Aim::TestAimbot::Enabled);
-							ImGui::Checkbox("OnShoot##TestAimbot", &Settings::Aim::TestAimbot::OnShoot);
-							ImGui::Checkbox("AutoShoot##TestAimbot", &Settings::Aim::TestAimbot::AutoShoot);
-							ImGui::BeginGroup();
-							{
-								ImGui::Columns(2, nullptr, false);
-								ImGui::Checkbox("Silent##TestAimbot", &Settings::Aim::TestAimbot::Silent); ImGui::NextColumn();
-								ImGui::Checkbox("Viewmodel Move##TestAimbot", &Settings::Aim::TestAimbot::WeaponMove);
-								ImGui::Columns(1, nullptr, false);
-							}
-							ImGui::EndGroup();
-							ImGui::Combo("Target Priority##TestAimbot", &Settings::Aim::TestAimbot::TargetPriority, "FOV\0Damage\0Closest\0Smart");
+							ImGui::Checkbox("Enabled##Triggerbot", &Settings::Misc::Triggerbot::Enabled);
+							ImGui::SliderInt("Delay##Triggerbot", &Settings::Misc::Triggerbot::Delay, 0, 64);
 						}
 						ImGui::EndGroupBox();
+					}
+					ImGui::EndGroupBox();
+					ImGui::Text("Test Aimbot");
+					ImGui::BeginGroupBox("TestAimbot", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						ImGui::Checkbox("Enabled##TestAimbot", &Settings::Aim::TestAimbot::Enabled);
+						ImGui::Checkbox("OnShoot##TestAimbot", &Settings::Aim::TestAimbot::OnShoot);
+						ImGui::Checkbox("AutoShoot##TestAimbot", &Settings::Aim::TestAimbot::AutoShoot);
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							ImGui::Checkbox("Silent##TestAimbot", &Settings::Aim::TestAimbot::Silent); ImGui::NextColumn();
+							ImGui::Checkbox("Viewmodel Move##TestAimbot", &Settings::Aim::TestAimbot::WeaponMove);
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
+						ImGui::Combo("Target Priority##TestAimbot", &Settings::Aim::TestAimbot::TargetPriority, "FOV\0Damage\0Closest\0Smart");
 					}
 					ImGui::EndGroupBox();
 				}
@@ -1458,6 +1465,14 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 							ImGui::NextColumn();
 							ImGui::Text((bool)(Settings::KeyBinds::Aimbot::Type == 1) ? "Toggle" : "Hold");
 							ImGui::NextColumn();
+
+							if (ImGui::Selectable("Triggerbot", (bool)(selectedKb == 6), ImGuiSelectableFlags_SpanAllColumns))
+								selectedKb = 6;
+							ImGui::NextColumn();
+							ImGui::Text(KeyNames[Settings::KeyBinds::Triggerbot::Key]);
+							ImGui::NextColumn();
+							ImGui::Text((bool)(Settings::KeyBinds::Triggerbot::Type == 1) ? "Toggle" : "Hold");
+							ImGui::NextColumn();
 							
 							ImGui::Columns(1, nullptr, false);
 						}
@@ -1527,6 +1542,15 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9* pDevice)
 							ImGui::Text("Key"); ImGui::SameLine();
 							
 							if (ImGui::Hotkey("KeyInput##Aimbot", &Settings::KeyBinds::Aimbot::Key))
+								Config::Get().SaveUser();
+							break;
+						case 6:
+							if (ImGui::Combo("Enabled##Triggerbot", &Settings::KeyBinds::Triggerbot::Type, "Hold\0Toggle"))
+								Config::Get().SaveUser();
+
+							ImGui::Text("Key"); ImGui::SameLine();
+
+							if (ImGui::Hotkey("KeyInput##Triggerbot", &Settings::KeyBinds::Triggerbot::Key))
 								Config::Get().SaveUser();
 							break;
 						}
