@@ -4,7 +4,8 @@
 bool Settings::ESP::GrenadePrediction = false;
 bool Settings::Misc::WallbangCrosshair = false;
 
-int Settings::Misc::ZeusRange::Rays = 360;
+float Settings::Misc::ZeusRange::Speed = 0.0;
+float Settings::Misc::ZeusRange::Thickness = 1.0;
 
 bool Settings::ESP::Players::Enabled = false;
 
@@ -2567,8 +2568,8 @@ void ZeusRange()
 	if (!local_weapon || local_weapon->m_iItemDefinitionIndex() != ItemDefinitionIndex::WEAPON_TASER)
 		return;
 
-	float step = M_PI * 2.0 / 2047; //adjust if you need 1-5 extra fps lol
-	float rad = 178.f; // Not actual value for Zeus, just to look more accurate
+	float step = M_PI * 2.0 / 200; 
+	float rad = 178.f; // change for knife range --
 	Vector origin = g_LocalPlayer->GetEyePos();
 	static float hue_offset = 0;
 	for (float rotation = 0; rotation < (M_PI * 2.0); rotation += step)
@@ -2592,15 +2593,14 @@ void ZeusRange()
 
 				float r, g, b;
 				ColorConvertHSVtoRGB(hue / 360.f, 1, 1, r, g, b);
-				Color color = Color(r, g, b);
+				Color color = Color(r, g, b);		
 
-				g_VGuiSurface->DrawSetColor(color);
-				g_VGuiSurface->DrawLine(prev_scr_pos.x, prev_scr_pos.y, scr_pos.x, scr_pos.y);
+				Render::Get().RenderLine(prev_scr_pos.x, prev_scr_pos.y, scr_pos.x, scr_pos.y, color, Settings::Misc::ZeusRange::Thickness);
 			}
 			prev_scr_pos = scr_pos;
 		}
 	}
-	hue_offset += 0.25;
+	hue_offset += Settings::Misc::ZeusRange::Speed;
 }
 
 void DebugMode()

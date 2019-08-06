@@ -97,7 +97,8 @@ namespace Settings
 		namespace ZeusRange
 		{
 			extern bool Enabled;
-			extern int Rays;
+			extern float Speed;
+			extern float Thickness;
 		}
 
 		namespace SmokeHelper

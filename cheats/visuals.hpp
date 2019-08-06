@@ -147,3 +147,4 @@ public:
 };
 
 void DebugMode();
+void ZeusRange();

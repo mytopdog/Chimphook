@@ -82,7 +82,9 @@ void Render::BeginScene()
 	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive() && g_LocalPlayer->m_hActiveWeapon()->IsGrenade()) {
 		grenade_prediction::Get().Paint();
 	}		
-
+	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive()) {
+		ZeusRange();
+	}
 
 	render_mutex.lock();
 	*draw_list_act = *draw_list;
