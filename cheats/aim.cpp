@@ -346,7 +346,7 @@ bool hit_chance(CUserCmd* cmd, C_BasePlayer* target, Vector pos)
 	C_BasePlayer* local = g_LocalPlayer;
 	C_BaseCombatWeapon* weapon = local->m_hActiveWeapon();
 
-	constexpr auto max_traces = 100;
+	constexpr auto max_traces = 250;
 
 	Math::AngleVectors(Math::CalcAngle(g_LocalPlayer->GetEyePos(), pos), forward, right, up);
 

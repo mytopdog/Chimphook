@@ -263,11 +263,13 @@ public:
 	bool HasBullets();
 	bool CanFire();
 	bool IsGrenade();
+	bool IsTaser();
 	bool IsKnife();
 	bool IsReloading();
 	bool IsSMG();
 	bool IsHeavy();
 	bool IsShotgun();
+	bool IsDeagleR8();
 	bool IsRifle();
 	bool IsAuto();
 	bool IsPistol();

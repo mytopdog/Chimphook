@@ -288,6 +288,14 @@ public:
 	OPTION(bool, testaimbotautoprioritise, &Settings::Aim::TestAimbot::Auto::Prioritise);
 	OPTION(int, testaimbotautoprioritised, &Settings::Aim::TestAimbot::Auto::Prioritised);
 
+	OPTION(bool, testaimbotautor8, &Settings::Misc::AutoRevolver);
+	OPTION(bool, testaimbotdeagler8autostop, &Settings::Aim::TestAimbot::DeagleR8::AutoStop);
+	OPTION(bool, testaimbotdeagler8autocrouch, &Settings::Aim::TestAimbot::DeagleR8::AutoCrouch);
+	OPTION(int, testaimbotdeagler8mindamage, &Settings::Aim::TestAimbot::DeagleR8::MinDamage);
+	OPTION(float, testaimbotdeagler8hitchance, &Settings::Aim::TestAimbot::DeagleR8::HitChance);
+	OPTION(bool, testaimbotdeagler8prioritise, &Settings::Aim::TestAimbot::DeagleR8::Prioritise);
+	OPTION(int, testaimbotdeagler8prioritised, &Settings::Aim::TestAimbot::DeagleR8::Prioritised);
+
 	OPTION(bool, testaimbotrifleautostop, &Settings::Aim::TestAimbot::Rifle::AutoStop);
 	OPTION(bool, testaimbotrifleautocrouch, &Settings::Aim::TestAimbot::Rifle::AutoCrouch);
 	OPTION(int, testaimbotriflemindamage, &Settings::Aim::TestAimbot::Rifle::MinDamage);

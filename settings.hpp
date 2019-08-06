@@ -68,6 +68,7 @@ namespace Settings
 		extern bool InfiniteDuck;
 		extern bool SelfNade;
 
+		extern bool AutoRevolver;
 		extern bool AutoPistol;
 		extern bool AutoReload;
 		extern bool DeagleSpinner;
@@ -499,6 +500,16 @@ namespace Settings
 				extern bool AutoStop;
 				extern bool AutoCrouch;
 				extern bool AutoScope;
+				extern int MinDamage;
+				extern float HitChance;
+				extern bool Prioritise;
+				extern int Prioritised;
+			}
+
+			namespace DeagleR8
+			{
+				extern bool AutoStop;
+				extern bool AutoCrouch;
 				extern int MinDamage;
 				extern float HitChance;
 				extern bool Prioritise;

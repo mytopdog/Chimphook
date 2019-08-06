@@ -32,6 +32,13 @@ float Settings::Aim::TestAimbot::Auto::HitChance = 0.f;
 bool Settings::Aim::TestAimbot::Auto::Prioritise = false;
 int Settings::Aim::TestAimbot::Auto::Prioritised = 0;
 
+bool Settings::Aim::TestAimbot::DeagleR8::AutoStop = false;
+bool Settings::Aim::TestAimbot::DeagleR8::AutoCrouch = false;
+int Settings::Aim::TestAimbot::DeagleR8::MinDamage = 0;
+float Settings::Aim::TestAimbot::DeagleR8::HitChance = 0.f;
+bool Settings::Aim::TestAimbot::DeagleR8::Prioritise = false;
+int Settings::Aim::TestAimbot::DeagleR8::Prioritised = 0;
+
 bool Settings::Aim::TestAimbot::Rifle::AutoStop = false;
 bool Settings::Aim::TestAimbot::Rifle::AutoCrouch = false;
 int Settings::Aim::TestAimbot::Rifle::MinDamage = 0;
@@ -82,10 +89,13 @@ float GetWeaponHitChance(C_BaseCombatWeapon* weapon)
 	else if (weapon->IsAuto())
 		return Settings::Aim::TestAimbot::Auto::HitChance;
 
+	else if (weapon->IsDeagleR8())
+		return Settings::Aim::TestAimbot::DeagleR8::HitChance;
+
 	else if (weapon->IsRifle())
 		return Settings::Aim::TestAimbot::Rifle::HitChance;
 
-	else if (weapon->IsPistol())
+	else if (weapon->IsPistol() && !weapon->IsDeagleR8())
 		return Settings::Aim::TestAimbot::Pistol::HitChance;
 
 	else if (weapon->IsSMG())
@@ -109,10 +119,13 @@ int GetWeaponMinDamage(C_BaseCombatWeapon* weapon)
 	else if (weapon->IsAuto())
 		return Settings::Aim::TestAimbot::Auto::MinDamage;
 
+	else if (weapon->IsDeagleR8())
+		return Settings::Aim::TestAimbot::DeagleR8::MinDamage;
+
 	else if (weapon->IsRifle())
 		return Settings::Aim::TestAimbot::Rifle::MinDamage;
 
-	else if (weapon->IsPistol())
+	else if (weapon->IsPistol() && !weapon->IsDeagleR8())
 		return Settings::Aim::TestAimbot::Pistol::MinDamage;
 
 	else if (weapon->IsSMG())
@@ -136,10 +149,13 @@ bool GetWeaponAutoStop(C_BaseCombatWeapon* weapon)
 	else if (weapon->IsAuto())
 		return Settings::Aim::TestAimbot::Auto::AutoStop;
 
+	else if (weapon->IsDeagleR8())
+		return Settings::Aim::TestAimbot::DeagleR8::AutoStop;
+
 	else if (weapon->IsRifle())
 		return Settings::Aim::TestAimbot::Rifle::AutoStop;
 
-	else if (weapon->IsPistol())
+	else if (weapon->IsPistol() && !weapon->IsDeagleR8())
 		return Settings::Aim::TestAimbot::Pistol::AutoStop;
 
 	else if (weapon->IsSMG())
@@ -163,10 +179,13 @@ bool GetWeaponAutoCrouch(C_BaseCombatWeapon* weapon)
 	else if (weapon->IsAuto())
 		return Settings::Aim::TestAimbot::Auto::AutoCrouch;
 
+	else if (weapon->IsDeagleR8())
+		return Settings::Aim::TestAimbot::DeagleR8::AutoCrouch;
+
 	else if (weapon->IsRifle())
 		return Settings::Aim::TestAimbot::Rifle::AutoCrouch;
 
-	else if (weapon->IsPistol())
+	else if (weapon->IsPistol() && !weapon->IsDeagleR8())
 		return Settings::Aim::TestAimbot::Pistol::AutoCrouch;
 
 	else if (weapon->IsSMG())
@@ -205,10 +224,13 @@ bool GetWeaponPrioritiseHitbox(C_BaseCombatWeapon* weapon)
 	else if (weapon->IsAuto())
 		return Settings::Aim::TestAimbot::Auto::Prioritise;
 
+	else if (weapon->IsDeagleR8())
+		return Settings::Aim::TestAimbot::DeagleR8::Prioritise;
+
 	else if (weapon->IsRifle())
 		return Settings::Aim::TestAimbot::Rifle::Prioritise;
 
-	else if (weapon->IsPistol())
+	else if (weapon->IsPistol() && !weapon->IsDeagleR8())
 		return Settings::Aim::TestAimbot::Pistol::Prioritise;
 
 	else if (weapon->IsSMG())
@@ -232,10 +254,13 @@ Hitbox GetWeaponPrioritisedHitbox(C_BaseCombatWeapon* weapon)
 	else if (weapon->IsAuto())
 		return (Hitbox)Settings::Aim::TestAimbot::Auto::Prioritised;
 
+	else if (weapon->IsDeagleR8())
+		return (Hitbox)Settings::Aim::TestAimbot::DeagleR8::Prioritised;
+
 	else if (weapon->IsRifle())
 		return (Hitbox)Settings::Aim::TestAimbot::Rifle::Prioritised;
 
-	else if (weapon->IsPistol())
+	else if (weapon->IsPistol() && !weapon->IsDeagleR8())
 		return (Hitbox)Settings::Aim::TestAimbot::Pistol::Prioritised;
 
 	else if (weapon->IsSMG())

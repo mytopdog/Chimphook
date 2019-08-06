@@ -297,6 +297,7 @@ namespace Hooks
 		if (!cmd || !cmd->command_number)
 			return;
 
+		AutoRevolver(cmd);
 		AutoDefuse(cmd);
 		Triggerbot(cmd);
 		BunnyHop(cmd);
@@ -353,6 +354,17 @@ namespace Hooks
 		if (CreateMove::sendPacket)
 		{
 			if (g_LocalPlayer->IsAlive() && g_EngineClient->IsInGame()) CreateMove::lastTickViewAngles = cmd->viewangles;
+		}
+
+		for (int i = 0; i < g_EntityList->GetMaxEntities(); i++)
+		{
+			C_BaseEntity* entity = C_BaseEntity::GetEntityByIndex(i);
+
+			if (!entity)
+				continue;
+
+			if (entity->GetClientClass()->m_ClassID == ClassId_CCSPlayerResource)
+				g_PlayerResource = (C_CSPlayerResource*)entity;
 		}
 
 		verified->m_cmd = *cmd;
