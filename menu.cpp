@@ -1604,6 +1604,8 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 				ImGui::EndGroupBox();
 				ImGui::Checkbox("FUCK", &Settings::Misc::FUCK);
 				ImGui::Checkbox("Debug Mode", &Settings::Misc::DebugMode);
+				ImGui::Checkbox("Zeus Range", &Settings::Misc::ZeusRange::Enabled);
+				ImGui::SliderInt("Rays", &Settings::Misc::ZeusRange::Rays, 3, 1000);
 
 				if (ImGui::Button("Unload"))
 					Settings::System::Unload = true;

@@ -399,8 +399,11 @@ bool hit_chance(CUserCmd* cmd, C_BasePlayer* target, Vector pos)
 			return true;
 
 		//if ((max_traces - i) < total_hits + i)
+		//{
 		//	return false;
+		//}
 	}
+
 
 	float current_hitchance = ((float)total_hits / (float)max_traces) * 100.f;
 
@@ -637,6 +640,7 @@ C_BasePlayer* FindPlayer(bool& found, float& bestDamage, Bone& bestBone)
 
 bool IsViable(CUserCmd* cmd, C_BasePlayer* target, bool found, float dmg, Bone bone)
 {
+
 	if (!found)
 		return false;
 
@@ -645,7 +649,7 @@ bool IsViable(CUserCmd* cmd, C_BasePlayer* target, bool found, float dmg, Bone b
 
 	if (!g_LocalPlayer->m_hActiveWeapon()->CanFire())
 		return false;
-		
+
 	return hit_chance(cmd, target, target->GetBonePos((int)bone));
 }
 
@@ -873,8 +877,8 @@ void Triggerbot(CUserCmd* pCmd)
 	if (!pl->IsAlive())
 		return;
 	C_BasePlayer* test;
-	if (hit_chance(pCmd, test, pl->GetHitboxPos(HITBOX_CHEST)))
-		return;
+	//if (hit_chance(pCmd, test, pl->GetHitboxPos(HITBOX_CHEST)))
+		//return;
 
 	if (Settings::Misc::Triggerbot::Delay > 0)
 	{

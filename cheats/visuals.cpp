@@ -4,6 +4,8 @@
 bool Settings::ESP::GrenadePrediction = false;
 bool Settings::Misc::WallbangCrosshair = false;
 
+int Settings::Misc::ZeusRange::Rays = 360;
+
 bool Settings::ESP::Players::Enabled = false;
 
 bool Settings::ESP::Players::Enemies::Enabled = false;
@@ -169,6 +171,7 @@ bool Settings::Misc::SmokeHelper::Enabled = false;
 int Settings::Misc::SmokeHelper::TypeHelp = 0;
 
 bool Settings::Misc::DebugMode = false;
+bool Settings::Misc::ZeusRange::Enabled = false;
 
 RECT GetBBox(C_BaseEntity* ent)
 {
@@ -2528,6 +2531,76 @@ void SmokeHelper::OnCreateMove(CUserCmd* cmd)
 		break;
 	}
 	}
+}
+
+void ColorConvertHSVtoRGB(float h, float s, float v, float& out_r, float& out_g, float& out_b)
+{
+	if (s == 0.0f)
+	{
+		// gray
+		out_r = out_g = out_b = v;
+		return;
+	}
+
+	h = fmodf(h, 1.0f) / (60.0f / 360.0f);
+	int   i = (int)h;
+	float f = h - (float)i;
+	float p = v * (1.0f - s);
+	float q = v * (1.0f - s * f);
+	float t = v * (1.0f - s * (1.0f - f));
+
+	switch (i)
+	{
+	case 0: out_r = v; out_g = t; out_b = p; break;
+	case 1: out_r = q; out_g = v; out_b = p; break;
+	case 2: out_r = p; out_g = v; out_b = t; break;
+	case 3: out_r = p; out_g = q; out_b = v; break;
+	case 4: out_r = t; out_g = p; out_b = v; break;
+	case 5: default: out_r = v; out_g = p; out_b = q; break;
+	}
+}
+
+void ZeusRange()
+{
+	Vector prev_scr_pos, scr_pos;
+	C_BaseCombatWeapon* local_weapon = g_LocalPlayer->m_hActiveWeapon();
+	if (!local_weapon || local_weapon->m_iItemDefinitionIndex() != ItemDefinitionIndex::WEAPON_TASER)
+		return;
+
+	float step = M_PI * 2.0 / 2047; //adjust if you need 1-5 extra fps lol
+	float rad = 178.f; // Not actual value for Zeus, just to look more accurate
+	Vector origin = g_LocalPlayer->GetEyePos();
+	static float hue_offset = 0;
+	for (float rotation = 0; rotation < (M_PI * 2.0); rotation += step)
+	{
+		Vector pos(rad * cos(rotation) + origin.x, rad * sin(rotation) + origin.y, origin.z);
+
+		Ray_t ray;
+		trace_t trace;
+		CTraceFilter filter;
+
+		filter.pSkip = g_LocalPlayer;
+		ray.Init(origin, pos);
+
+		g_EngineTrace->TraceRay(ray, MASK_SHOT_BRUSHONLY, &filter, &trace);
+
+		if (Math::WorldToScreen(trace.endpos, scr_pos))
+		{
+			if (prev_scr_pos.IsValid())
+			{
+				int hue = RAD2DEG(rotation) + hue_offset;
+
+				float r, g, b;
+				ColorConvertHSVtoRGB(hue / 360.f, 1, 1, r, g, b);
+				Color color = Color(r, g, b);
+
+				g_VGuiSurface->DrawSetColor(color);
+				g_VGuiSurface->DrawLine(prev_scr_pos.x, prev_scr_pos.y, scr_pos.x, scr_pos.y);
+			}
+			prev_scr_pos = scr_pos;
+		}
+	}
+	hue_offset += 0.25;
 }
 
 void DebugMode()

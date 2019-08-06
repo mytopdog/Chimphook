@@ -92,6 +92,12 @@ namespace Settings
 		
 		extern bool FUCK;
 		extern bool DebugMode;
+		
+		namespace ZeusRange
+		{
+			extern bool Enabled;
+			extern int Rays;
+		}
 
 		namespace SmokeHelper
 		{
