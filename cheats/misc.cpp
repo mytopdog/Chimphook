@@ -931,30 +931,6 @@ void AutoRevolver(CUserCmd* cmd)
 
 }
 
-void MoonWalk(CUserCmd* cmd)
-{
-	if (Settings::Misc::MoonWalk)
-	{
-		if (GetAsyncKeyState('W'))
-			cmd->forwardmove = 450;
-
-		if (GetAsyncKeyState('S'))
-			cmd->forwardmove = -450;
-
-		if (GetAsyncKeyState('D'))
-			cmd->sidemove = 450;
-
-		if (GetAsyncKeyState('A'))
-			cmd->sidemove = -450;
-
-		g_EngineClient->ExecuteClientCmd("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft");
-	}
-	else
-	{
-		g_EngineClient->ExecuteClientCmd("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright");
-	}
-}
-
 static ITexture* buffer;
 
 void draw_test()

@@ -33,6 +33,7 @@ public:
 class Options
 {
 public:
+	OPTION(bool, miscmoonwalk, &Settings::Misc::MoonWalk);
 	OPTION(bool, miscbunnyhop, &Settings::Misc::BunnyHop);
 	OPTION(bool, miscautostrafer, &Settings::Misc::AutoStrafer);
 	OPTION(bool, miscautocowboy, &Settings::Misc::AutoCowboy);
@@ -41,6 +42,11 @@ public:
 	OPTION(bool, miscinfiniteduck, &Settings::Misc::InfiniteDuck);
 	OPTION(bool, miscselfnade, &Settings::Misc::SelfNade);
 	OPTION(bool, miscedgejumper, &Settings::Misc::EdgeJumper);
+
+	OPTION(bool, misczeusrange, &Settings::Misc::ZeusRange::Enabled);
+	OPTION(float, misczeusrangespeed, &Settings::Misc::ZeusRange::Speed);
+	OPTION(int, misczeusrangethickness, &Settings::Misc::ZeusRange::Thickness);
+	OPTION(int, misczeusrangestep, &Settings::Misc::ZeusRange::Step);
 
 	OPTION(bool, miscslowwalk, &Settings::Misc::SlowWalk::Enabled);
 	OPTION(int, miscslowwalkamount, &Settings::Misc::SlowWalk::Amount);

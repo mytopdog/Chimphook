@@ -794,6 +794,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::Text(Settings::Misc::ChatSpammer::Filename.c_str());
 						}
 						ImGui::EndGroup();
+						ImGui::Checkbox("Moonwalk", &Settings::Misc::MoonWalk);
 					}
 					ImGui::EndGroupBox();
 					break;
@@ -1190,6 +1191,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::Checkbox("Shadows", &Settings::Misc::Removals::Shadows);
 					}
 					ImGui::EndGroupBox();
+					ImGui::Text("Others");
 					ImGui::BeginGroupBox("Others", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
 						ImGui::Checkbox("Grenade Prediction", &Settings::ESP::GrenadePrediction);

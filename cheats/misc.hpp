@@ -9,7 +9,6 @@
 #include <Psapi.h>
 
 void AutoRevolver(CUserCmd* cmd);
-void MoonWalk(CUserCmd* cmd);
 void AutoDefuse(CUserCmd* cmd);
 void InfiniteDuck(CUserCmd* cmd);
 void AutoPistol(CUserCmd* cmd);
