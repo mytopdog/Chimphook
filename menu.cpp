@@ -1190,7 +1190,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::Checkbox("Shadows", &Settings::Misc::Removals::Shadows);
 					}
 					ImGui::EndGroupBox();
-					ImGui::BeginGroupBox("GrenadePrediction", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					ImGui::BeginGroupBox("Others", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
 						ImGui::Checkbox("Grenade Prediction", &Settings::ESP::GrenadePrediction);
 						ImGui::BeginGroup();
@@ -1210,6 +1210,18 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::Columns(1, nullptr, false);
 						}
 						ImGui::EndGroup();
+					}
+					ImGui::EndGroupBox();
+					ImGui::NextColumn();
+					ImGui::Text("Zeus Range");
+					ImGui::BeginGroupBox("ZeusRange", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						ImGui::Columns(2, nullptr, false);
+						ImGui::Checkbox("Enabled", &Settings::Misc::ZeusRange::Enabled);
+						ImGui::SliderFloat("Speed", &Settings::Misc::ZeusRange::Speed, 0, 5, "%.2f");
+						ImGui::SliderInt("Thickness", &Settings::Misc::ZeusRange::Thickness, 0, 5);
+						ImGui::SliderInt("Step", &Settings::Misc::ZeusRange::Step, 1, 30);
+						ImGui::Columns(1, nullptr, false);
 					}
 					ImGui::EndGroupBox();
 					ImGui::Columns(1, nullptr, false);
@@ -1619,9 +1631,6 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 				ImGui::EndGroupBox();
 				ImGui::Checkbox("FUCK", &Settings::Misc::FUCK);
 				ImGui::Checkbox("Debug Mode", &Settings::Misc::DebugMode);
-				ImGui::Checkbox("Zeus Range", &Settings::Misc::ZeusRange::Enabled);
-				ImGui::SliderFloat("Speed", &Settings::Misc::ZeusRange::Speed, 0.0, 5, "%0.1f");
-				ImGui::SliderFloat("Thickness", &Settings::Misc::ZeusRange::Thickness, 0.5, 3, "%0.25f");
 
 				if (ImGui::Button("Unload"))
 					Settings::System::Unload = true;

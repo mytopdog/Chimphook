@@ -98,7 +98,8 @@ namespace Settings
 		{
 			extern bool Enabled;
 			extern float Speed;
-			extern float Thickness;
+			extern int Thickness;
+			extern int Step;
 		}
 
 		namespace SmokeHelper

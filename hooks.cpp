@@ -52,6 +52,7 @@ EventListener* events = nullptr;
 
 bool CreateMove::sendPacket = true;
 QAngle CreateMove::lastTickViewAngles = QAngle(0, 0, 0);
+int CreateMove::lastbuttons = 0;
 int CreateMove::tick = 0;
 
 QAngle CreateMove::RealAngles = QAngle(0, 0, 0);
@@ -337,10 +338,8 @@ namespace Hooks
 		if (Menu::Get().IsVisible())
 			cmd->buttons &= ~IN_ATTACK;
 
-		if (!ChickenTamer(cmd)) {
+		if (!ChickenTamer(cmd))
 			DoAim(cmd, bSendPacket);
-		}
-
 
 		SmokeHelper::Get().OnCreateMove(cmd);
 
@@ -351,9 +350,9 @@ namespace Hooks
 			cmd->viewangles.roll = 0.f;
 		}
 
-		if (CreateMove::sendPacket)
-		{
-			if (g_LocalPlayer->IsAlive() && g_EngineClient->IsInGame()) CreateMove::lastTickViewAngles = cmd->viewangles;
+		if (bSendPacket) {
+			CreateMove::lastTickViewAngles = cmd->viewangles;
+			CreateMove::lastbuttons = cmd->buttons;
 		}
 
 		for (int i = 0; i < g_EntityList->GetMaxEntities(); i++)

@@ -13,6 +13,7 @@ namespace CreateMove
 {
 	extern bool sendPacket;
 	extern QAngle lastTickViewAngles;
+	extern int lastbuttons;
 	extern int tick;
 
 	extern QAngle FakeAngles;

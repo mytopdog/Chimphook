@@ -4,8 +4,10 @@
 bool Settings::ESP::GrenadePrediction = false;
 bool Settings::Misc::WallbangCrosshair = false;
 
-float Settings::Misc::ZeusRange::Speed = 0.0;
-float Settings::Misc::ZeusRange::Thickness = 1.0;
+bool Settings::Misc::ZeusRange::Enabled = false;
+float Settings::Misc::ZeusRange::Speed = 0.f;
+int Settings::Misc::ZeusRange::Thickness = 1;
+int Settings::Misc::ZeusRange::Step = 1;
 
 bool Settings::ESP::Players::Enabled = false;
 
@@ -172,7 +174,6 @@ bool Settings::Misc::SmokeHelper::Enabled = false;
 int Settings::Misc::SmokeHelper::TypeHelp = 0;
 
 bool Settings::Misc::DebugMode = false;
-bool Settings::Misc::ZeusRange::Enabled = false;
 
 RECT GetBBox(C_BaseEntity* ent)
 {
@@ -2563,24 +2564,41 @@ void ColorConvertHSVtoRGB(float h, float s, float v, float& out_r, float& out_g,
 
 void ZeusRange()
 {
-	Vector prev_scr_pos, scr_pos;
-	C_BaseCombatWeapon* local_weapon = g_LocalPlayer->m_hActiveWeapon();
-	if (!local_weapon || local_weapon->m_iItemDefinitionIndex() != ItemDefinitionIndex::WEAPON_TASER)
+	if (!Settings::Misc::ZeusRange::Enabled)
 		return;
 
-	float step = M_PI * 2.0 / 200; 
-	float rad = 178.f; // change for knife range --
-	Vector origin = g_LocalPlayer->GetEyePos();
-	static float hue_offset = 0;
-	for (float rotation = 0; rotation < (M_PI * 2.0); rotation += step)
+	Vector prev_scr_pos, scr_pos;
+	C_BaseCombatWeapon* local_weapon = g_LocalPlayer->SelfOrObs()->m_hActiveWeapon();
+
+	if (!local_weapon || local_weapon->GetCSWeaponData()->iWeaponType != WEAPONTYPE_KNIFE || !g_Input->m_fCameraInThirdPerson)
+		return;
+
+	float step = Settings::Misc::ZeusRange::Step;
+	float dist = 0.f;
+
+	if (local_weapon->IsKnife())
 	{
-		Vector pos(rad * cos(rotation) + origin.x, rad * sin(rotation) + origin.y, origin.z);
+		dist = 64.f;
+	}
+	else if (local_weapon->m_iItemDefinitionIndex() == WEAPON_TASER)
+	{
+		dist = 180.f;
+	}
+	else {
+		return;
+	}
+
+	Vector origin = g_LocalPlayer->SelfOrObs()->GetEyePos();
+	static float hue_offset = 0;
+	for (float rotation = 0; rotation < 360.f + step; rotation += step)
+	{
+		Vector pos(dist * cos(DEG2RAD(rotation)) + origin.x, dist * sin(DEG2RAD(rotation)) + origin.y, origin.z);
 
 		Ray_t ray;
 		trace_t trace;
 		CTraceFilter filter;
 
-		filter.pSkip = g_LocalPlayer;
+		filter.pSkip = g_LocalPlayer->SelfOrObs();
 		ray.Init(origin, pos);
 
 		g_EngineTrace->TraceRay(ray, MASK_SHOT_BRUSHONLY, &filter, &trace);
@@ -2589,7 +2607,7 @@ void ZeusRange()
 		{
 			if (prev_scr_pos.IsValid())
 			{
-				int hue = RAD2DEG(rotation) + hue_offset;
+				int hue = rotation + hue_offset;
 
 				float r, g, b;
 				ColorConvertHSVtoRGB(hue / 360.f, 1, 1, r, g, b);
