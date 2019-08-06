@@ -1621,7 +1621,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 				ImGui::Checkbox("Debug Mode", &Settings::Misc::DebugMode);
 				ImGui::Checkbox("Zeus Range", &Settings::Misc::ZeusRange::Enabled);
 				ImGui::SliderFloat("Speed", &Settings::Misc::ZeusRange::Speed, 0.0, 5, "%0.1f");
-				ImGui::SliderFloat("Thickness", &Settings::Misc::ZeusRange::Thickness, 0.5, 3, "%0.25f");
+				ImGui::SliderFloat("Thickness", &Settings::Misc::ZeusRange::Thickness, 0.5, 3, "%0.5f");
+
+				ImGui::Checkbox("Moon Walk", &Settings::Misc::MoonWalk);
 
 				if (ImGui::Button("Unload"))
 					Settings::System::Unload = true;

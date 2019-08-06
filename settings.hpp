@@ -72,6 +72,7 @@ namespace Settings
 		extern bool AutoPistol;
 		extern bool AutoReload;
 		extern bool DeagleSpinner;
+		extern bool MoonWalk;
 
 		extern bool RemoveFootsteps;
 		extern bool RankReveal;

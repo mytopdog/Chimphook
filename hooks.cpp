@@ -298,6 +298,7 @@ namespace Hooks
 			return;
 
 		AutoRevolver(cmd);
+		MoonWalk(cmd);
 		AutoDefuse(cmd);
 		Triggerbot(cmd);
 		BunnyHop(cmd);
