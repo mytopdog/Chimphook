@@ -373,10 +373,6 @@ bool ChickenTamer(CUserCmd* cmd)
 
 					return true;
 				}
-				else
-				{
-					cmd->buttons &= ~IN_USE;
-				}
 			}
 		}
 	}
@@ -908,6 +904,9 @@ void AutoRevolver(CUserCmd* cmd)
 		return;
 
 	if (!g_LocalPlayer || !g_LocalPlayer->m_hActiveWeapon())
+		return;
+
+	if (cmd->buttons & IN_ATTACK || cmd->buttons & IN_RELOAD)
 		return;
 
 	if (g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER2 || g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)
