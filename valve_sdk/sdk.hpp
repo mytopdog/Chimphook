@@ -135,7 +135,7 @@ inline ISteamUtils*          g_SteamUtils;
 inline IViewRenderBeams*     g_RenderBeams;
 inline CCenterPrint*         g_CenterPrint;
 inline IMatchFramework*      g_MatchFramework;
-inline C_CSPlayerResource**  g_PlayerResource;
+inline C_CSPlayerResource*  g_PlayerResource;
 inline IVEngineClient*       g_EngineClient;
 inline CHudChat*             g_HUDChat;
 inline IGameUI*              g_GameUI;

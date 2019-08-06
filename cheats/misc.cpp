@@ -3,8 +3,8 @@
 #include "misc.hpp"
 #include <random>
 
-bool Settings::Misc::AutoDefuse::Enabled = false;
 bool Settings::Misc::RankReveal = true;
+bool Settings::Misc::AutoRevolver = false;
 bool Settings::Misc::InfiniteDuck = false;
 bool Settings::Misc::AutoPistol = false;
 bool Settings::Misc::AutoReload = false;
@@ -36,6 +36,7 @@ bool Settings::Misc::SpectatorList = false;
 bool Settings::Misc::BulletImpacts = false;
 bool Settings::Misc::NoDecals = false;
 
+bool Settings::Misc::AutoDefuse::Enabled = false;
 bool Settings::Misc::FakeZoom::Enabled = false;
 
 bool Settings::Misc::Brightness::Enabled = false;
@@ -899,6 +900,35 @@ void WorldColour()
 		}
 
 	}
+}
+
+void AutoRevolver(CUserCmd* cmd)
+{
+	if (!Settings::Misc::AutoRevolver)
+		return;
+
+	if (!g_LocalPlayer || !g_LocalPlayer->m_hActiveWeapon())
+		return;
+
+	if (g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER2 || g_LocalPlayer->m_hActiveWeapon()->m_iItemDefinitionIndex() == WEAPON_REVOLVER)
+	{
+		static int RevolverDelay = 0;
+		RevolverDelay++;
+
+		Utils::ConsolePrint("Auto Revolver");
+
+		if (RevolverDelay <= 15)
+			cmd->buttons |= IN_ATTACK;
+		else {
+			RevolverDelay = 0;
+
+			float flPostponeFireReadyTime = g_LocalPlayer->m_hActiveWeapon()->m_flPostponeFireReadyTime();
+
+			if (flPostponeFireReadyTime > 0 && flPostponeFireReadyTime < g_GlobalVars->curtime)
+				cmd->buttons &= ~IN_ATTACK;
+		}
+	}
+
 }
 
 static ITexture* buffer;

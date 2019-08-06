@@ -8,8 +8,8 @@
 #include "../render.hpp"
 #include <Psapi.h>
 
+void AutoRevolver(CUserCmd* cmd);
 void AutoDefuse(CUserCmd* cmd);
-void Triggerbot(CUserCmd* cmd);
 void InfiniteDuck(CUserCmd* cmd);
 void AutoPistol(CUserCmd* cmd);
 void AutoReload(CUserCmd* cmd);

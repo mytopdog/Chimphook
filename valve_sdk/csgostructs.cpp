@@ -62,6 +62,7 @@ bool C_BaseEntity::IsChicken()
 {
 	return GetClientClass()->m_ClassID == ClassId_CChicken;
 }
+
 CCSWeaponInfo* C_BaseCombatWeapon::GetCSWeaponData()
 {
 	return CallVFunction<CCSWeaponInfo*(__thiscall*)(void*)>(this, 454)(this);
@@ -118,6 +119,11 @@ bool C_BaseCombatWeapon::IsGun()
 	}
 }
 
+bool C_BaseCombatWeapon::IsTaser()
+{
+	return m_Item().m_iItemDefinitionIndex() == WEAPON_TASER;
+}
+
 bool C_BaseCombatWeapon::IsKnife()
 {
 	if (this->m_Item().m_iItemDefinitionIndex() == WEAPON_TASER) return false;
@@ -142,6 +148,11 @@ bool C_BaseCombatWeapon::IsHeavy()
 	return GetCSWeaponData()->iWeaponType == WEAPONTYPE_MACHINEGUN;
 }
 
+bool C_BaseCombatWeapon::IsDeagleR8()
+{
+	return m_Item().m_iItemDefinitionIndex() == WEAPON_DEAGLE || m_Item().m_iItemDefinitionIndex() == WEAPON_REVOLVER2 || m_Item().m_iItemDefinitionIndex() == WEAPON_REVOLVER;
+}
+ 
 bool C_BaseCombatWeapon::IsRifle()
 {
 	return GetCSWeaponData()->iWeaponType == WEAPONTYPE_RIFLE;

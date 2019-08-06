@@ -1268,51 +1268,57 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 					ImGui::BeginGroup();
 					{
 						bool vssel = weaponsselected == 0;
-						if (ImGui::ToggleButton("Scout##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 8, 20)))
+						if (ImGui::ToggleButton("Scout##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 9, 20)))
 						{
 							weaponsselected = 0;
 						}
 						vssel = weaponsselected == 1;
 						ImGui::SameLine(0, 0);
-						if (ImGui::ToggleButton("Awp##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 8, 20)))
+						if (ImGui::ToggleButton("Awp##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 9, 20)))
 						{
 							weaponsselected = 1;
 						}
 						vssel = weaponsselected == 2;
 						ImGui::SameLine(0, 0);
-						if (ImGui::ToggleButton("Auto##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 8, 20)))
+						if (ImGui::ToggleButton("Auto##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 9, 20)))
 						{
 							weaponsselected = 2;
 						}
 						vssel = weaponsselected == 3;
 						ImGui::SameLine(0, 0);
-						if (ImGui::ToggleButton("Rifle##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 8, 20)))
+						if (ImGui::ToggleButton("Deagle/R8##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 9, 20)))
 						{
 							weaponsselected = 3;
 						}
 						vssel = weaponsselected == 4;
 						ImGui::SameLine(0, 0);
-						if (ImGui::ToggleButton("Pistol##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 8, 20)))
+						if (ImGui::ToggleButton("Rifle##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 9, 20)))
 						{
 							weaponsselected = 4;
 						}
 						vssel = weaponsselected == 5;
 						ImGui::SameLine(0, 0);
-						if (ImGui::ToggleButton("Shotgun##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 8, 20)))
+						if (ImGui::ToggleButton("Pistol##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 9, 20)))
 						{
 							weaponsselected = 5;
 						}
 						vssel = weaponsselected == 6;
 						ImGui::SameLine(0, 0);
-						if (ImGui::ToggleButton("SMG##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 8, 20)))
+						if (ImGui::ToggleButton("Shotgun##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 9, 20)))
 						{
 							weaponsselected = 6;
 						}
 						vssel = weaponsselected == 7;
 						ImGui::SameLine(0, 0);
-						if (ImGui::ToggleButton("Other##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 8, 20)))
+						if (ImGui::ToggleButton("SMG##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 9, 20)))
 						{
 							weaponsselected = 7;
+						}
+						vssel = weaponsselected == 8;
+						ImGui::SameLine(0, 0);
+						if (ImGui::ToggleButton("Other##WeaponsAimbot", &vssel, ImVec2(ImGui::GetWindowSize().x / 9, 20)))
+						{
+							weaponsselected = 8;
 						}
 					}
 					ImGui::EndGroup();
@@ -1347,6 +1353,15 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::Combo("Hitbox", &Settings::Aim::TestAimbot::Auto::Prioritised, "Head\0Neck\0Pelvis\0Spine\0Legs\0Arms");
 						break;
 					case 3:
+						ImGui::Checkbox("Auto Revolver", &Settings::Misc::AutoRevolver);
+						ImGui::Checkbox("Auto Stop", &Settings::Aim::TestAimbot::DeagleR8::AutoStop);
+						ImGui::Checkbox("Auto Crouch", &Settings::Aim::TestAimbot::DeagleR8::AutoCrouch);
+						ImGui::SliderInt("Min Damage", &Settings::Aim::TestAimbot::DeagleR8::MinDamage, 0, 100);
+						ImGui::SliderFloat("Hit Chance", &Settings::Aim::TestAimbot::DeagleR8::HitChance, 0, 99.99, "%.2f");
+						ImGui::Checkbox("Prioritise Hitbox", &Settings::Aim::TestAimbot::DeagleR8::Prioritise);
+						ImGui::Combo("Hitbox", &Settings::Aim::TestAimbot::DeagleR8::Prioritised, "Head\0Neck\0Pelvis\0Spine\0Legs\0Arms");
+						break;
+					case 4:
 						ImGui::Checkbox("Auto Stop", &Settings::Aim::TestAimbot::Rifle::AutoStop);
 						ImGui::Checkbox("Auto Crouch", &Settings::Aim::TestAimbot::Rifle::AutoCrouch);
 						ImGui::SliderInt("Min Damage", &Settings::Aim::TestAimbot::Rifle::MinDamage, 0, 100);
@@ -1354,7 +1369,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::Checkbox("Prioritise Hitbox", &Settings::Aim::TestAimbot::Rifle::Prioritise);
 						ImGui::Combo("Hitbox", &Settings::Aim::TestAimbot::Rifle::Prioritised, "Head\0Neck\0Pelvis\0Spine\0Legs\0Arms");
 						break;
-					case 4:
+					case 5:
 						ImGui::Checkbox("Auto Stop", &Settings::Aim::TestAimbot::Pistol::AutoStop);
 						ImGui::Checkbox("Auto Crouch", &Settings::Aim::TestAimbot::Pistol::AutoCrouch);
 						ImGui::SliderInt("Min Damage", &Settings::Aim::TestAimbot::Pistol::MinDamage, 0, 100);
@@ -1362,7 +1377,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::Checkbox("Prioritise Hitbox", &Settings::Aim::TestAimbot::Pistol::Prioritise);
 						ImGui::Combo("Hitbox", &Settings::Aim::TestAimbot::Pistol::Prioritised, "Head\0Neck\0Pelvis\0Spine\0Legs\0Arms");
 						break;
-					case 5:
+					case 6:
 						ImGui::Checkbox("Auto Stop", &Settings::Aim::TestAimbot::Shotgun::AutoStop);
 						ImGui::Checkbox("Auto Crouch", &Settings::Aim::TestAimbot::Shotgun::AutoCrouch);
 						ImGui::SliderInt("Min Damage", &Settings::Aim::TestAimbot::Shotgun::MinDamage, 0, 100);
@@ -1370,7 +1385,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::Checkbox("Prioritise Hitbox", &Settings::Aim::TestAimbot::Shotgun::Prioritise);
 						ImGui::Combo("Hitbox", &Settings::Aim::TestAimbot::Shotgun::Prioritised, "Head\0Neck\0Pelvis\0Spine\0Legs\0Arms");
 						break;
-					case 6:
+					case 7:
 						ImGui::Checkbox("Auto Stop", &Settings::Aim::TestAimbot::SMG::AutoStop);
 						ImGui::Checkbox("Auto Crouch", &Settings::Aim::TestAimbot::SMG::AutoCrouch);
 						ImGui::SliderInt("Min Damage", &Settings::Aim::TestAimbot::SMG::MinDamage, 0, 100);
@@ -1378,7 +1393,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::Checkbox("Prioritise Hitbox", &Settings::Aim::TestAimbot::SMG::Prioritise);
 						ImGui::Combo("Hitbox", &Settings::Aim::TestAimbot::SMG::Prioritised, "Head\0Neck\0Pelvis\0Spine\0Legs\0Arms");
 						break;
-					case 7:
+					case 8:
 						ImGui::Checkbox("Auto Stop", &Settings::Aim::TestAimbot::Other::AutoStop);
 						ImGui::Checkbox("Auto Crouch", &Settings::Aim::TestAimbot::Other::AutoCrouch);
 						ImGui::SliderInt("Min Damage", &Settings::Aim::TestAimbot::Other::MinDamage, 0, 100);
@@ -1779,7 +1794,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 											{
 												ImGui::Columns(2, nullptr, false);
 												player_info_t info = player->GetPlayerInfo();
-												const char* clantag = (*g_PlayerResource)->GetClan(player->EntIndex());
+												const char* clantag = g_PlayerResource->GetClan(player->EntIndex());
 
 												if (ImGui::Button("Steal Name"))
 												{
@@ -1793,7 +1808,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 
 												if (ImGui::Button("Steal Clan"))
 												{
-													const char* clantag = (const char*)((*g_PlayerResource)->GetClan(player->EntIndex()));
+													const char* clantag = (const char*)(g_PlayerResource->GetClan(player->EntIndex()));
 
 													Utils::SetClantag(clantag);
 													ImGui::CloseCurrentPopup();
@@ -1879,10 +1894,10 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							if (player)
 							{
 								player_info_t info = player->GetPlayerInfo();
-								const char* clantag = (*g_PlayerResource)->GetClan(player->EntIndex());
-								int* rank = (*g_PlayerResource)->GetCompetitiveRanking(player->EntIndex());
-								int* wins = (*g_PlayerResource)->GetCompetitiveWins(player->EntIndex());
-								int ping = (int)((*g_PlayerResource)->GetPing(player->EntIndex()));
+								const char* clantag = g_PlayerResource->GetClan(player->EntIndex());
+								int* rank = g_PlayerResource->GetCompetitiveRanking(player->EntIndex());
+								int* wins = g_PlayerResource->GetCompetitiveWins(player->EntIndex());
+								int ping = (int)(g_PlayerResource->GetPing(player->EntIndex()));
 
 								std::string temp = "";
 								temp += "EntID: ";
@@ -1941,7 +1956,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 
 								if (ImGui::Button("Steal Clan"))
 								{
-									const char* clantag = (const char*)((*g_PlayerResource)->GetClan(player->EntIndex()));
+									const char* clantag = (const char*)(g_PlayerResource->GetClan(player->EntIndex()));
 
 									Utils::SetClantag(clantag);
 								}

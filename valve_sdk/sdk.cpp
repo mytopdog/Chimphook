@@ -81,9 +81,6 @@ namespace Interfaces
 		g_CenterPrint = *(CCenterPrint**)(Utils::PatternScan(client, "A1 ? ? ? ? B9 ? ? ? ? FF 50 1C E8") + 6);
 		g_RenderBeams = *(IViewRenderBeams**)(Utils::PatternScan(client, "A1 ? ? ? ? FF 10 A1 ? ? ? ? B9") + 1);
 
-		g_PlayerResource = (C_CSPlayerResource**)((uint32_t)client + 0x313552C);
-
-
 		auto get_steam_user = ((HSteamUser(*)())GetProcAddress(GetModuleHandle(L"steam_api.dll"), "GetHSteamUser"));
 		auto get_steam_pipe = ((HSteamPipe(*)())GetProcAddress(GetModuleHandle(L"steam_api.dll"), "GetHSteamPipe"));
 
