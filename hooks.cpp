@@ -520,7 +520,7 @@ namespace Hooks
 	void __fastcall hkFrameStageNotify(void* _this, int edx, ClientFrameStage_t stage)
 	{
 		static auto ofunc = hlclient_hook.get_original<decltype(&hkFrameStageNotify)>(index::FrameStageNotify);
-		
+
 		QAngle vecAimPunch;
 		QAngle vecViewPunch;
 

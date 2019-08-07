@@ -1,23 +1,41 @@
 ﻿#include "backtracking.hpp"
 #include "../helpers/math.hpp"
 
+convars cvars;
+
 bool Settings::Backtrack::Enabled = false;
 int Settings::Backtrack::ms = 200;
 
 float Backtrack::GetLerpTime()
 {
-	const float ratio = std::clamp(interp_ratio->GetFloat(), min_interp_ratio->GetFloat(), max_interp_ratio->GetFloat());
-	return std::max(interp->GetFloat(), max_update_rate ? max_update_rate->GetFloat() : update_rate->GetFloat());
+	cvars.interp_ratio = g_CVar->FindVar("cl_interp_ratio");
+	cvars.min_interp_ratio = g_CVar->FindVar("sv_client_min_interp_ratio");
+	cvars.max_interp_ratio = g_CVar->FindVar("sv_client_max_interp_ratio");
+	cvars.interp = g_CVar->FindVar("cl_interp");
+	cvars.max_update_rate = g_CVar->FindVar("sv_maxupdaterate");
+	cvars.update_rate = g_CVar->FindVar("cl_updaterate");
+	cvars.max_unlag = g_CVar->FindVar("sv_maxunlag");
+
+	const float ratio = std::clamp(cvars.interp_ratio->GetFloat(), cvars.min_interp_ratio->GetFloat(), cvars.max_interp_ratio->GetFloat());
+	return std::max(cvars.interp->GetFloat(), cvars.max_update_rate ? cvars.max_update_rate->GetFloat() : cvars.update_rate->GetFloat());
 }
 
 bool Backtrack::IsValidTick(float simtime)
 {
+	cvars.interp_ratio = g_CVar->FindVar("cl_interp_ratio");
+	cvars.min_interp_ratio = g_CVar->FindVar("sv_client_min_interp_ratio");
+	cvars.max_interp_ratio = g_CVar->FindVar("sv_client_max_interp_ratio");
+	cvars.interp = g_CVar->FindVar("cl_interp");
+	cvars.max_update_rate = g_CVar->FindVar("sv_maxupdaterate");
+	cvars.update_rate = g_CVar->FindVar("cl_updaterate");
+	cvars.max_unlag = g_CVar->FindVar("sv_maxunlag");
+
 	INetChannelInfo* network = g_EngineClient->GetNetChannelInfo();
 
 	if (!network)
 		return false;
 
-	auto delta = std::clamp(network->GetLatency(0) + GetLerpTime(), 0.f, max_unlag->GetFloat()) - (g_GlobalVars->curtime - simtime);
+	auto delta = std::clamp(network->GetLatency(0) + GetLerpTime(), 0.f, cvars.max_unlag->GetFloat()) - (g_GlobalVars->curtime - simtime);
 }
 
 void Backtrack::UpdateEntities()
@@ -31,10 +49,11 @@ void Backtrack::UpdateEntities()
 
 	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
 	{
-		C_BasePlayer* pl= C_BasePlayer::GetPlayerByIndex(i);
+		C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-		if (!pl || pl == g_LocalPlayer || pl->IsDormant() || !pl->IsAlive() || pl->m_iTeamNum() == pl->m_iTeamNum()) {
+		if (!pl || pl == g_LocalPlayer || !pl->IsAlive() || pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum()) {
 			records[i].clear();
+
 			continue;
 		}
 
@@ -48,7 +67,7 @@ void Backtrack::UpdateEntities()
 			*(uintptr_t*)(*(uintptr_t*)var_map + j * 0xC) = 0;
 
 		backtrack_record_t record;
-		record.headpos = g_LocalPlayer->GetHitboxPos(HITBOX_HEAD);
+		record.headpos = pl->GetHitboxPos(HITBOX_HEAD);
 		record.simtime = pl->m_flSimulationTime();
 
 		pl->SetupBones(record.matrix, 128, 0x7FF00, g_GlobalVars->curtime);

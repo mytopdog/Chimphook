@@ -303,8 +303,6 @@ void Visuals::Player::Begin(C_BasePlayer* pl)
 
 	if (ctx.is_enemy && Settings::Backtrack::Enabled)
 	{
-		Utils::ConsolePrint("Visual Backtracky nigga");
-
 		for (int i = 0; i < Backtrack::Get().records[pl->EntIndex()].size(); i++)
 		{
 			backtrack_record_t record = Backtrack::Get().records[pl->EntIndex()][i];
@@ -313,7 +311,7 @@ void Visuals::Player::Begin(C_BasePlayer* pl)
 			if (!Math::WorldToScreen(record.headpos, headpos))
 				return;
 
-			Render::Get().RenderCircleFilled(headpos.x, headpos.y, 16, 48, Color(255, 255, 255, 255));
+			Render::Get().RenderCircleFilled(headpos.x, headpos.y, 6, 48, Color(255, 255, 255, 255));
 		}
 	}
 
