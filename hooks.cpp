@@ -546,6 +546,11 @@ namespace Hooks
 			}
 		}
 
+		if (g_EngineClient->IsInGame() && stage == FRAME_NET_UPDATE_END)
+		{
+			Backtrack::Get().UpdateEntities();
+		}
+
 		static int lastseq = -1;
 
 		if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)

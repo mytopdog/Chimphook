@@ -1254,7 +1254,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						}
 						ImGui::EndGroupBox();
 						ImGui::Text("Backtrack");
-						ImGui::BeginGroupBox("Backtrackstuff", ImVec2(0, -ImGui::GetContentRegionAvail().Y));
+						ImGui::BeginGroupBox("Backtrackstuff", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 						{
 							ImGui::Checkbox("Enabled##Backtrack", &Settings::Backtrack::Enabled);
 							ImGui::SliderInt("Ms##Backtrack", &Settings::Backtrack::ms, 0, 200);

@@ -600,6 +600,12 @@ namespace Settings
 		}
 	}
 
+	namespace Backtrack
+	{
+		extern bool Enabled;
+		extern int ms;
+	}
+
 	namespace SkinChanger
 	{
 		extern bool Enabled;

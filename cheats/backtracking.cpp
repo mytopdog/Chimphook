@@ -1,6 +1,9 @@
 ﻿#include "backtracking.hpp"
 #include "../helpers/math.hpp"
 
+bool Settings::Backtrack::Enabled = false;
+int Settings::Backtrack::ms = 200;
+
 float Backtrack::GetLerpTime()
 {
 	const float ratio = std::clamp(interp_ratio->GetFloat(), min_interp_ratio->GetFloat(), max_interp_ratio->GetFloat());

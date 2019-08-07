@@ -1,15 +1,16 @@
 #pragma once
 
 #include "../valve_sdk/csgostructs.hpp"
+#include "../settings.hpp"
 #include <deque>
 
-ConVar* interp_ratio;
-ConVar* min_interp_ratio;
-ConVar* max_interp_ratio;
-ConVar* interp;
-ConVar* max_update_rate;
-ConVar* update_rate;
-ConVar* max_unlag;
+static ConVar* interp_ratio;
+static ConVar* min_interp_ratio;
+static ConVar* max_interp_ratio;
+static ConVar* interp;
+static ConVar* max_update_rate;
+static ConVar* update_rate;
+static ConVar* max_unlag;
 
 #define TICK_INTERVAL			( g_GlobalVars->interval_per_tick )
 #define TIME_TO_TICKS( dt )		( floorf(( 0.5f + (float)(dt) / TICK_INTERVAL ) ) )
