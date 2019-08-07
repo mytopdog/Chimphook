@@ -52,7 +52,7 @@ void Backtrack::UpdateEntities()
 
 		records[i].push_front(record);
 
-		while (records[i].size() > 3 && records[i].size() > (size_t)TIME_TO_TICKS((float)Settings::Backtrack::MS / 1000.f))
+		while (records[i].size() > 3 && records[i].size() > (size_t)TIME_TO_TICKS((float)Settings::Backtrack::ms / 1000.f))
 			records[i].pop_back();
 
 		if (auto invalid = std::find_if(std::cbegin(records[i]), std::cend(records[i]), [](const backtrack_record_t & rec) { return !Backtrack::Get().IsValidTick(rec.simtime); }); invalid != std::cend(records[i]))
