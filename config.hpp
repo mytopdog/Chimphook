@@ -105,6 +105,7 @@ public:
 
 	OPTION(bool, miscFUCK, &Settings::Misc::FUCK);
 
+
 	OPTION(bool, miscautodefuseenabled, &Settings::Misc::AutoDefuse::Enabled);
 
 	OPTION(bool, miscsoundshitsoundenabled, &Settings::Misc::Sounds::HitSound::Enabled);
@@ -269,6 +270,7 @@ public:
 	OPTION(bool, testaimbotautoshoot, &Settings::Aim::TestAimbot::AutoShoot);
 	OPTION(bool, testaimbotsilent, &Settings::Aim::TestAimbot::Silent);
 	OPTION(int, testaimbottargetpriority, &Settings::Aim::TestAimbot::TargetPriority);
+	OPTION(bool, triggerbotenable, &Settings::Misc::Triggerbot::Enabled);
 
 	OPTION(bool, testaimbotscoutautostop, &Settings::Aim::TestAimbot::Scout::AutoStop);
 	OPTION(bool, testaimbotscoutautocrouch, &Settings::Aim::TestAimbot::Scout::AutoCrouch);

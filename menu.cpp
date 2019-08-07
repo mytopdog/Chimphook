@@ -1253,6 +1253,13 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::SliderInt("Delay##Triggerbot", &Settings::Misc::Triggerbot::Delay, 0, 64);
 						}
 						ImGui::EndGroupBox();
+						ImGui::Text("Backtrack");
+						ImGui::BeginGroupBox("Backtrackstuff", ImVec2(0, -ImGui::GetContentRegionAvail().Y));
+						{
+							ImGui::Checkbox("Enabled##Backtrack", &Settings::Backtrack::Enabled);
+							ImGui::SliderInt("Ms##Backtrack", &Settings::Backtrack::ms, 0, 200);
+						}
+						ImGui::EndGroupBox();
 					}
 					ImGui::EndGroupBox();
 					ImGui::Text("Test Aimbot");
