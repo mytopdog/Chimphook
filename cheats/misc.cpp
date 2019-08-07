@@ -658,9 +658,7 @@ void FakeDuck(CUserCmd* cmd, bool& bSendPacket)
 	}
 }
 
-#define TICK_INTERVAL			( g_GlobalVars->interval_per_tick )
-#define TIME_TO_TICKS( dt )		( floorf(( 0.5f + (float)(dt) / TICK_INTERVAL ) ) )
-#define TICKS_TO_TIME( t )		( TICK_INTERVAL *( t ) )
+
 
 void AutoDefuse(CUserCmd* cmd)
 {

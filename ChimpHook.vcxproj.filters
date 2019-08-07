@@ -411,6 +411,9 @@
     <ClInclude Include="cheats\grenadedata.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cheats\backtracking.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="valve_sdk\csgostructs.cpp">
@@ -522,6 +525,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="helpers\skinchangerparser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\backtracking.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

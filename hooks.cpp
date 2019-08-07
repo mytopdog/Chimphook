@@ -16,7 +16,7 @@
 #include "cheats/misc.hpp"
 #include "cheats/aim.hpp"
 #include "cheats/chattranslator.h"
-
+#include "cheats/backtracking.hpp"
 
 #include "helpers/skinchangerparser.hpp"
 #include "cheats/chamsPreview/test.cpp"
@@ -339,8 +339,10 @@ namespace Hooks
 		if (Menu::Get().IsVisible())
 			cmd->buttons &= ~IN_ATTACK;
 
-		if (!ChickenTamer(cmd))
+		if (!ChickenTamer(cmd)) {
 			DoAim(cmd, bSendPacket);
+			Backtrack::Get().Run(cmd);
+		}
 
 		SmokeHelper::Get().OnCreateMove(cmd);
 

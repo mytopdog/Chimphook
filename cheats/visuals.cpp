@@ -1,6 +1,8 @@
 #include "visuals.hpp"
+#include "backtracking.hpp"
 #include "autowall.hpp"
 #include "../helpers/skinchangerparser.hpp"
+
 bool Settings::ESP::GrenadePrediction = false;
 bool Settings::Misc::WallbangCrosshair = false;
 
@@ -298,6 +300,20 @@ void Visuals::Player::Begin(C_BasePlayer* pl)
 	ctx.distance = Math::VectorDistance(origin, g_LocalPlayer->m_vecOrigin());
 
 	ctx.font_size = 12.f;
+
+	if (ctx.is_enemy && Settings::Backtrack::Enabled)
+	{
+		for (int i = 0; i < Backtrack::Get().records[pl->EntIndex()].size(); i++)
+		{
+			backtrack_record_t record = Backtrack::Get().records[pl->EntIndex()][i];
+			Vector headpos;
+
+			if (!Math::WorldToScreen(record.headpos, headpos))
+				return;
+
+			Render::Get().RenderCircleFilled(headpos.x, headpos.y, 2, 48, Color(255, 255, 255, 255));
+		}
+	}
 
 	if (ctx.is_enemy && Settings::ESP::Players::Enemies::Snaplines)
 		RenderSnapline(Settings::ESP::Players::Enemies::Colours::Snaplines);

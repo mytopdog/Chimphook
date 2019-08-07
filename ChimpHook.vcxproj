@@ -170,6 +170,7 @@
     <ClInclude Include="cheats\aim.hpp" />
     <ClInclude Include="cheats\aimsett.h" />
     <ClInclude Include="cheats\autowall.hpp" />
+    <ClInclude Include="cheats\backtracking.hpp" />
     <ClInclude Include="cheats\chattranslator.h" />
     <ClInclude Include="cheats\grenadedata.hpp" />
     <ClInclude Include="cheats\hotkeys.hpp" />
@@ -297,6 +298,7 @@
   <ItemGroup>
     <ClCompile Include="cheats\aim.cpp" />
     <ClCompile Include="cheats\autowall.cpp" />
+    <ClCompile Include="cheats\backtracking.cpp" />
     <ClCompile Include="cheats\chamsPreview\test.cpp" />
     <ClCompile Include="cheats\chattranslator.cpp" />
     <ClCompile Include="cheats\hotkeys.cpp" />
