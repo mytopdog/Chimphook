@@ -1,4 +1,5 @@
 #include "movement.hpp"
+#include "backtracking.hpp"
 #include "../helpers/math.hpp"
 
 bool Settings::Misc::BunnyHop = false;
@@ -80,6 +81,36 @@ float distance(float x1, float y1, float x2, float y2)
 	return sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
 }
 
+bool GetClosestTickCenter(C_BasePlayer* pl, backtrack_record_t& pRecord)
+{
+	float dist = FLT_MAX;
+	backtrack_record_t closest;
+	bool found = false;
+
+	for (int i = 0; i < Backtrack::Get().records[pl->EntIndex()].size(); i++)
+	{
+		backtrack_record_t record = Backtrack::Get().records[pl->EntIndex()][i];
+
+		if (!Backtrack::Get().IsValidTick(record.simtime))
+			continue;
+
+		float distt = distance(g_LocalPlayer->m_vecOrigin().x, g_LocalPlayer->m_vecOrigin().y, record.origin.x, record.origin.y);
+
+		if (distt < dist) {
+			closest = record;
+			dist = distt;
+			found = true;
+		}
+	}
+
+	if (found)
+	{
+		pRecord = closest;
+	}
+
+	return found;
+}
+
 void AutoCowboy(CUserCmd* cmd)
 {
 	if (!Settings::Misc::AutoCowboy)
@@ -92,6 +123,20 @@ void AutoCowboy(CUserCmd* cmd)
 		return;
 
 	C_BaseEntity* GroundEntity = g_LocalPlayer->m_hGroundEntity();
+
+	/*C_BaseEntity* GroundEntity = nullptr;
+
+	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
+	{
+		C_BaseEntity* groundEntity = C_BaseEntity::GetEntityByIndex(i);
+
+		if (!groundEntity || !groundEntity->IsPlayer() || groundEntity->IsDormant() || groundEntity == g_LocalPlayer)
+			continue;
+
+		GroundEntity = groundEntity;
+		break;
+	}*/
+
 	Vector ownPos = g_LocalPlayer->m_vecOrigin();
 
 	if (GroundEntity)
@@ -99,8 +144,28 @@ void AutoCowboy(CUserCmd* cmd)
 		if (GroundEntity->IsPlayer())
 		{
 			C_BasePlayer* GroundPlayer = (C_BasePlayer*)(GroundEntity);
+			Vector entPos;
+
+			/*if (Settings::Backtrack::Enabled) {
+				backtrack_record_t record;
+
+				if (GetClosestTickCenter(GroundPlayer, record))
+				{
+					entPos = GroundPlayer->m_vecOrigin();
+
+					cmd->tick_count = record.simtime;
+				}
+				else
+				{
+					entPos = GroundPlayer->m_vecOrigin();
+				}
+			}
+			else
+			{*/
+				entPos = GroundPlayer->m_vecOrigin();
+			//}
+
 			float yaw = cmd->viewangles.yaw;
-			Vector entPos = GroundPlayer->m_vecOrigin();
 			Vector VecForward = ownPos - entPos;
 
 			Vector translatedVelocity = Vector(
@@ -222,6 +287,8 @@ void MoonWalk(CUserCmd* cmd)
 {
 	if (Settings::Misc::MoonWalk)
 	{
+		g_EngineClient->ExecuteClientCmd("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft");
+
 		if (cmd->buttons & IN_BACK)
 			cmd->forwardmove = 450;
 
@@ -233,9 +300,6 @@ void MoonWalk(CUserCmd* cmd)
 
 		if (cmd->buttons & IN_MOVERIGHT)
 			cmd->sidemove = -450;
-
-
-		g_EngineClient->ExecuteClientCmd("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft");
 	}
 	else
 	{

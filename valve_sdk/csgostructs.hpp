@@ -85,6 +85,9 @@ public:
 	NETVAR(int32_t, m_iItemIDHigh, "DT_BaseAttributableItem", "m_iItemIDHigh");
 	NETVAR(int32_t, m_iEntityQuality, "DT_BaseAttributableItem", "m_iEntityQuality");
 	NETVAR(str_32, m_iCustomName, "DT_BaseAttributableItem", "m_szCustomName");
+
+	CUtlVector<IRefCounted*>& m_CustomMaterials();
+	CUtlVector<IRefCounted*>& m_VisualsDataProcessors();
 };
 
 enum class Bone : int
@@ -233,7 +236,6 @@ public:
 		return *(C_EconItemView*)this;
 	}
 	void SetGloveModelIndex(int modelIndex);
-
 };
 
 class C_BaseWeaponWorldModel : public C_BaseEntity
@@ -278,10 +280,10 @@ public:
 	float GetInaccuracy();
 	float GetSpread();
 	void UpdateAccuracyPenalty();
-	CUtlVector<IRefCounted*>& m_CustomMaterials();
-	bool* m_bCustomMaterialInitialized();
 
 	bool IsAutomatic();
+	CUtlVector<IRefCounted*>& m_CustomMaterials();
+	bool* m_bCustomMaterialInitialized();
 };
 
 class C_WeaponCSBase : public C_BaseCombatWeapon {};
@@ -611,3 +613,35 @@ public:
 	float m_flUnknown3;
 	char pad10[528];
 }; //Size=0x344
+
+inline void clearRefCountedVector(CUtlVector<IRefCounted*>& vec)
+{
+	for (int i = 0; i < vec.m_Size; i++)
+	{
+		IRefCounted* elem = vec[i];
+
+		if (elem)
+		{
+			elem->unreference();
+			elem = nullptr;
+		}
+	}
+	vec.RemoveAll();
+};
+
+inline void forceItemUpdate(C_BaseCombatWeapon* item)
+{
+	C_EconItemView& view = item->m_Item();
+
+	*item->m_bCustomMaterialInitialized() = (item->m_nFallbackPaintKit() <= 0);
+
+ 	clearRefCountedVector(item->m_CustomMaterials());
+	clearRefCountedVector(view.m_CustomMaterials());
+
+//	CUtlVector<IRefCounted*>& vec = view.m_VisualsDataProcessors();
+
+//	clearRefCountedVector(vec);
+
+	item->PostDataUpdate(0);
+	item->OnDataChanged(0);
+}

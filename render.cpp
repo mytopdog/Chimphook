@@ -79,7 +79,7 @@ void Render::BeginScene()
 	if (g_EngineClient->IsInGame() && g_LocalPlayer)
 		Visuals::Get().AddToDrawList();
 
-	if (g_EngineClient->IsInGame() && g_LocalPlayer->IsAlive() && g_LocalPlayer->m_hActiveWeapon()->IsGrenade())
+	if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->IsAlive())
 		grenade_prediction::Get().Paint();
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->SelfOrObs()->IsAlive())

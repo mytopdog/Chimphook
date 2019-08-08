@@ -704,9 +704,6 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::BeginGroup();
 						{
 							ImGui::Columns(2, nullptr, false);
-							ImGui::Checkbox("World Colour", &Settings::Misc::WorldColour::Enabled); ImGui::NextColumn();
-							ImGuiEx::ColorEdit4("Colour##World", &Settings::Misc::WorldColour::Colour); ImGui::NextColumn();
-
 							ImGui::Checkbox("Camera FOV", &Settings::Misc::CameraFOV::Enabled); ImGui::NextColumn();
 							ImGui::SliderInt("CameraFOVInt", &Settings::Misc::CameraFOV::FOV, 0, 70); ImGui::NextColumn();
 
@@ -1201,7 +1198,8 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::Columns(2, nullptr, false); 
 							ImGui::Checkbox("Grenade Prediction", &Settings::ESP::GrenadePrediction::Enabled); ImGui::NextColumn();
 							ImGui::Checkbox("Only local", &Settings::ESP::GrenadePrediction::OnlyLocal); ImGui::NextColumn();
-							ImGui::Checkbox("Show Bullet Tracers", &Settings::Visuals::BulletShots::Enabled); ImGui::NextColumn();
+
+							ImGui::Checkbox("Bullet Tracers", &Settings::Visuals::BulletShots::Enabled); ImGui::NextColumn();
 							ImGuiEx::ColorEdit3("Colour", &Settings::Visuals::BulletShots::Colour); ImGui::NextColumn();
 							ImGui::Columns(1, nullptr, false);
 						}
@@ -1211,7 +1209,51 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						{
 							ImGui::Columns(2, nullptr, false);
 							ImGui::Checkbox("Smoke Assist", &Settings::Misc::SmokeHelper::Enabled); ImGui::NextColumn();
-							ImGui::Combo("Type", &Settings::Misc::SmokeHelper::TypeHelp, "Visuals\0Visuals + Assist\0Visuals + Aimbot\0Visuals + Smoke Bot");
+							ImGui::Combo("Type", &Settings::Misc::SmokeHelper::TypeHelp, "Visuals\0Visuals + Assist\0Visuals + Aimbot\0Visuals + Smoke Bot"); ImGui::NextColumn();
+
+							if (ImGui::Checkbox("Night Mode", &Settings::Visuals::Nightmode::Enabled)) {
+								if (g_EngineClient->IsInGame())
+								{
+									if (Settings::Visuals::Nightmode::Enabled)
+										Nightmode::Get().Execute();
+									else
+										Nightmode::Get().Clear();
+
+									if (Settings::Visuals::WorldColour::Enabled)
+										WorldColour::Execute();
+								}
+							}
+							ImGui::NextColumn();
+							if (ImGui::SliderFloat("Intensity", &Settings::Visuals::Nightmode::Intensity, 0.f, 1.f, "%.2f")) {
+								if (g_EngineClient->IsInGame() && Settings::Visuals::Nightmode::Enabled)
+								{
+									Nightmode::Get().Execute();
+								}
+							}
+							ImGui::NextColumn();
+							if (ImGui::Checkbox("World Colour", &Settings::Visuals::WorldColour::Enabled))
+							{
+								if (g_EngineClient->IsInGame())
+								{
+									if (Settings::Visuals::WorldColour::Enabled)
+									{
+										WorldColour::Execute();
+									}
+									else
+									{
+										WorldColour::Clear();
+									}
+								}
+							}
+							ImGui::NextColumn();
+							if (ImGuiEx::ColorEdit4("Colour##World", &Settings::Visuals::WorldColour::Colour))
+							{
+								if (g_EngineClient->IsInGame() && Settings::Visuals::Nightmode::Enabled)
+								{
+									WorldColour::Execute();
+								}
+							} 
+							ImGui::NextColumn();
 							ImGui::Columns(1, nullptr, false);
 						}
 						ImGui::EndGroup();

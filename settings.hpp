@@ -137,12 +137,6 @@ namespace Settings
 			extern int FOV;
 		}
 
-		namespace WorldColour
-		{
-			extern bool Enabled;
-			extern Color Colour;
-		}
-
 		namespace Sounds
 		{
 			namespace HitSound
@@ -313,6 +307,18 @@ namespace Settings
 		}
 
 		namespace BulletShots
+		{
+			extern bool Enabled;
+			extern Color Colour;
+		}
+
+		namespace Nightmode
+		{
+			extern bool Enabled;
+			extern float Intensity;
+		}
+
+		namespace WorldColour
 		{
 			extern bool Enabled;
 			extern Color Colour;

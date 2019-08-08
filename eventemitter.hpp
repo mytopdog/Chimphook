@@ -60,8 +60,18 @@ public:
 			}
 		}
 
-		if (strstr(ev->GetName(), "game_init") || strstr(ev->GetName(), "game_start") || strstr(ev->GetName(), "round_start") || strstr(ev->GetName(), "game_newmap"))
+		if (strstr(ev->GetName(), "game_init") || strstr(ev->GetName(), "game_start") || strstr(ev->GetName(), "round_start") || strstr(ev->GetName(), "game_newmap")) {
+			ConVar* skyname = g_CVar->FindVar("sv_skyname");
+			Nightmode::Get().currentSkyName = skyname->GetString();
+			
+			if (Settings::Visuals::Nightmode::Enabled)
+				Nightmode::Get().Execute();
+
+			if (Settings::Visuals::WorldColour::Enabled)
+				WorldColour::Execute();
+
 			selectedP = -1;
+		}
 	}
 
 	int GetEventDebugID() override

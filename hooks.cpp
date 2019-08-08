@@ -35,8 +35,8 @@ bool Settings::Misc::ViewmodelFOV::Enabled = false;
 int Settings::Misc::ViewmodelFOV::FOV = 68;
 bool Settings::Misc::CameraFOV::Enabled = false;
 int Settings::Misc::CameraFOV::FOV = 0;
-bool Settings::Misc::WorldColour::Enabled = false;
-Color Settings::Misc::WorldColour::Colour = Color(0, 0, 0, 255);
+bool Settings::Visuals::WorldColour::Enabled = false;
+Color Settings::Visuals::WorldColour::Colour = Color(0, 0, 0, 255);
 bool Settings::Misc::Removals::RecoilShake = false;
 bool Settings::Misc::Removals::Scope = false;
 bool Settings::Misc::Removals::ScopeBlur = false;
@@ -200,10 +200,10 @@ namespace Hooks
 		static ConVar* malr = g_CVar->FindVar("mat_ambient_light_r");
 		static ConVar* malg = g_CVar->FindVar("mat_ambient_light_g");
 		static ConVar* malb = g_CVar->FindVar("mat_ambient_light_b");
-		if (Settings::Misc::WorldColour::Enabled) {
-			malr->SetValue(Settings::Misc::WorldColour::Colour.r() / 255.f);
-			malg->SetValue(Settings::Misc::WorldColour::Colour.g() / 255.f);
-			malb->SetValue(Settings::Misc::WorldColour::Colour.b() / 255.f);
+		if (Settings::Visuals::WorldColour::Enabled) {
+			malr->SetValue(Settings::Visuals::WorldColour::Colour.r() / 255.f);
+			malg->SetValue(Settings::Visuals::WorldColour::Colour.g() / 255.f);
+			malb->SetValue(Settings::Visuals::WorldColour::Colour.b() / 255.f);
 		}
 		else
 		{
@@ -316,7 +316,6 @@ namespace Hooks
 		RemovePostProcessing();
 		AdjustBrightness();
 		RemoveShadows();
-		WorldColour();
 
 		NameStealer::OnCreateMove();
 		FreeLook::OnCreateMove(cmd);

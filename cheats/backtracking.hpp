@@ -40,7 +40,7 @@ class Backtrack : public Singleton<Backtrack>
 public:
 	int selectedpl;
 	int selectedr;
-	std::deque<backtrack_record_t> records[65];
+	std::deque<backtrack_record_t> records[700];
 
 	bool IsValidTick(float simtime);
 	void Run(CUserCmd* cmd);

@@ -30,7 +30,6 @@ void NoDecals();
 void RemovePostProcessing();
 void AdjustBrightness();
 void RemoveShadows();
-void WorldColour();
 
 void CameraFOV(CViewSetup* vsView);
 void ViewmodelFOV(CViewSetup* vsView);
@@ -78,6 +77,21 @@ namespace NameStealer
 {
 	void OnCreateMove();
 	void FireGameEvent(IGameEvent* ev);
+}
+
+class Nightmode : public Singleton<Nightmode>
+{
+public:
+	const char* currentSkyName;
+
+	void Clear();
+	void Execute();
+};
+
+namespace WorldColour
+{
+	void Clear();
+	void Execute();
 }
 
 void draw_test();

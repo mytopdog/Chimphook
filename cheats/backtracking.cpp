@@ -51,7 +51,7 @@ void Backtrack::UpdateEntities()
 	{
 		C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-		if (!pl || pl == g_LocalPlayer || !pl->IsAlive() || pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum()) {
+		if (!pl || pl == g_LocalPlayer || !pl->IsAlive()) {
 			records[i].clear();
 
 			continue;
@@ -98,7 +98,7 @@ void Backtrack::Run(CUserCmd* cmd)
 	if (!g_LocalPlayer)
 		return;
 
-	float best_fov = 360.f;
+	float best_fov = 255.f;
 	C_BasePlayer* best_target;
 	int best_target_index;
 	Vector best_head_position;
@@ -134,7 +134,7 @@ void Backtrack::Run(CUserCmd* cmd)
 		if (records[best_target_index].size() <= 3)
 			return;
 
-		best_fov = 360.f;
+		best_fov = 255.f;
 
 		for (size_t i = 0; i < records[best_target_index].size(); i++)
 		{

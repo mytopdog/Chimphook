@@ -83,8 +83,8 @@ public:
 	OPTION(bool, miscviewmodelfov, &Settings::Misc::ViewmodelFOV::Enabled);
 	OPTION(int, miscviewmodelfovval, &Settings::Misc::ViewmodelFOV::FOV);
 
-	OPTION(bool, miscworldcolourenabled, &Settings::Misc::WorldColour::Enabled);
-	OPTION(Color, miscworldcolourcolor, &Settings::Misc::WorldColour::Colour);
+	OPTION(bool, visualsworldcolourenabled, &Settings::Visuals::WorldColour::Enabled);
+	OPTION(Color, visualsworldcolourcolor, &Settings::Visuals::WorldColour::Colour);
 
 	OPTION(bool, miscbrightness, &Settings::Misc::Brightness::Enabled);
 	OPTION(int, miscbrightnessperc, &Settings::Misc::Brightness::Perc);
@@ -224,6 +224,9 @@ public:
 
 	OPTION(bool, visualsbulletshots, &Settings::Visuals::BulletShots::Enabled);
 	OPTION(Color, visualsbulletshotscolour, &Settings::Visuals::BulletShots::Colour);
+
+	OPTION(bool, visualsnightmode, &Settings::Visuals::Nightmode::Enabled);
+	OPTION(float, visualsnightmodeintensity, &Settings::Visuals::Nightmode::Intensity);
 
 	OPTION(bool, chamsplayersmaster, &Settings::Visuals::Chams::Players::Enabled);
 

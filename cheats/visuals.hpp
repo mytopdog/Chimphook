@@ -118,10 +118,6 @@ public:
 	void ResolveFlyCollisionCustom(trace_t& tr, Vector& vecVelocity, float interval);
 	int PhysicsClipVelocity(const Vector& in, const Vector& normal, Vector& out, float overbounce);
 
-	int act = 0;
-	int type = 0;
-	std::vector<Vector> path;
-	std::vector<std::pair<Vector, QAngle>> OtherCollisions;
 	Color TracerColor = Color(255, 255, 0, 255);
 	bool firegrenade_didnt_hit = false;
 };

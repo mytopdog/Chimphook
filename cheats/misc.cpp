@@ -74,6 +74,9 @@ bool Settings::Misc::ClantagScroller::Enabled = false;
 std::string Settings::Misc::ClantagScroller::Clantag = "Chimphook";
 int Settings::Misc::ClantagScroller::Delay = 250;
 
+bool Settings::Visuals::Nightmode::Enabled = false;
+float Settings::Visuals::Nightmode::Intensity = 0.f;
+
 void InfiniteDuck(CUserCmd* cmd)
 {
 	if (!Settings::Misc::InfiniteDuck)
@@ -383,7 +386,7 @@ bool ChickenTamer(CUserCmd* cmd)
 
 void FreeLook::OnCreateMove(CUserCmd* cmd)
 {
-	if (!Settings::Misc::FreeLook::Enabled || !Settings::Misc::FreeLook::_enabled || g_Input->m_fCameraInThirdPerson)
+	if (!Settings::Misc::FreeLook::Enabled || !Settings::Misc::FreeLook::_enabled)
 	{
 		LastState::Get().viewangles = cmd->viewangles;
 		LastState::Get().virtualViewangles.Init(0, 0, 0);
@@ -397,12 +400,9 @@ void FreeLook::OnCreateMove(CUserCmd* cmd)
 
 		LastState::Get().virtualViewangles += cmd->viewangles - LastState::Get().viewangles;
 
-		// LastState::Get().virtualViewangles.Normalize();
-		if (LastState::Get().virtualViewangles.pitch > 89.0f) LastState::Get().virtualViewangles.pitch = 89.0f;
-		else if (LastState::Get().virtualViewangles.pitch < -89.0f) LastState::Get().virtualViewangles.pitch = -89.0f;
-
-		Utils::ConsolePrint(std::to_string(LastState::Get().virtualViewangles.pitch).c_str());
-		Utils::ConsolePrint("\n");
+		LastState::Get().virtualViewangles.Normalize();
+		if (LastState::Get().virtualViewangles.pitch >= 89.0f) LastState::Get().virtualViewangles.pitch = 89.0f;
+		else if (LastState::Get().virtualViewangles.pitch <= -89.0f) LastState::Get().virtualViewangles.pitch = -89.0f;
 
 		g_EngineClient->SetViewAngles(&LastState::Get().viewangles);
 	}
@@ -448,7 +448,7 @@ void ThirdPerson::OverrideView()
 				g_Input->m_fCameraInThirdPerson = true;
 			}
 
-			QAngle view;
+			QAngle view;// = LastState::Get().virtualViewangles;
 			g_EngineClient->GetViewAngles(&view);
 
 			auto GetCorrectDistance = [](float ideal_distance, QAngle angle) -> float
@@ -916,11 +916,27 @@ void SlowWalk(CUserCmd* cmd)
 	}
 }
 
-void WorldColour()
+void WorldColour::Clear()
 {
-	if (!Settings::Misc::WorldColour::Enabled)
-		return;
+	for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
+	{
+		IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
 
+		if (!pMaterial)
+			continue;
+
+		if (strstr(pMaterial->GetTextureGroupName(), "World"))
+		{
+			pMaterial->ColorModulate(1.f, 1.f, 1.f);
+		}
+	}
+
+	if (Settings::Visuals::Nightmode::Enabled)
+		Nightmode::Get().Execute();
+}
+
+void WorldColour::Execute()
+{
 	for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
 	{
 		IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
@@ -931,9 +947,8 @@ void WorldColour()
 		if (strstr(pMaterial->GetTextureGroupName(), "World"))
 		{
 			// pMaterial->AlphaModulate(0.5f);
-			pMaterial->ColorModulate(Settings::Misc::WorldColour::Colour.r() / 255.f, Settings::Misc::WorldColour::Colour.g() / 255.f, Settings::Misc::WorldColour::Colour.b() / 255.f);
+			pMaterial->ColorModulate(Settings::Visuals::WorldColour::Colour.r() / 255.f, Settings::Visuals::WorldColour::Colour.g() / 255.f, Settings::Visuals::WorldColour::Colour.b() / 255.f);
 		}
-
 	}
 }
 
@@ -1041,4 +1056,48 @@ void draw_test()
 	g_MdlRender->SuppressEngineLighting(false);
 	g_RenderView->PopView(dummyFrustum);
 	render_ctx->BindLocalCubemap(NULL);*/
+}
+
+void LoadSky(const char* skyname)
+{
+	static void (__fastcall* LoadNamedSky)(const char*) = reinterpret_cast<void(__fastcall*)(const char*)>(Utils::PatternScan(GetModuleHandleW(L"engine.dll"), "55 8B EC 81 EC ? ? ? ? 56 57 8B F9 C7 45"));
+	LoadNamedSky(skyname);
+}
+
+void Nightmode::Clear()
+{
+	LoadSky(currentSkyName);
+
+	for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
+	{
+		static IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
+
+		if (!pMaterial || pMaterial->IsErrorMaterial())
+			continue;
+
+		if (strstr(pMaterial->GetTextureGroupName(), "World") || strstr(pMaterial->GetTextureGroupName(), "StaticProp"))
+		{
+			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_TRANSLUCENT, true);
+			pMaterial->ColorModulate(1.f, 1.f, 1.f);
+		}
+	}
+}
+
+void Nightmode::Execute()
+{
+	LoadSky("sky_csgo_night02");
+
+	for (MaterialHandle_t i = g_MatSystem->FirstMaterial(); i != g_MatSystem->InvalidMaterial(); i = g_MatSystem->NextMaterial(i))
+	{
+		IMaterial* pMaterial = g_MatSystem->GetMaterial(i);
+
+		if (!pMaterial || pMaterial->IsErrorMaterial())
+			continue;
+
+		if (strstr(pMaterial->GetTextureGroupName(), "World") || strstr(pMaterial->GetTextureGroupName(), "StaticProp"))
+		{
+			pMaterial->SetMaterialVarFlag(MATERIAL_VAR_TRANSLUCENT, false);
+			pMaterial->ColorModulate(1.f - Settings::Visuals::Nightmode::Intensity, 1.f - Settings::Visuals::Nightmode::Intensity, 1.f - Settings::Visuals::Nightmode::Intensity);
+		}
+	}
 }

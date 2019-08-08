@@ -200,8 +200,8 @@ void C_BaseCombatWeapon::UpdateAccuracyPenalty()
 }
 
 CUtlVector<IRefCounted*>& C_BaseCombatWeapon::m_CustomMaterials()
-{	static auto inReload = *(uint32_t*)(Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "83 BE ? ? ? ? ? 7F 67") + 2) - 12;
-	return *(CUtlVector<IRefCounted*>*)((uintptr_t)this + inReload);
+{	static auto customMaterials = *(uint32_t*)(Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "83 BE ? ? ? ? ? 7F 67") + 2) - 12;
+	return *(CUtlVector<IRefCounted*>*)((uintptr_t)this + customMaterials);
 }
 
 bool* C_BaseCombatWeapon::m_bCustomMaterialInitialized()
@@ -209,6 +209,19 @@ bool* C_BaseCombatWeapon::m_bCustomMaterialInitialized()
 	static auto currentCommand = *(uint32_t*)(Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "C6 86 ? ? ? ? ? FF 50 04") + 2);
 	return (bool*)((uintptr_t)this + currentCommand);
 }
+
+CUtlVector<IRefCounted*>& C_EconItemView::m_CustomMaterials()
+{
+	return *(CUtlVector<IRefCounted*>*)((uintptr_t)this + 0x14);
+}
+
+CUtlVector<IRefCounted*>& C_EconItemView::m_VisualsDataProcessors()
+{
+	static auto visDataProc = *(uint32_t*)(Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "81 C7 ? ? ? ? 8B 4F 0C 8B 57 04 89 4C 24 0C") + 2);
+	return *(CUtlVector<IRefCounted*>*)((uintptr_t)this + visDataProc);
+}
+
+
 
 CUserCmd*& C_BasePlayer::m_pCurrentCommand()
 {

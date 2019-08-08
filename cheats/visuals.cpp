@@ -323,7 +323,7 @@ void Visuals::Player::Begin(C_BasePlayer* pl)
 			RenderSkeleton(Settings::ESP::Players::Enemies::Colours::Skeletons);
 
 		if (Settings::ESP::Players::Enemies::BacktrackSkeletons)
-			RenderBacktrackSkeleton(Settings::ESP::Players::Enemies::Colours::Skeletons);
+			RenderBacktrackSkeleton(Settings::ESP::Players::Enemies::Colours::BacktrackSkeletons);
 
 		if (Settings::ESP::Players::Enemies::Names)
 			RenderName(Settings::ESP::Players::Enemies::Colours::Names);
@@ -1418,7 +1418,7 @@ void grenade_prediction::Paint()
 			}
 			else
 			{
-				if (Math::WorldToScreen(*path.begin(), cd))
+				if (Math::WorldToScreen(*grendat[g_LocalPlayer->EntIndex()].predictedPath.begin(), cd))
 					Render::Get().RenderText(("Most damage dealt to: " + EntName + " -" + std::to_string(bestdmg)).c_str(), ImVec2(cd[0], cd[1]), 12.f, *BestColor, true, false, f_AndaleMono);
 			}
 		}
@@ -1614,30 +1614,24 @@ bool grenade_prediction::CheckDetonate(const Vector & vecThrow, const trace_t & 
 	firegrenade_didnt_hit = false;
 	switch (grendat[pl->EntIndex()].grenadeType)
 	{
-	case ClassId_CSmokeGrenade:
-	case ClassId_CDecoyGrenade:
-		// Velocity must be <0.1, this is only checked every 0.2s
-		if (vecThrow.Length() < 0.1f)
+	case WEAPON_SMOKEGRENADE:
+	case WEAPON_DECOY:
+		if (vecThrow.Length2D() < 0.1f)
 		{
 			int det_tick_mod = static_cast<int>(0.2f / interval);
 			return !(tick % det_tick_mod);
 		}
 		return false;
 
-		/* TIMES AREN'T COMPLETELY RIGHT FROM WHAT I'VE SEEN ! ! ! */
-	case ClassId_CMolotovGrenade:
-	case ClassId_CIncendiaryGrenade:
-		// Detonate when hitting the floor
+	case WEAPON_MOLOTOV:
+	case WEAPON_INCGRENADE:
 		if (tr.fraction != 1.0f && tr.plane.normal.z > 0.7f)
 			return true;
-		// OR we've been flying for too long
 
-	case ClassId_CFlashbang:
-	case ClassId_CHEGrenade: {
-		// Pure timer based, detonate at 1.5s, checked every 0.2s
-		firegrenade_didnt_hit = static_cast<float>(tick) * interval > 1.5f && !(tick % static_cast<int>(0.2f / interval));
-		return firegrenade_didnt_hit;
-	}
+	case WEAPON_FLASHBANG:
+	case WEAPON_HEGRENADE:
+		return static_cast<float>(tick) * interval > 1.5f && !(tick % static_cast<int>(0.2f / interval));
+
 	default:
 		return false;
 	}
