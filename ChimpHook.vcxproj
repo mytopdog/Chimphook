@@ -225,6 +225,7 @@
     <ClInclude Include="valve_sdk\interfaces\IEngineSound.hpp" />
     <ClInclude Include="valve_sdk\interfaces\IEngineTrace.hpp" />
     <ClInclude Include="valve_sdk\interfaces\IGameEventmanager.hpp" />
+    <ClInclude Include="valve_sdk\interfaces\IGameTypes.hpp" />
     <ClInclude Include="valve_sdk\interfaces\IInputSystem.hpp" />
     <ClInclude Include="valve_sdk\interfaces\IKeyValuesSystem.hpp" />
     <ClInclude Include="valve_sdk\interfaces\ILocalize.hpp" />

@@ -51,12 +51,12 @@ bool Settings::Misc::AntiKick = false;
 bool Settings::Misc::ChatSpammer::Enabled = false;
 std::string Settings::Misc::ChatSpammer::Filename = "";
 
+bool Settings::Misc::ThirdPersonSpectate::Enabled = false;
 bool Settings::Misc::ThirdPerson::Enabled = false;
 bool Settings::Misc::ThirdPerson::IgnoreScope = false;
 bool Settings::Misc::ThirdPerson::IgnorePlayers = false;
 bool Settings::Misc::ThirdPerson::IgnoreWalls = false;
 bool Settings::Misc::ThirdPerson::RealAngles = false;
-bool Settings::Misc::ThirdPerson::IgnoreSpectating = false;
 int Settings::Misc::ThirdPerson::CameraOffset = 120;
 
 bool Settings::Misc::FreeLook::Enabled = false;
@@ -417,53 +417,93 @@ void FreeLook::OverrideView(CViewSetup* vsView)
 	}
 }
 
+void DoThirdPersonSpectate()
+{
+	if (!g_LocalPlayer)
+		return;
+
+	if (!g_LocalPlayer->m_hObserverTarget())
+		return;
+
+	if (Settings::Misc::ThirdPersonSpectate::Enabled && Settings::Misc::ThirdPersonSpectate::_enabled)
+	{
+		g_LocalPlayer->m_iObserverMode() = OBS_MODE_CHASE;
+	}
+	else
+	{
+		g_LocalPlayer->m_iObserverMode() = OBS_MODE_IN_EYE;
+	}
+}
+
 void ThirdPerson::OverrideView()
 {
 	if (!g_LocalPlayer)
 		return;
 
-	if (Settings::Misc::ThirdPerson::Enabled && Settings::Misc::ThirdPerson::_enabled && (!g_LocalPlayer->m_hObserverTarget() || Settings::Misc::ThirdPerson::IgnoreSpectating) && (!g_LocalPlayer->SelfOrObs()->m_bIsScoped() || Settings::Misc::ThirdPerson::IgnoreScope))
+	if (Settings::Misc::ThirdPerson::Enabled && Settings::Misc::ThirdPerson::_enabled && (!g_LocalPlayer->SelfOrObs()->m_bIsScoped() || Settings::Misc::ThirdPerson::IgnoreScope))
 	{
-		if (!g_Input->m_fCameraInThirdPerson)
-		{
-			g_Input->m_fCameraInThirdPerson = true;
-		}
-
-		QAngle view;
-		g_EngineClient->GetViewAngles(&view);
-
-		auto GetCorrectDistance = [](float ideal_distance, QAngle angle) -> float
-		{
-			angle.pitch *= -1.f, angle.yaw += 180.f;
-
-			Vector direction;
-			Math::AngleVectors(angle, direction);
-
-			CTraceFilterWorldAndPropsOnly filter;
-			trace_t trace;
-			Ray_t ray;
-
-			ray.Init(g_LocalPlayer->SelfOrObs()->GetEyePos(), g_LocalPlayer->SelfOrObs()->GetEyePos() + (direction * ideal_distance));
-
-			if (Settings::Misc::ThirdPerson::IgnorePlayers) {
-				g_EngineTrace->TraceRay(ray, MASK_SHOT | ~CONTENTS_PLAYERCLIP, &filter, &trace);
-			} else {
-				g_EngineTrace->TraceRay(ray, MASK_SHOT, &filter, &trace);
+		if (!g_LocalPlayer->m_hObserverTarget()) {
+			if (!g_Input->m_fCameraInThirdPerson)
+			{
+				g_Input->m_fCameraInThirdPerson = true;
 			}
 
-			return (ideal_distance * trace.fraction) - 10.f;
-		};
+			QAngle view;
+			g_EngineClient->GetViewAngles(&view);
 
-		g_Input->m_fCameraInThirdPerson = true;
+			auto GetCorrectDistance = [](float ideal_distance, QAngle angle) -> float
+			{
+				angle.pitch *= -1.f, angle.yaw += 180.f;
 
-		if (Settings::Misc::ThirdPerson::IgnoreWalls)
-			g_Input->m_vecCameraOffset.z = Settings::Misc::ThirdPerson::CameraOffset;
+				Vector direction;
+				Math::AngleVectors(angle, direction);
+
+				if (Settings::Misc::ThirdPerson::IgnorePlayers)
+				{
+					CTraceFilterWorldAndPropsOnly filter;
+					trace_t trace;
+					Ray_t ray;
+
+					ray.Init(g_LocalPlayer->SelfOrObs()->GetEyePos(), g_LocalPlayer->SelfOrObs()->GetEyePos() + (direction * ideal_distance));
+
+					g_EngineTrace->TraceRay(ray, MASK_SHOT, &filter, &trace);
+
+					return (ideal_distance * trace.fraction) - 10.f;
+				}
+				else
+				{
+					CTraceFilter filter;
+					filter.pSkip = g_LocalPlayer;
+					trace_t trace;
+					Ray_t ray;
+
+					ray.Init(g_LocalPlayer->SelfOrObs()->GetEyePos(), g_LocalPlayer->SelfOrObs()->GetEyePos() + (direction * ideal_distance));
+
+					g_EngineTrace->TraceRay(ray, MASK_SHOT, &filter, &trace);
+
+					return (ideal_distance * trace.fraction) - 10.f;
+				}
+			};
+
+			g_Input->m_fCameraInThirdPerson = true;
+
+			if (Settings::Misc::ThirdPerson::IgnoreWalls)
+				g_Input->m_vecCameraOffset.z = Settings::Misc::ThirdPerson::CameraOffset - 10.f;
+			else
+				g_Input->m_vecCameraOffset.z = GetCorrectDistance(Settings::Misc::ThirdPerson::CameraOffset, view);
+		}
 		else
-			g_Input->m_vecCameraOffset.z = GetCorrectDistance(Settings::Misc::ThirdPerson::CameraOffset, view);
+		{
+			g_Input->m_fCameraInThirdPerson = false;
+
+			DoThirdPersonSpectate();
+		}
 	}
 	else
 	{
 		g_Input->m_fCameraInThirdPerson = false;
+
+		if (g_LocalPlayer->m_hObserverTarget()) DoThirdPersonSpectate();
 	}
 }
 

@@ -421,6 +421,8 @@ namespace Utils {
 		for (std::int32_t i = 0; i < *hud_weapons->get_weapon_count(); i++)
 			i = fn(hud_weapons, i);
 
-		g_ClientState->full_update();
+		typedef void (*ForceUpdate)(void);
+		ForceUpdate FullUpdate = (ForceUpdate)PatternScan(GetModuleHandleW(L"engine.dll"), "A1 ? ? ? ? B9 ? ? ? ? 56 FF 50 14 8B 34 85");
+		FullUpdate();
 	}
 }

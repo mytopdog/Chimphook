@@ -46,6 +46,7 @@
 #include "interfaces/IKeyValuesSystem.hpp"
 #include "interfaces/ILocalize.hpp"
 #include "interfaces/IStudioRender.hpp"
+#include "interfaces/IGameTypes.hpp"
 
 #include "misc/GameUI.hpp"
 #include "misc/Convar.hpp"
@@ -127,6 +128,7 @@ public:
 	std::string note;
 };
 
+inline IGameTypes*           g_GameTypes;
 inline IStudioRender*        g_StudioRender;
 inline ILocalize*            g_Localize;
 inline ISteamClient*         g_SteamClient;
@@ -135,7 +137,7 @@ inline ISteamUtils*          g_SteamUtils;
 inline IViewRenderBeams*     g_RenderBeams;
 inline CCenterPrint*         g_CenterPrint;
 inline IMatchFramework*      g_MatchFramework;
-inline C_CSPlayerResource*  g_PlayerResource;
+inline C_CSPlayerResource*   g_PlayerResource;
 inline IVEngineClient*       g_EngineClient;
 inline CHudChat*             g_HUDChat;
 inline IGameUI*              g_GameUI;

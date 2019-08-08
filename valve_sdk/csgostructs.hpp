@@ -437,6 +437,13 @@ public:
 		return *(std::array<float, 24>*)((uintptr_t)this + _m_flPoseParameter);
 	}
 
+
+	QAngle& GetAngles()
+	{
+		typedef QAngle&(__thiscall* oGetAbsAngles)(PVOID);
+		return CallVFunction<oGetAbsAngles>(this, 11)(this);
+	}
+
 	PNETVAR(CHandle<C_BaseCombatWeapon>, m_hMyWeapons, "DT_BaseCombatCharacter", "m_hMyWeapons");
 	PNETVAR(CHandle<C_BaseAttributableItem>, m_hMyWearables, "DT_BaseCombatCharacter", "m_hMyWearables");
 
@@ -471,16 +478,16 @@ public:
 		return *(float_t*)((uintptr_t)this + _m_flMaxspeed);
 	}
 
+
 	float get_max_desync_delta()
 	{
 
-		uintptr_t animstate = (uintptr_t)(this->GetPlayerAnimState());
+		auto animstate = uintptr_t(this->GetPlayerAnimState());
 
-		float rate = 180;
 		float duckammount = *(float*)(animstate + 0xA4);
 		float speedfraction = mathmax(0.f, mathmin(*reinterpret_cast<float*>(animstate + 0xF8), 1.f));
 
-		float speedfactor = mathmax(0.f, mathmin(1.f, *reinterpret_cast<float*>(animstate + 0xFC)));
+		float speedfactor = mathmax(0.f, mathmin(1.f, *reinterpret_cast<float*> (animstate + 0xFC)));
 
 		float unk1 = ((*reinterpret_cast<float*> (animstate + 0x11C) * -0.30000001) - 0.19999999) * speedfraction;
 		float unk2 = unk1 + 1.f;
@@ -495,7 +502,7 @@ public:
 
 		unk3 = *(float*)(animstate + 0x334) * unk2;
 
-		return rate;
+		return unk3;
 
 	}
 

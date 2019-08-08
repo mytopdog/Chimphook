@@ -64,6 +64,7 @@ namespace Interfaces
         g_VGuiSurface         = get_interface<ISurface>            (vguiFactory       , "VGUI_Surface031");
         g_PhysSurface         = get_interface<IPhysicsSurfaceProps>(vphysicsFactory   , "VPhysicsSurfaceProps001");
         g_InputSystem         = get_interface<IInputSystem>        (inputSysFactory   , "InputSystemVersion001");
+		g_GameTypes           = get_interface<IGameTypes>          (clientFactory     , "VENGINE_GAMETYPES_VERSION002");
 
         HMODULE client = GetModuleHandleW(L"client_panorama.dll");
 		HMODULE engine = GetModuleHandleW(L"engine.dll");
@@ -115,6 +116,5 @@ namespace Interfaces
         PRINT_INTERFACE(g_VGuiSurface   );
         PRINT_INTERFACE(g_PhysSurface   );
         PRINT_INTERFACE(g_InputSystem   );
-		PRINT_INTERFACE(g_PlayerResource);
     }
 }

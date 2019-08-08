@@ -459,10 +459,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::Columns(1, nullptr, false);
 						}
 						ImGui::EndGroup();
-						// ImGui::Checkbox("Ignore Players", &Settings::Misc::ThirdPerson::IgnorePlayers);
+						ImGui::Checkbox("Ignore Players", &Settings::Misc::ThirdPerson::IgnorePlayers);
 						ImGui::Checkbox("Ignore Walls", &Settings::Misc::ThirdPerson::IgnoreWalls);
 						ImGui::Checkbox("Ignore Scope", &Settings::Misc::ThirdPerson::IgnoreScope);
-						// ImGui::Checkbox("Ignore Spectating", &Settings::Misc::ThirdPerson::IgnoreSpectating);
 						ImGui::Checkbox("Real Angles", &Settings::Misc::ThirdPerson::RealAngles);
 					}
 					ImGui::EndGroupBox();
@@ -716,6 +715,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::Columns(1, nullptr, false);
 						}
 						ImGui::EndGroup();
+						ImGui::Checkbox("Third Person Spectate", &Settings::Misc::ThirdPersonSpectate::Enabled);
 					}
 					ImGui::EndGroupBox();
 					ImGui::Text("Others");
@@ -876,6 +876,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGui::Columns(2, nullptr, false);
 								ImGui::Checkbox("Boxes##ESPEnemy", &Settings::ESP::Players::Enemies::Boxes);
 								ImGui::Checkbox("Skeletons##ESPEnemy", &Settings::ESP::Players::Enemies::Skeletons);
+								ImGui::Checkbox("Backtrack Skeletons##ESPEnemy", &Settings::ESP::Players::Enemies::BacktrackSkeletons);
 								ImGui::Checkbox("Names##ESPEnemy", &Settings::ESP::Players::Enemies::Names);
 								ImGui::Checkbox("Health##ESPEnemy", &Settings::ESP::Players::Enemies::Health);
 								ImGui::Checkbox("Weapons##ESPEnemy", &Settings::ESP::Players::Enemies::Weapons);
@@ -887,6 +888,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 
 								ImGuiEx::ColorEdit4("##ESPEnemyBoxesColour", &Settings::ESP::Players::Enemies::Colours::Boxes);
 								ImGuiEx::ColorEdit4("##ESPEnemySkeletonsColour", &Settings::ESP::Players::Enemies::Colours::Skeletons);
+								ImGuiEx::ColorEdit4("##ESPEnemyBacktrackSkeletonsColour", &Settings::ESP::Players::Enemies::Colours::BacktrackSkeletons);
 								ImGuiEx::ColorEdit4("##ESPEnemyNamesColour", &Settings::ESP::Players::Enemies::Colours::Names);
 								ImGuiEx::ColorEdit4("##ESPEnemyHealthColour", &Settings::ESP::Players::Enemies::Colours::Health);
 								ImGuiEx::ColorEdit4("##ESPEnemyWeaponsColour", &Settings::ESP::Players::Enemies::Colours::Weapons);
@@ -1194,12 +1196,13 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 					ImGui::Text("Others");
 					ImGui::BeginGroupBox("Others", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
-						ImGui::Checkbox("Grenade Prediction", &Settings::ESP::GrenadePrediction);
 						ImGui::BeginGroup();
 						{
-							ImGui::Columns(2, nullptr, false);
+							ImGui::Columns(2, nullptr, false); 
+							ImGui::Checkbox("Grenade Prediction", &Settings::ESP::GrenadePrediction::Enabled); ImGui::NextColumn();
+							ImGui::Checkbox("Only local", &Settings::ESP::GrenadePrediction::OnlyLocal); ImGui::NextColumn();
 							ImGui::Checkbox("Show Bullet Tracers", &Settings::Visuals::BulletShots::Enabled); ImGui::NextColumn();
-							ImGuiEx::ColorEdit3("Colour", &Settings::Visuals::BulletShots::Colour);
+							ImGuiEx::ColorEdit3("Colour", &Settings::Visuals::BulletShots::Colour); ImGui::NextColumn();
 							ImGui::Columns(1, nullptr, false);
 						}
 						ImGui::EndGroup();
@@ -1505,44 +1508,44 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::Text((bool)(Settings::KeyBinds::ThirdPerson::Type == 1) ? "Toggle" : "Hold");
 							ImGui::NextColumn();
 
-							if (ImGui::Selectable("FreeLook", (bool)(selectedKb == 1), ImGuiSelectableFlags_SpanAllColumns))
+							if (ImGui::Selectable("Thirdperson Spectate", (bool)(selectedKb == 1), ImGuiSelectableFlags_SpanAllColumns))
 								selectedKb = 1;
+							ImGui::NextColumn();
+							ImGui::Text(KeyNames[Settings::KeyBinds::ThirdPersonSpec::Key]);
+							ImGui::NextColumn();
+							ImGui::Text((bool)(Settings::KeyBinds::ThirdPersonSpec::Type == 1) ? "Toggle" : "Hold");
+							ImGui::NextColumn();
+
+							if (ImGui::Selectable("Free Look", (bool)(selectedKb == 2), ImGuiSelectableFlags_SpanAllColumns))
+								selectedKb = 2;
 							ImGui::NextColumn();
 							ImGui::Text(KeyNames[Settings::KeyBinds::FreeLook::Key]);
 							ImGui::NextColumn();
 							ImGui::Text((bool)(Settings::KeyBinds::FreeLook::Type == 1) ? "Toggle" : "Hold");
 							ImGui::NextColumn();
 
-							if (ImGui::Selectable("FakeDuck", (bool)(selectedKb == 2), ImGuiSelectableFlags_SpanAllColumns))
-								selectedKb = 2;
+							if (ImGui::Selectable("Fake Duck", (bool)(selectedKb == 3), ImGuiSelectableFlags_SpanAllColumns))
+								selectedKb = 3;
 							ImGui::NextColumn();
 							ImGui::Text(KeyNames[Settings::KeyBinds::FakeDuck::Key]);
 							ImGui::NextColumn();
 							ImGui::Text((bool)(Settings::KeyBinds::FakeDuck::Type == 1) ? "Toggle" : "Hold");
 							ImGui::NextColumn();
 
-							if (ImGui::Selectable("AutoDefuse", (bool)(selectedKb == 3), ImGuiSelectableFlags_SpanAllColumns))
-								selectedKb = 3;
+							if (ImGui::Selectable("Auto Defuse", (bool)(selectedKb == 4), ImGuiSelectableFlags_SpanAllColumns))
+								selectedKb = 4;
 							ImGui::NextColumn();
 							ImGui::Text(KeyNames[Settings::KeyBinds::AutoDefuse::Key]);
 							ImGui::NextColumn();
 							ImGui::Text((bool)(Settings::KeyBinds::AutoDefuse::Type == 1) ? "Toggle" : "Hold");
 							ImGui::NextColumn();
 
-							if (ImGui::Selectable("FakeZoom", (bool)(selectedKb == 4), ImGuiSelectableFlags_SpanAllColumns))
-								selectedKb = 4;
+							if (ImGui::Selectable("Fake Zoom", (bool)(selectedKb == 5), ImGuiSelectableFlags_SpanAllColumns))
+								selectedKb = 5;
 							ImGui::NextColumn();
 							ImGui::Text(KeyNames[Settings::KeyBinds::FakeZoom::Key]);
 							ImGui::NextColumn();
 							ImGui::Text((bool)(Settings::KeyBinds::FakeZoom::Type == 1) ? "Toggle" : "Hold");
-							ImGui::NextColumn();
-
-							if (ImGui::Selectable("Aimbot", (bool)(selectedKb == 5), ImGuiSelectableFlags_SpanAllColumns))
-								selectedKb = 5;
-							ImGui::NextColumn();
-							ImGui::Text(KeyNames[Settings::KeyBinds::Aimbot::Key]);
-							ImGui::NextColumn();
-							ImGui::Text((bool)(Settings::KeyBinds::Aimbot::Type == 1) ? "Toggle" : "Hold");
 							ImGui::NextColumn();
 
 							if (ImGui::Selectable("Triggerbot", (bool)(selectedKb == 6), ImGuiSelectableFlags_SpanAllColumns))
@@ -1551,6 +1554,14 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::Text(KeyNames[Settings::KeyBinds::Triggerbot::Key]);
 							ImGui::NextColumn();
 							ImGui::Text((bool)(Settings::KeyBinds::Triggerbot::Type == 1) ? "Toggle" : "Hold");
+							ImGui::NextColumn();
+
+							if (ImGui::Selectable("Aimbot", (bool)(selectedKb == 7), ImGuiSelectableFlags_SpanAllColumns))
+								selectedKb = 7;
+							ImGui::NextColumn();
+							ImGui::Text(KeyNames[Settings::KeyBinds::Aimbot::Key]);
+							ImGui::NextColumn();
+							ImGui::Text((bool)(Settings::KeyBinds::Aimbot::Type == 1) ? "Toggle" : "Hold");
 							ImGui::NextColumn();
 
 							ImGui::Columns(1, nullptr, false);
@@ -1564,8 +1575,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						switch (selectedKb)
 						{
 						case 0:
-							if (ImGui::Checkbox("Enabled##ThirdPerson", &Settings::KeyBinds::ThirdPerson::Enabled))
-								Config::Get().SaveUser();
+							ImGui::Text("Thirdperson");
 
 							if (ImGui::Combo("Type##ThirdPerson", &Settings::KeyBinds::ThirdPerson::Type, "Hold\0Toggle"))
 								Config::Get().SaveUser();
@@ -1576,6 +1586,19 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								Config::Get().SaveUser();
 							break;
 						case 1:
+							ImGui::Text("Thirdperson Spectate");
+
+							if (ImGui::Combo("Type##ThirdPersonSpec", &Settings::KeyBinds::ThirdPersonSpec::Type, "Hold\0Toggle"))
+								Config::Get().SaveUser();
+
+							ImGui::Text("Key"); ImGui::SameLine();
+
+							if (ImGui::Hotkey("KeyInput##ThirdPersonSpec", &Settings::KeyBinds::ThirdPersonSpec::Key))
+								Config::Get().SaveUser();
+							break;
+						case 2:
+							ImGui::Text("Free Look");
+
 							if (ImGui::Combo("Type##FreeLook", &Settings::KeyBinds::FreeLook::Type, "Hold\0Toggle"))
 								Config::Get().SaveUser();
 
@@ -1584,7 +1607,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							if (ImGui::Hotkey("KeyInput##FreeLook", &Settings::KeyBinds::FreeLook::Key))
 								Config::Get().SaveUser();
 							break;
-						case 2:
+						case 3:
+							ImGui::Text("Fake Duck");
+
 							if (ImGui::Combo("Type##FakeDuck", &Settings::KeyBinds::FakeDuck::Type, "Hold\0Toggle"))
 								Config::Get().SaveUser();
 
@@ -1593,7 +1618,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							if (ImGui::Hotkey("KeyInput##FakeDuck", &Settings::KeyBinds::FakeDuck::Key))
 								Config::Get().SaveUser();
 							break;
-						case 3:
+						case 4:
+							ImGui::Text("Auto Defuse");
+
 							if (ImGui::Combo("Type##AutoDefuse", &Settings::KeyBinds::AutoDefuse::Type, "Hold\0Toggle"))
 								Config::Get().SaveUser();
 
@@ -1602,7 +1629,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							if (ImGui::Hotkey("KeyInput##AutoDefuse", &Settings::KeyBinds::AutoDefuse::Key))
 								Config::Get().SaveUser();
 							break;
-						case 4:
+						case 5:
+							ImGui::Text("Fake Zoom");
+
 							if (ImGui::Combo("Type##FakeZoom", &Settings::KeyBinds::FakeZoom::Type, "Hold\0Toggle"))
 								Config::Get().SaveUser();
 
@@ -1611,25 +1640,26 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							if (ImGui::Hotkey("KeyInput##FakeZoom", &Settings::KeyBinds::FakeZoom::Key))
 								Config::Get().SaveUser();
 							break;
-						case 5:
-							if (ImGui::Checkbox("Enabled##Aimbot", &Settings::KeyBinds::Aimbot::Enabled))
-								Config::Get().SaveUser();
-
-							if (ImGui::Combo("Type##Aimbot", &Settings::KeyBinds::Aimbot::Type, "Hold\0Toggle"))
-								Config::Get().SaveUser();
-
-							ImGui::Text("Key"); ImGui::SameLine();
-
-							if (ImGui::Hotkey("KeyInput##Aimbot", &Settings::KeyBinds::Aimbot::Key))
-								Config::Get().SaveUser();
-							break;
 						case 6:
+							ImGui::Text("Triggerbot");
+
 							if (ImGui::Combo("Type##Triggerbot", &Settings::KeyBinds::Triggerbot::Type, "Hold\0Toggle"))
 								Config::Get().SaveUser();
 
 							ImGui::Text("Key"); ImGui::SameLine();
 
 							if (ImGui::Hotkey("KeyInput##Triggerbot", &Settings::KeyBinds::Triggerbot::Key))
+								Config::Get().SaveUser();
+							break;
+						case 7:
+							ImGui::Text("Aimbot");
+							
+							if (ImGui::Combo("Type##Aimbot", &Settings::KeyBinds::Aimbot::Type, "Hold\0Toggle"))
+								Config::Get().SaveUser();
+
+							ImGui::Text("Key"); ImGui::SameLine();
+
+							if (ImGui::Hotkey("KeyInput##Aimbot", &Settings::KeyBinds::Aimbot::Key))
 								Config::Get().SaveUser();
 							break;
 						}
@@ -1778,10 +1808,6 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 									{
 										selectedP = player->EntIndex();
 									}
-
-									if (ImGui::IsItemHovered() && ImGui::GetIO().MouseClicked[1])
-										selectedP = player->EntIndex();
-
 									ImGui::NextColumn();
 
 									if (info.szName) ImGui::Text(info.szName);
@@ -1807,90 +1833,90 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 									ImGui::NextColumn();
 									ImGui::Columns(1, nullptr, false);
 
-									if (ImGui::BeginPopupContextWindow("ContextMenuPlayerlist", 1))
+									std::string label = "ContextMenuPlayerlist";
+									label += i;
+
+									if (ImGui::BeginPopupContextWindow(label.c_str(), 1))
 									{
 										ImGui::BeginGroupBox("##ContextMenuNigger", ImVec2(200, 100));
 										{
-											if (player && selectedP == player->EntIndex())
+											ImGui::Columns(2, nullptr, false);
+											player_info_t info = player->GetPlayerInfo();
+											const char* clantag = g_PlayerResource->GetClan(player->EntIndex());
+
+											if (ImGui::Button("Steal Name"))
 											{
-												ImGui::Columns(2, nullptr, false);
-												player_info_t info = player->GetPlayerInfo();
-												const char* clantag = g_PlayerResource->GetClan(player->EntIndex());
+												char* endl = " ";
+												std::string f;
+												f += info.szName;
+												f += endl;
+												Utils::SetName(f.c_str());
+												ImGui::CloseCurrentPopup();
+											}
 
-												if (ImGui::Button("Steal Name"))
+											if (ImGui::Button("Steal Clan"))
+											{
+												const char* clantag = (const char*)(g_PlayerResource->GetClan(player->EntIndex()));
+
+												Utils::SetClantag(clantag);
+												ImGui::CloseCurrentPopup();
+											}
+
+											if (ImGui::Button("Open Profile"))
+											{
+												g_SteamFriends->ActivateGameOverlayToUser("steamid", (CSteamID)(uint64)info.steamID64);
+
+												ImGui::CloseCurrentPopup();
+												_visible = false;
+											}
+
+											if (ImGui::Button("Create Record"))
+											{
+												player_record_t rec;
+												rec.Init(info.steamID64, info.szName, Utils::GetEpochTime(), "");
+
+												AddRecord(rec);
+
+												tabSelected = 1;
+												selectedR = info.steamID64;
+												ImGui::CloseCurrentPopup();
+											}
+											ImGui::NextColumn();
+											int AvatarImage = g_SteamFriends->GetLargeFriendAvatar((CSteamID)(uint64)info.steamID64);
+
+											if (AvatarImage > 0)
+											{
+												uint32 WIDTH = 0, HEIGHT = 0;
+												g_SteamUtils->GetImageSize(AvatarImage, &WIDTH, &HEIGHT);
+
+												if (WIDTH > 0 && HEIGHT > 0)
 												{
-													char* endl = " ";
-													std::string f;
-													f += info.szName;
-													f += endl;
-													Utils::SetName(f.c_str());
-													ImGui::CloseCurrentPopup();
-												}
+													int sz = WIDTH * HEIGHT * 4;
 
-												if (ImGui::Button("Steal Clan"))
-												{
-													const char* clantag = (const char*)(g_PlayerResource->GetClan(player->EntIndex()));
+													uint8* dest = (uint8*)malloc(sz);
 
-													Utils::SetClantag(clantag);
-													ImGui::CloseCurrentPopup();
-												}
-
-												if (ImGui::Button("Open Profile"))
-												{
-													g_SteamFriends->ActivateGameOverlayToUser("steamid", (CSteamID)(uint64)info.steamID64);
-
-													ImGui::CloseCurrentPopup();
-													_visible = false;
-												}
-
-												if (ImGui::Button("Create Record"))
-												{
-													player_record_t rec;
-													rec.Init(info.steamID64, info.szName, Utils::GetEpochTime(), "");
-
-													AddRecord(rec);
-
-													tabSelected = 1;
-													selectedR = info.steamID64;
-													ImGui::CloseCurrentPopup();
-												}
-												ImGui::NextColumn();
-												int AvatarImage = g_SteamFriends->GetLargeFriendAvatar((CSteamID)(uint64)info.steamID64);
-
-												if (AvatarImage > 0)
-												{
-													uint32 WIDTH = 0, HEIGHT = 0;
-													g_SteamUtils->GetImageSize(AvatarImage, &WIDTH, &HEIGHT);
-
-													if (WIDTH > 0 && HEIGHT > 0)
+													if (dest)
 													{
-														int sz = WIDTH * HEIGHT * 4;
-
-														uint8* dest = (uint8*)malloc(sz);
-
-														if (dest)
+														if (g_SteamUtils->GetImageRGBA(AvatarImage, dest, sz))
 														{
-															if (g_SteamUtils->GetImageRGBA(AvatarImage, dest, sz))
+															LPDIRECT3DTEXTURE9 texture;
+															D3DXCreateTexture(pDevice, WIDTH, HEIGHT, 0, D3DUSAGE_DYNAMIC, D3DFORMAT::D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture);
+
+															if (texture)
 															{
-																LPDIRECT3DTEXTURE9 texture;
-																D3DXCreateTexture(pDevice, WIDTH, HEIGHT, 0, D3DUSAGE_DYNAMIC, D3DFORMAT::D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture);
+																CopyImageToTexture(dest, WIDTH, HEIGHT, texture, 0, 0);
 
-																if (texture)
-																{
-																	CopyImageToTexture(dest, WIDTH, HEIGHT, texture, 0, 0);
+																ImGui::Image((void*)(uintptr_t)texture, ImVec2(84, 84));
 
-																	ImGui::Image((void*)(uintptr_t)texture, ImVec2(84, 84));
-
-																	texturesToRelease.push_back((ImTextureID)(void*)(uintptr_t)texture);
-																}
+																texturesToRelease.push_back((ImTextureID)(void*)(uintptr_t)texture);
 															}
-
-															free(dest);
 														}
+
+														free(dest);
 													}
 												}
-												ImGui::Columns(1, nullptr, false);
 											}
+											ImGui::Columns(1, nullptr, false);
 										}
 										ImGui::EndGroupBox();
 										ImGui::EndPopup();

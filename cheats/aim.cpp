@@ -218,6 +218,8 @@ void AntiAim(CUserCmd* cmd, bool& bSendPacket)
 		else
 			ang.yaw += 0.f;
 
+		Utils::ConsolePrint(g_LocalPlayer->get_max_desync_delta());
+
 		bSendPacket = bSend;
 
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND && cmd->sidemove < 3 && cmd->sidemove > -3)

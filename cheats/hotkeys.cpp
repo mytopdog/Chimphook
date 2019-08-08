@@ -7,21 +7,23 @@
 
 bool Settings::System::ChimpHookNotifications = true;
 
-bool Settings::Misc::FreeLook::_enabled = false;
-bool Settings::Misc::Triggerbot::_enabled = false;
 bool Settings::Misc::ThirdPerson::_enabled = false;
+bool Settings::Misc::ThirdPersonSpectate::_enabled = false;
+bool Settings::Misc::FreeLook::_enabled = false;
 bool Settings::Misc::FakeDuck::_enabled = false;
 bool Settings::Misc::AutoDefuse::_enabled = false;
 bool Settings::Misc::FakeZoom::_enabled = false;
+bool Settings::Misc::Triggerbot::_enabled = false;
 bool Settings::Aim::TestAimbot::_enabled = false;
 
-bool Settings::KeyBinds::Aimbot::Enabled = false;
 int Settings::KeyBinds::Aimbot::Key = 0;
 int Settings::KeyBinds::Aimbot::Type = 0;
 
-bool Settings::KeyBinds::ThirdPerson::Enabled = false;
 int Settings::KeyBinds::ThirdPerson::Key = 0;
 int Settings::KeyBinds::ThirdPerson::Type = 0;
+
+int Settings::KeyBinds::ThirdPersonSpec::Key = 0;
+int Settings::KeyBinds::ThirdPersonSpec::Type = 0;
 
 int Settings::KeyBinds::FreeLook::Key = 0;
 int Settings::KeyBinds::FreeLook::Type = 0;
@@ -113,32 +115,53 @@ void Hotkeys::Run(const char* name, int key, bool* option, bool toggle, bool* st
 
 void Hotkeys::Begin()
 {
-	if (Settings::Misc::ThirdPerson::Enabled && Settings::KeyBinds::ThirdPerson::Enabled)
+	if (Settings::Misc::ThirdPerson::Enabled && Settings::KeyBinds::ThirdPerson::Key)
 		Hotkeys::Run("ThirdPerson", Settings::KeyBinds::ThirdPerson::Key, &Settings::Misc::ThirdPerson::_enabled, (bool)(Settings::KeyBinds::ThirdPerson::Type == 1), &kb_thirdperson_storage, false); 
+	
+	if (Settings::Misc::ThirdPersonSpectate::Enabled && Settings::KeyBinds::ThirdPersonSpec::Key)
+		Hotkeys::Run("ThirdPerson Spectate", Settings::KeyBinds::ThirdPersonSpec::Key, &Settings::Misc::ThirdPersonSpectate::_enabled, (bool)(Settings::KeyBinds::ThirdPersonSpec::Type == 1), &kb_thirdpersonspec_storage, false);
 
-	if (Settings::Misc::FreeLook::Enabled)
+	if (Settings::Misc::FreeLook::Enabled && Settings::KeyBinds::FreeLook::Key)
 		Hotkeys::Run("FreeLook", Settings::KeyBinds::FreeLook::Key, &Settings::Misc::FreeLook::_enabled, (bool)(Settings::KeyBinds::FreeLook::Type == 1), &kb_freelook_storage, false);
 
-	if (Settings::Misc::FakeDuck::Enabled)
+	if (Settings::Misc::FakeDuck::Enabled && Settings::KeyBinds::FakeDuck::Key)
 		Hotkeys::Run("FakeDuck", Settings::KeyBinds::FakeDuck::Key, &Settings::Misc::FakeDuck::_enabled, (bool)(Settings::KeyBinds::FakeDuck::Type == 1), &kb_fakeduck_storage, false);
 
-	if (Settings::Misc::AutoDefuse::Enabled)
+	if (Settings::Misc::AutoDefuse::Enabled && Settings::KeyBinds::AutoDefuse::Key)
 		Hotkeys::Run("AutoDefuse", Settings::KeyBinds::AutoDefuse::Key, &Settings::Misc::AutoDefuse::_enabled, (bool)(Settings::KeyBinds::AutoDefuse::Type == 1), &kb_autodefuse_storage, true);
 
-	if (Settings::Misc::Triggerbot::Enabled)
+	if (Settings::Misc::Triggerbot::Enabled && Settings::KeyBinds::Triggerbot::Key)
 		Hotkeys::Run("Triggerbot", Settings::KeyBinds::Triggerbot::Key, &Settings::Misc::Triggerbot::_enabled, (bool)(Settings::KeyBinds::Triggerbot::Type == 1), &kb_triggerbot_storage, true);
 
-	if (Settings::Misc::FakeZoom::Enabled)
+	if (Settings::Misc::FakeZoom::Enabled && Settings::KeyBinds::FakeZoom::Key)
 		Hotkeys::Run("FakeZoom", Settings::KeyBinds::FakeZoom::Key, &Settings::Misc::FakeZoom::_enabled, (bool)(Settings::KeyBinds::FakeZoom::Type == 1), &kb_fakezoom_storage, false);
 		
-	if (Settings::Aim::TestAimbot::Enabled && Settings::KeyBinds::Aimbot::Enabled)
+	if (Settings::Aim::TestAimbot::Enabled && Settings::KeyBinds::Aimbot::Key)
 		Hotkeys::Run("Aimbot", Settings::KeyBinds::Aimbot::Key, &Settings::Aim::TestAimbot::_enabled, (bool)(Settings::KeyBinds::Aimbot::Type == 1), &kb_aimbot_storage, true);
 
-	if (!Settings::KeyBinds::Aimbot::Enabled)
-		Settings::Aim::TestAimbot::_enabled = true;
-
-	if (!Settings::KeyBinds::ThirdPerson::Enabled)
+	if (!Settings::KeyBinds::ThirdPerson::Key)
 		Settings::Misc::ThirdPerson::_enabled = true;
+		
+	if (!Settings::KeyBinds::ThirdPersonSpec::Key)
+		Settings::Misc::ThirdPersonSpectate::_enabled = true;
+
+	if (!Settings::KeyBinds::FreeLook::Key)
+		Settings::Misc::FreeLook::_enabled = true;
+
+	if (!Settings::KeyBinds::FakeDuck::Key)
+		Settings::Misc::FakeDuck::_enabled = true;
+
+	if (!Settings::KeyBinds::AutoDefuse::Key)
+		Settings::Misc::AutoDefuse::_enabled = true;
+
+	if (!Settings::KeyBinds::Triggerbot::Key)
+		Settings::Misc::Triggerbot::_enabled = true;
+
+	if (!Settings::KeyBinds::FakeZoom::Key)
+		Settings::Misc::FakeZoom::_enabled = true;
+
+	if (!Settings::KeyBinds::Aimbot::Key)
+		Settings::Aim::TestAimbot::_enabled = true;
 
 	if (GetAsyncKeyState(Settings::AntiAim::Yaw::LKey))
 	{

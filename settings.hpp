@@ -14,7 +14,12 @@ namespace Settings
 	{
 		namespace ThirdPerson
 		{
-			extern bool Enabled;
+			extern int Type;
+			extern int Key;
+		}
+
+		namespace ThirdPersonSpec
+		{
 			extern int Type;
 			extern int Key;
 		}
@@ -45,12 +50,17 @@ namespace Settings
 
 		namespace Aimbot
 		{
-			extern bool Enabled;
 			extern int Type;
 			extern int Key;
 		}
 
 		namespace Triggerbot
+		{
+			extern int Type;
+			extern int Key;
+		}
+
+		namespace ThirdPersonSpectate
 		{
 			extern int Type;
 			extern int Key;
@@ -94,6 +104,12 @@ namespace Settings
 		
 		extern bool FUCK;
 		extern bool DebugMode;
+
+		namespace ThirdPersonSpectate
+		{
+			extern bool Enabled;
+			extern bool _enabled;
+		}
 		
 		namespace ZeusRange
 		{
@@ -180,7 +196,6 @@ namespace Settings
 			extern bool IgnorePlayers;
 			extern bool IgnoreWalls;
 			extern bool RealAngles;
-			extern bool IgnoreSpectating;
 			extern int  CameraOffset;
 		}
 
@@ -306,7 +321,11 @@ namespace Settings
 
 	namespace ESP
 	{
-		extern bool GrenadePrediction;
+		namespace GrenadePrediction
+		{
+			extern bool Enabled;
+			extern bool OnlyLocal;
+		}
 
 		namespace Glow
 		{
@@ -356,6 +375,7 @@ namespace Settings
 
 				extern bool Boxes;
 				extern bool Skeletons;
+				extern bool BacktrackSkeletons;
 				extern bool Names;
 				extern bool Health;
 				extern bool Weapons;
@@ -367,6 +387,7 @@ namespace Settings
 				{
 					extern Color Boxes;
 					extern Color Skeletons;
+					extern Color BacktrackSkeletons;
 					extern Color Names;
 					extern Color Health;
 					extern Color Weapons;

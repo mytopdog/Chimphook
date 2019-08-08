@@ -414,6 +414,9 @@
     <ClInclude Include="cheats\backtracking.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="valve_sdk\interfaces\IGameTypes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="valve_sdk\csgostructs.cpp">

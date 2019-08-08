@@ -3,7 +3,8 @@
 #include "autowall.hpp"
 #include "../helpers/skinchangerparser.hpp"
 
-bool Settings::ESP::GrenadePrediction = false;
+bool Settings::ESP::GrenadePrediction::Enabled = false;
+bool Settings::ESP::GrenadePrediction::OnlyLocal = false;
 bool Settings::Misc::WallbangCrosshair = false;
 
 bool Settings::Misc::ZeusRange::Enabled = false;
@@ -25,6 +26,7 @@ bool Settings::ESP::Players::Localplayer::Occluded = false;
 bool Settings::ESP::Players::Enemies::Boxes = false;
 bool Settings::ESP::Players::Enemies::Names = false;
 bool Settings::ESP::Players::Enemies::Skeletons = false;
+bool Settings::ESP::Players::Enemies::BacktrackSkeletons = false;
 bool Settings::ESP::Players::Enemies::Health = false;
 bool Settings::ESP::Players::Enemies::Weapons = false;
 bool Settings::ESP::Players::Enemies::Snaplines = false;
@@ -34,6 +36,7 @@ bool Settings::ESP::Players::Enemies::EyeLines = false;
 Color Settings::ESP::Players::Enemies::Colours::Boxes = Color(255, 255, 255, 255);
 Color Settings::ESP::Players::Enemies::Colours::Names = Color(255, 255, 255, 255);
 Color Settings::ESP::Players::Enemies::Colours::Skeletons = Color(255, 255, 255, 255);
+Color Settings::ESP::Players::Enemies::Colours::BacktrackSkeletons = Color(255, 255, 255, 255);
 Color Settings::ESP::Players::Enemies::Colours::Health = Color(255, 255, 255, 255);
 Color Settings::ESP::Players::Enemies::Colours::Weapons = Color(255, 255, 255, 255);
 Color Settings::ESP::Players::Enemies::Colours::Snaplines = Color(255, 255, 255, 255);
@@ -301,20 +304,6 @@ void Visuals::Player::Begin(C_BasePlayer* pl)
 
 	ctx.font_size = 12.f;
 
-	if (ctx.is_enemy && Settings::Backtrack::Enabled)
-	{
-		for (int i = 0; i < Backtrack::Get().records[pl->EntIndex()].size(); i++)
-		{
-			backtrack_record_t record = Backtrack::Get().records[pl->EntIndex()][i];
-			Vector headpos;
-
-			if (!Math::WorldToScreen(record.headpos, headpos))
-				return;
-
-			Render::Get().RenderCircleFilled(headpos.x, headpos.y, 6, 48, Color(255, 255, 255, 255));
-		}
-	}
-
 	if (ctx.is_enemy && Settings::ESP::Players::Enemies::Snaplines)
 		RenderSnapline(Settings::ESP::Players::Enemies::Colours::Snaplines);
 
@@ -332,6 +321,9 @@ void Visuals::Player::Begin(C_BasePlayer* pl)
 
 		if (Settings::ESP::Players::Enemies::Skeletons)
 			RenderSkeleton(Settings::ESP::Players::Enemies::Colours::Skeletons);
+
+		if (Settings::ESP::Players::Enemies::BacktrackSkeletons)
+			RenderBacktrackSkeleton(Settings::ESP::Players::Enemies::Colours::Skeletons);
 
 		if (Settings::ESP::Players::Enemies::Names)
 			RenderName(Settings::ESP::Players::Enemies::Colours::Names);
@@ -421,6 +413,46 @@ void Visuals::Player::RenderSkeleton(Color col)
 			if (Math::WorldToScreen(v_parent, s_parent) && Math::WorldToScreen(v_child, s_child))
 			{
 				Render::Get().RenderLine(s_parent[0], s_parent[1], s_child[0], s_child[1], col, 1);
+			}
+		}
+	}
+}
+
+void Visuals::Player::RenderBacktrackSkeleton(Color col)
+{
+	if (!Settings::Backtrack::Enabled)
+		return;
+
+	const model_t* itemModel = ctx.pl->GetModel();
+	if (!itemModel)
+		return;
+
+	studiohdr_t* hdr = g_MdlInfo->GetStudiomodel(itemModel);
+
+	if (!hdr)
+		return;
+
+	for (int i = 0; i < Backtrack::Get().records[ctx.pl->EntIndex()].size(); i++) {
+		Vector v_parent, v_child, s_parent, s_child;
+
+		backtrack_record_t record = Backtrack::Get().records[ctx.pl->EntIndex()][i];
+
+		for (int j = 0; j < hdr->numbones; j++)
+		{
+			mstudiobone_t* bone = hdr->GetBone(j);
+
+			if (!bone)
+				continue;
+
+			if ((bone->flags & BONE_USED_BY_HITBOX) && (bone->parent != -1))
+			{
+				v_child = Vector(record.matrix[j][0][3], record.matrix[j][1][3], record.matrix[j][2][3]);
+				v_parent = Vector(record.matrix[bone->parent][0][3], record.matrix[bone->parent][1][3], record.matrix[bone->parent][2][3]);
+
+				if (Math::WorldToScreen(v_parent, s_parent) && Math::WorldToScreen(v_child, s_child))
+				{
+					Render::Get().RenderLine(s_parent[0], s_parent[1], s_child[0], s_child[1], col, 1);
+				}
 			}
 		}
 	}
@@ -908,15 +940,15 @@ void Chams::SceneEnd()
 						ent->DrawModel(1, 255);
 						
 						if (Settings::AntiAim::Yaw::Type == 3) {
-							QAngle origAngle = g_LocalPlayer->m_angEyeAngles();
+							QAngle origAngle = g_LocalPlayer->GetAngles();
 
-							g_LocalPlayer->SetAngle2(QAngle(0, CreateMove::FakeAngles.yaw, 0));
+							g_LocalPlayer->SetAbsAngles(QAngle(0, CreateMove::FakeAngles.yaw, 0));
 							g_RenderView->SetColorModulation(0.f, 0.f, 0.f);
 							mat->ColorModulate(0.f, 0.f, 0.f);
 							g_MdlRender->ForcedMaterialOverride(mat);
 							g_LocalPlayer->DrawModel(1, 255);
 							g_MdlRender->ForcedMaterialOverride(nullptr);
-							g_LocalPlayer->SetAngle2(QAngle(0, origAngle.yaw, 0));
+							g_LocalPlayer->SetAbsAngles(QAngle(0, origAngle.yaw, 0));
 						}
 					}
 				}
@@ -930,6 +962,12 @@ void Chams::SceneEnd()
  						{
 							Color col = Settings::Visuals::Chams::Players::Enemies::Occluded;
 							g_RenderView->SetColorModulation(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
+
+							if (Settings::Backtrack::Enabled && Backtrack::Get().selectedpl && Backtrack::Get().selectedr && Backtrack::Get().selectedpl == pl->EntIndex())
+								g_RenderView->SetBlend(0.05f);
+							else
+								g_RenderView->SetBlend(1.f);
+
 							mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
 							mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
 							mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
@@ -937,10 +975,57 @@ void Chams::SceneEnd()
 							g_MdlRender->ForcedMaterialOverride(mat);
 
 							ent->DrawModel(1, 255);
+
+							if (Settings::Backtrack::Enabled)
+							{
+								QAngle origAng = pl->GetAngles();
+								Vector origOrigin = pl->m_vecOrigin();
+								Vector origVelocity = pl->m_vecVelocity();
+								float origCycle = pl->m_flCycle();
+								int origSequence = pl->m_nSequence();
+								EntityFlags origFlags = (EntityFlags)pl->m_fFlags();
+								float origLowerbodyyawtarget = pl->m_flLowerBodyYawTarget();
+
+								for (int i = 0; i < Backtrack::Get().records[ent->EntIndex()].size(); i++)
+								{
+									backtrack_record_t record = Backtrack::Get().records[ent->EntIndex()][i];
+
+									pl->SetAbsOrigin(record.origin);
+									pl->SetAbsAngles(record.angs);
+									pl->m_vecVelocity() = record.velocity;
+									pl->m_flCycle() = record.cycle;
+									pl->m_nSequence() = record.sequence;
+									pl->m_fFlags() = record.flags;
+									pl->m_flLowerBodyYawTarget() = record.lowerbodyyawtarget;
+
+									if (pl->EntIndex() == Backtrack::Get().selectedpl && i == Backtrack::Get().selectedr)
+										g_RenderView->SetBlend(1.f);
+									else
+										g_RenderView->SetBlend(0.05f);
+
+									ent->DrawModel(0x1, 255);
+								}
+
+								g_RenderView->SetBlend(1.f);
+
+								pl->SetAbsAngles(origAng);
+								pl->SetAbsOrigin(origOrigin);
+								pl->m_vecVelocity() = origVelocity;
+								pl->m_flCycle() = origCycle;
+								pl->m_nSequence() = origSequence;
+								pl->m_fFlags() = origFlags;
+								pl->m_flLowerBodyYawTarget() = origLowerbodyyawtarget;
+							}
 						}
 
 						Color col = Settings::Visuals::Chams::Players::Enemies::Visible;
 						g_RenderView->SetColorModulation(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
+
+						if (Settings::Backtrack::Enabled && Backtrack::Get().selectedpl && Backtrack::Get().selectedr && Backtrack::Get().selectedpl == pl->EntIndex())
+							g_RenderView->SetBlend(0.05f);
+						else
+							g_RenderView->SetBlend(1.f);
+
 						mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
 						mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
 						mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
@@ -948,6 +1033,47 @@ void Chams::SceneEnd()
 						g_MdlRender->ForcedMaterialOverride(mat);
 
 						ent->DrawModel(1, 255);
+
+						if (Settings::Backtrack::Enabled)
+						{
+							QAngle origAng = pl->GetAngles();
+							Vector origOrigin = pl->m_vecOrigin();
+							Vector origVelocity = pl->m_vecVelocity();
+							float origCycle = pl->m_flCycle();
+							int origSequence = pl->m_nSequence();
+							EntityFlags origFlags = (EntityFlags)pl->m_fFlags();
+							float origLowerbodyyawtarget = pl->m_flLowerBodyYawTarget();
+
+							for (int i = 0; i < Backtrack::Get().records[ent->EntIndex()].size(); i++)
+							{
+								backtrack_record_t record = Backtrack::Get().records[ent->EntIndex()][i];
+
+								pl->SetAbsOrigin(record.origin);
+								pl->SetAbsAngles(record.angs);
+								pl->m_vecVelocity() = record.velocity;
+								pl->m_flCycle() = record.cycle;
+								pl->m_nSequence() = record.sequence;
+								pl->m_fFlags() = record.flags;
+								pl->m_flLowerBodyYawTarget() = record.lowerbodyyawtarget;
+
+								if (pl->EntIndex() == Backtrack::Get().selectedpl && i == Backtrack::Get().selectedr)
+									g_RenderView->SetBlend(1.f);
+								else
+									g_RenderView->SetBlend(0.05f);
+
+								ent->DrawModel(0x1, 255);
+							}
+
+							g_RenderView->SetBlend(1.f);
+
+							pl->SetAbsAngles(origAng);
+							pl->SetAbsOrigin(origOrigin);
+							pl->m_vecVelocity() = origVelocity;
+							pl->m_flCycle() = origCycle;
+							pl->m_nSequence() = origSequence;
+							pl->m_fFlags() = origFlags;
+							pl->m_flLowerBodyYawTarget() = origLowerbodyyawtarget;
+						}
 					}
 				}
 				else if (!is_localplayer && is_teammate)
@@ -1110,60 +1236,40 @@ void Chams::OnDME(
 	}
 }
 
-void setupgrendat()
-{
-	grendat.reserve(65);
-	for (int i = 0; i < 65; i++)
-	{
-		grendat.push_back(grenadedata());
-	}
-}
-
 grenadedata& getlocal()
 {
-	return grendat.at(g_LocalPlayer->EntIndex());
+	return grendat[g_LocalPlayer->EntIndex()];
 }
 
 grenadedata& getpl(C_BasePlayer* pl)
 {
-	return grendat.at(pl->EntIndex());
-}
-
-void grenade_prediction::Tick(int buttons)
-{
-	if (!Settings::ESP::GrenadePrediction)
-		return;
-
-	bool in_attack = (buttons & IN_ATTACK);
-	bool in_attack2 = (buttons & IN_ATTACK2);
-
-	act = (in_attack && in_attack2) ? ACT_LOB :
-		(in_attack2) ? ACT_DROP :
-		(in_attack) ? ACT_THROW :
-		ACT_NONE;
+	return grendat[pl->EntIndex()];
 }
 
 void grenade_prediction::View()
 {
-	if (!Settings::ESP::GrenadePrediction)
+	if (!Settings::ESP::GrenadePrediction::Enabled)
 		return;
 
 	if (g_LocalPlayer && g_LocalPlayer->IsAlive())
 	{
 		C_BaseCombatWeapon* weapon = g_LocalPlayer->m_hActiveWeapon();
-		if (weapon && weapon->IsGrenade() && act != ACT_NONE)
+		if (weapon && weapon->IsGrenade())
 		{
 			QAngle Angles;
 			g_EngineClient->GetViewAngles(&Angles);
 
-			getlocal().grenadeType = weapon->m_iItemDefinitionIndex();
+			grendat[g_LocalPlayer->EntIndex()].grenadeType = weapon->m_iItemDefinitionIndex();
 			Simulate(Angles, g_LocalPlayer);
 		}
 		else
 		{
-			getlocal().grenadeType = 0;
+			grendat[g_LocalPlayer->EntIndex()].grenadeType = 0;
 		}
 	}
+
+	if (Settings::ESP::GrenadePrediction::OnlyLocal)
+		return;
 
 	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
 	{
@@ -1175,9 +1281,7 @@ void grenade_prediction::View()
 
 			if (weapon && weapon->IsGrenade())
 			{
-				QAngle angles = pl->m_angEyeAngles();
-
-				Utils::ConsolePrint(pl->EntIndex());
+				QAngle angles = pl->GetAngles();
 
 				grendat[pl->EntIndex()].grenadeType = weapon->m_iItemDefinitionIndex();
 				Simulate(angles, pl);
@@ -1192,7 +1296,7 @@ void grenade_prediction::View()
 
 void grenade_prediction::Paint()
 {
-	if (!Settings::ESP::GrenadePrediction)
+	if (!Settings::ESP::GrenadePrediction::Enabled)
 		return;
 
 	if (!g_LocalPlayer)
@@ -1202,11 +1306,11 @@ void grenade_prediction::Paint()
 	if (!weapon)
 		return;
 
-	if ((getlocal().grenadeType) && getlocal().predictedPath.size() > 1 && act != ACT_NONE && weapon->IsGrenade())
+	if ((grendat[g_LocalPlayer->EntIndex()].grenadeType) && grendat[g_LocalPlayer->EntIndex()].predictedPath.size() > 1 && weapon->IsGrenade())
 	{
 		Vector ab, cd;
-		Vector prev = getlocal().predictedPath[0];
-		for (auto it = getlocal().predictedPath.begin(), end = getlocal().predictedPath.end(); it != end; ++it)
+		Vector prev = grendat[g_LocalPlayer->EntIndex()].predictedPath[0];
+		for (auto it = grendat[g_LocalPlayer->EntIndex()].predictedPath.begin(), end = grendat[g_LocalPlayer->EntIndex()].predictedPath.end(); it != end; ++it)
 		{
 			if (Math::WorldToScreen(prev, ab) && Math::WorldToScreen(*it, cd))
 			{
@@ -1215,12 +1319,12 @@ void grenade_prediction::Paint()
 			prev = *it;
 		}
 
-		for (auto it = getlocal().predictedOtherCollisions.begin(), end = getlocal().predictedOtherCollisions.end(); it != end; ++it)
+		for (auto it = grendat[g_LocalPlayer->EntIndex()].predictedOtherCollisions.begin(), end = grendat[g_LocalPlayer->EntIndex()].predictedOtherCollisions.end(); it != end; ++it)
 		{
 			Render::Get().Render3DCube(2.f, it->second, it->first, Color(0, 255, 0, 200));
 		}
 
-		Render::Get().Render3DCube(2.f, getlocal().predictedOtherCollisions.rbegin()->second, getlocal().predictedOtherCollisions.rbegin()->first, Color(255, 0, 0, 200));
+		Render::Get().Render3DCube(2.f, grendat[g_LocalPlayer->EntIndex()].predictedOtherCollisions.rbegin()->second, grendat[g_LocalPlayer->EntIndex()].predictedOtherCollisions.rbegin()->first, Color(255, 0, 0, 200));
 
 		std::string EntName;
 		auto bestdmg = 0;
@@ -1231,7 +1335,7 @@ void grenade_prediction::Paint()
 		static Color orangecol = { 255, 128, 0, 255 };
 		Color* BestColor = &redcol;
 
-		Vector endpos = getlocal().predictedPath[getlocal().predictedPath.size() - 1];
+		Vector endpos = grendat[g_LocalPlayer->EntIndex()].predictedPath[grendat[g_LocalPlayer->EntIndex()].predictedPath.size() - 1];
 		Vector absendpos = endpos;
 
 		float totaladded = 0.0f;
@@ -1320,22 +1424,27 @@ void grenade_prediction::Paint()
 		}
 	}
 
+	if (Settings::ESP::GrenadePrediction::OnlyLocal)
+		return;
+
 	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
 	{
 		C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
 		if (!pl || !pl->IsAlive() || pl == g_LocalPlayer)
-			return;
+			continue;
 
-		C_BaseCombatWeapon* weapon = pl->m_hActiveWeapon();
-		if (!weapon)
-			return;
+		C_BaseCombatWeapon* plwep = pl->m_hActiveWeapon();
 
-		if ((getpl(pl).grenadeType) && getpl(pl).predictedPath.size() > 1 && act != ACT_NONE && weapon->IsGrenade())
+		if (!plwep && grendat[i].grenadeType && grendat[i].predictedPath.size() > 1)
+			continue;
+
+
+		if ((grendat[i].grenadeType) && grendat[i].predictedPath.size() > 1 && plwep->IsGrenade())
 		{
 			Vector ab, cd;
-			Vector prev = getpl(pl).predictedPath[0];
-			for (auto it = getpl(pl).predictedPath.begin(), end = getpl(pl).predictedPath.end(); it != end; ++it)
+			Vector prev = grendat[i].predictedPath[0];
+			for (auto it = grendat[i].predictedPath.begin(), end = grendat[i].predictedPath.end(); it != end; ++it)
 			{
 				if (Math::WorldToScreen(prev, ab) && Math::WorldToScreen(*it, cd))
 				{
@@ -1344,12 +1453,12 @@ void grenade_prediction::Paint()
 				prev = *it;
 			}
 
-			for (auto it = getpl(pl).predictedOtherCollisions.begin(), end = getpl(pl).predictedOtherCollisions.end(); it != end; ++it)
+			for (auto it = grendat[i].predictedOtherCollisions.begin(), end = grendat[i].predictedOtherCollisions.end(); it != end; ++it)
 			{
 				Render::Get().Render3DCube(2.f, it->second, it->first, Color(0, 255, 0, 200));
 			}
 
-			Render::Get().Render3DCube(2.f, getpl(pl).predictedOtherCollisions.rbegin()->second, getpl(pl).predictedOtherCollisions.rbegin()->first, Color(255, 0, 0, 200));
+			Render::Get().Render3DCube(2.f, grendat[i].predictedOtherCollisions.rbegin()->second, grendat[i].predictedOtherCollisions.rbegin()->first, Color(255, 0, 0, 200));
 
 			std::string EntName;
 			auto bestdmg = 0;
@@ -1360,7 +1469,7 @@ void grenade_prediction::Paint()
 			static Color orangecol = { 255, 128, 0, 255 };
 			Color* BestColor = &redcol;
 
-			Vector endpos = getpl(pl).predictedPath[getpl(pl).predictedPath.size() - 1];
+			Vector endpos = grendat[i].predictedPath[grendat[i].predictedPath.size() - 1];
 			Vector absendpos = endpos;
 
 			float totaladded = 0.0f;
@@ -1436,14 +1545,14 @@ void grenade_prediction::Simulate(QAngle & Angles, C_BasePlayer* pLocal)
 	int logstep = static_cast<int>(0.05f / interval);
 	int logtimer = 0;
 
-	getpl(pLocal).predictedPath.clear();
-	getpl(pLocal).predictedOtherCollisions.clear();
+	grendat[pLocal->EntIndex()].predictedPath.clear();
+	grendat[pLocal->EntIndex()].predictedOtherCollisions.clear();
 	// TracerColor = Color(255, 255, 0, 255);
 	TracerColor = Color(255, 255, 255, 255);
-	for (unsigned int i = 0; i < getpl(pLocal).predictedPath.max_size() - 1; ++i)
+	for (unsigned int i = 0; i < grendat[pLocal->EntIndex()].predictedPath.max_size() - 1; ++i)
 	{
 		if (!logtimer)
-			getpl(pLocal).predictedPath.push_back(vecSrc);
+			grendat[pLocal->EntIndex()].predictedPath.push_back(vecSrc);
 
 		int s = Step(vecSrc, vecThrow, i, interval, pLocal);
 		if ((s & 1) || vecThrow == Vector(0, 0, 0))
@@ -1454,7 +1563,7 @@ void grenade_prediction::Simulate(QAngle & Angles, C_BasePlayer* pLocal)
 		else ++logtimer;
 	}
 
-	getpl(pLocal).predictedPath.push_back(vecSrc);
+	grendat[pLocal->EntIndex()].predictedPath.push_back(vecSrc);
 }
 
 int grenade_prediction::Step(Vector & vecSrc, Vector & vecThrow, int tick, float interval, C_BasePlayer* player)
@@ -1491,7 +1600,7 @@ int grenade_prediction::Step(Vector & vecSrc, Vector & vecThrow, int tick, float
 	{
 		QAngle angles;
 		Math::VectorAngles((tr.endpos - tr.startpos).Normalized(), angles);
-		getpl(player).predictedOtherCollisions.push_back(std::make_pair(tr.endpos, angles));
+		grendat[player->EntIndex()].predictedOtherCollisions.push_back(std::make_pair(tr.endpos, angles));
 	}
 
 	// Set new position
@@ -1503,7 +1612,7 @@ int grenade_prediction::Step(Vector & vecSrc, Vector & vecThrow, int tick, float
 bool grenade_prediction::CheckDetonate(const Vector & vecThrow, const trace_t & tr, int tick, float interval, C_BasePlayer* pl)
 {
 	firegrenade_didnt_hit = false;
-	switch (getpl(pl).grenadeType)
+	switch (grendat[pl->EntIndex()].grenadeType)
 	{
 	case ClassId_CSmokeGrenade:
 	case ClassId_CDecoyGrenade:

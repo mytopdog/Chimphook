@@ -23,7 +23,7 @@ struct grenadedata
 	std::vector<std::pair<Vector, QAngle>> predictedOtherCollisions;
 };
 
-static std::vector<grenadedata> grendat(65);
+static grenadedata grendat[65];
 
 void BulletShots(IGameEvent* ev);
 void WallbangCrosshair();
@@ -66,6 +66,7 @@ public:
 		void RenderBox(Color col);
 		void RenderName(Color col);
 		void RenderSkeleton(Color col);
+		void RenderBacktrackSkeleton(Color col);
 		void RenderHealth(Color col);
 		void RenderWeapon(Color col);
 		void RenderSnapline(Color col);
@@ -101,12 +102,9 @@ enum
 	ACT_DROP
 };
 
-void setupgrendat();
-
 class grenade_prediction : public Singleton<grenade_prediction>
 {
 public:
-	void Tick(int buttons);
 	void View();
 	void Paint();
 

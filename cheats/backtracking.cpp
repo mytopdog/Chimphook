@@ -67,7 +67,15 @@ void Backtrack::UpdateEntities()
 			*(uintptr_t*)(*(uintptr_t*)var_map + j * 0xC) = 0;
 
 		backtrack_record_t record;
+		record.angs = pl->GetAngles();
+		record.origin = pl->m_vecOrigin();
 		record.headpos = pl->GetHitboxPos(HITBOX_HEAD);
+		record.velocity = pl->m_vecVelocity();
+		record.cycle = pl->m_flCycle();
+		record.sequence = pl->m_nSequence();
+		record.flags = (EntityFlags)pl->m_fFlags();
+		record.lowerbodyyawtarget = pl->m_flLowerBodyYawTarget();
+
 		record.simtime = pl->m_flSimulationTime();
 
 		pl->SetupBones(record.matrix, 128, 0x7FF00, g_GlobalVars->curtime);
@@ -84,10 +92,7 @@ void Backtrack::UpdateEntities()
 
 void Backtrack::Run(CUserCmd* cmd)
 {
-	if (Settings::Backtrack::Enabled)
-		return;
-
-	if (!(cmd->buttons & IN_ATTACK))
+	if (!Settings::Backtrack::Enabled)
 		return;
 
 	if (!g_LocalPlayer)
@@ -98,6 +103,7 @@ void Backtrack::Run(CUserCmd* cmd)
 	int best_target_index;
 	Vector best_head_position;
 	int best_record;
+	bool found = false;
 
 	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
 	{
@@ -117,11 +123,14 @@ void Backtrack::Run(CUserCmd* cmd)
 			best_target = pl;
 			best_target_index = i;
 			best_head_position = headpos;
+			found = true;
 		}
 	}
 
-	if (best_target)
+	if (found && best_target)
 	{
+		found = false;
+
 		if (records[best_target_index].size() <= 3)
 			return;
 
@@ -141,15 +150,24 @@ void Backtrack::Run(CUserCmd* cmd)
 			{
 				best_fov = fov;
 				best_record = i;
+				found = true;
 			}
 		}
 	}
 
-	if (best_record)
+	if (found && best_record)
 	{
 		backtrack_record_t record = records[best_target_index][best_record];
+		selectedpl = best_target_index;
+		selectedr = best_record;
 
-		cmd->tick_count = TIME_TO_TICKS(record.simtime);
+		if (cmd->buttons & IN_ATTACK)
+			cmd->tick_count = TIME_TO_TICKS(record.simtime);
+	}
+	else
+	{
+		selectedpl = 0;
+		selectedr = 0;
 	}
 }
 

@@ -1,11 +1,12 @@
 #pragma once
 
 static bool kb_thirdperson_storage = false;
+static bool kb_thirdpersonspec_storage = false;
 static bool kb_freelook_storage = false;
 static bool kb_fakeduck_storage = false;
 static bool kb_autodefuse_storage = false;
-static bool kb_triggerbot_storage = false;
 static bool kb_fakezoom_storage = false;
+static bool kb_triggerbot_storage = false;
 static bool kb_aimbot_storage = false;
 
 namespace Hotkeys

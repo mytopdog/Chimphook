@@ -222,17 +222,18 @@ void MoonWalk(CUserCmd* cmd)
 {
 	if (Settings::Misc::MoonWalk)
 	{
-		if (GetAsyncKeyState('W'))
+		if (cmd->buttons & IN_BACK)
 			cmd->forwardmove = 450;
 
-		if (GetAsyncKeyState('S'))
+		if (cmd->buttons & IN_FORWARD)
 			cmd->forwardmove = -450;
 
-		if (GetAsyncKeyState('D'))
+		if (cmd->buttons & IN_MOVELEFT)
 			cmd->sidemove = 450;
 
-		if (GetAsyncKeyState('A'))
+		if (cmd->buttons & IN_MOVERIGHT)
 			cmd->sidemove = -450;
+
 
 		g_EngineClient->ExecuteClientCmd("bind w +back; bind s +forward; bind a +moveright; bind d +moveleft");
 	}

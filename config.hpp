@@ -125,7 +125,8 @@ public:
 
 	OPTION(bool, miscfakezoom, &Settings::Misc::FakeZoom::Enabled);
 
-	OPTION(bool, espgrenadeprediction, &Settings::ESP::GrenadePrediction);
+	OPTION(bool, espgrenadeprediction, &Settings::ESP::GrenadePrediction::Enabled);
+	OPTION(bool, espgrenadepredictiononlylocal, &Settings::ESP::GrenadePrediction::OnlyLocal);
 
 	OPTION(bool, miscsmokehelper, &Settings::Misc::SmokeHelper::Enabled);
 	OPTION(int, miscsmokehelpertype, &Settings::Misc::SmokeHelper::TypeHelp);
@@ -136,6 +137,7 @@ public:
 	OPTION(bool, espenemiesoccluded, &Settings::ESP::Players::Enemies::Occluded);
 	OPTION(bool, espenemiesboxes, &Settings::ESP::Players::Enemies::Boxes);
 	OPTION(bool, espenemiesskeletons, &Settings::ESP::Players::Enemies::Skeletons);
+	OPTION(bool, espenemiesbacktrackskeletons, &Settings::ESP::Players::Enemies::BacktrackSkeletons);
 	OPTION(bool, espenemiesnames, &Settings::ESP::Players::Enemies::Names);
 	OPTION(bool, espenemieshealth, &Settings::ESP::Players::Enemies::Health);
 	OPTION(bool, espenemiesweapons, &Settings::ESP::Players::Enemies::Weapons);
@@ -145,6 +147,7 @@ public:
 
 	OPTION(Color, espenemiescolourboxes, &Settings::ESP::Players::Enemies::Colours::Boxes);
 	OPTION(Color, espenemiescolourskeletons, &Settings::ESP::Players::Enemies::Colours::Skeletons);
+	OPTION(Color, espenemiescolourbacktrackskeletons, &Settings::ESP::Players::Enemies::Colours::BacktrackSkeletons);
 	OPTION(Color, espenemiescolournames, &Settings::ESP::Players::Enemies::Colours::Names);
 	OPTION(Color, espenemiescolourhealth, &Settings::ESP::Players::Enemies::Colours::Health);
 	OPTION(Color, espenemiescolourweapons, &Settings::ESP::Players::Enemies::Colours::Weapons);
@@ -338,12 +341,14 @@ public:
 	OPTION(float, testaimbototherhitchance, &Settings::Aim::TestAimbot::Other::HitChance);
 	OPTION(bool, testaimbototherprioritise, &Settings::Aim::TestAimbot::Other::Prioritise);
 	OPTION(int, testaimbototherprioritised, &Settings::Aim::TestAimbot::Other::Prioritised);
+
+	OPTION(bool, backtrack, &Settings::Backtrack::Enabled);
+	OPTION(int, backtrackms, &Settings::Backtrack::ms);
 }options;
 
 class Useropt
 {
 public:
-	OPTION(bool, thirdpersonkeyenabled, &Settings::KeyBinds::ThirdPerson::Enabled);
 	OPTION(int, thirdpersonkey, &Settings::KeyBinds::ThirdPerson::Key);
 	OPTION(int, thirdpersontype, &Settings::KeyBinds::ThirdPerson::Type);
 	OPTION(int, freelookkey, &Settings::KeyBinds::FreeLook::Key);
@@ -356,7 +361,6 @@ public:
 	OPTION(int, triggerbotkey, &Settings::KeyBinds::Triggerbot::Key);
 	OPTION(int, fakezoomkey, &Settings::KeyBinds::FakeZoom::Key);
 	OPTION(int, fakezoomtype, &Settings::KeyBinds::FakeZoom::Type);
-	OPTION(bool, aimbotkeyenabled, &Settings::KeyBinds::Aimbot::Enabled);
 	OPTION(int, aimbotkey, &Settings::KeyBinds::Aimbot::Key);
 	OPTION(int, aimbottype, &Settings::KeyBinds::Aimbot::Type);
 

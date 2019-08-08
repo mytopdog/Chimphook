@@ -174,8 +174,6 @@ namespace Hooks
 		Glow::Shutdown();
 
 		std::remove("csgo\\materials\\mirrorcam.vmt");
-
-		setupgrendat();
 	}
 	//--------------------------------------------------------------------------------
 	void __fastcall hkRenderView(IViewRender* this0, void* EDX, CViewSetup& view, CViewSetup& hudViewSetup, ClearFlags_t nClearFlags, RenderViewInfo_t whatToDraw)
@@ -274,11 +272,7 @@ namespace Hooks
 	long __stdcall hkPresent(IDirect3DDevice9* pDevice, const RECT* pSourceRect, const RECT* pDestRect, HWND hDestWindowOverride, const RGNDATA* pDirtyRegion)
 	{
 		auto oPresent = direct3d_hook.get_original<decltype(&hkPresent)>(index::Present);
-		oPresent(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
-		if (Menu::Get().shouldupdate)
-			Utils::ForceUpdate();
 
-		Menu::Get().shouldupdate = false;
 		return oPresent(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
 	}
 	//--------------------------------------------------------------------------------
@@ -331,18 +325,16 @@ namespace Hooks
 		ClantagScroller::Get().OnCreateMove();
 		grenade_prediction::Get().View();
 
-		grenade_prediction::Get().Tick(cmd->buttons);
-
 		FakeLag(cmd, bSendPacket);
 		FakeDuck(cmd, bSendPacket);
 
 		if (Menu::Get().IsVisible())
 			cmd->buttons &= ~IN_ATTACK;
 
-		if (!ChickenTamer(cmd)) {
+		if (!ChickenTamer(cmd))
 			DoAim(cmd, bSendPacket);
-			Backtrack::Get().Run(cmd);
-		}
+
+		Backtrack::Get().Run(cmd);
 
 		SmokeHelper::Get().OnCreateMove(cmd);
 
@@ -556,6 +548,11 @@ namespace Hooks
 		if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
 		{
 			SkinChanger::Run();
+
+			if (Menu::Get().shouldupdate)
+				Utils::ForceUpdate();
+
+			Menu::Get().shouldupdate = false;
 		}
 
 		ofunc(g_CHLClient, edx, stage);
