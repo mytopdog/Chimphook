@@ -15,6 +15,8 @@ struct IntHash
 	}
 };
 
+extern QAngle aimAngle;
+extern QAngle oaimAngle;
 void RCS(CUserCmd* cmd);
 void DoAim(CUserCmd* cmd, bool& bSendPacket);
 void AntiAim(CUserCmd* cmd, bool& bSendPacket);

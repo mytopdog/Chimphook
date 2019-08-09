@@ -7,6 +7,8 @@
 #define XM_2PI 6.283185307f
 
 C_BasePlayer* AimbotTarget = nullptr;
+QAngle aimAngle = QAngle(0, 0, 0);
+QAngle oaimAngle = QAngle(0, 0, 0);
 
 bool Settings::Aim::RCS::Enabled = false;
 bool Settings::Aim::RCS::Silent = false;
@@ -790,13 +792,8 @@ void DoAim(CUserCmd* cmd, bool& bSendPacket)
 			{
 				if (Settings::Aim::TestAimbot::WeaponMove && !g_Input->m_fCameraInThirdPerson)
 				{
-					LastState::Get().virtualViewangles = cmd->viewangles;
-					g_EngineClient->GetViewAngles(&LastState::Get().viewangles);
-
-					LastState::Get().virtualViewangles.Normalize();
-					Math::ClampAngles(LastState::Get().virtualViewangles);
-
-					g_EngineClient->SetViewAngles(&LastState::Get().viewangles);
+					aimAngle = angle;
+					oaimAngle = angle;
 				}
 
 				Math::CorrectMovement(oldAngle, cmd, oldForward, oldSideMove);

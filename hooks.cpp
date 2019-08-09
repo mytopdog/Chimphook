@@ -196,6 +196,23 @@ namespace Hooks
 	{
 		static auto oEndScene = direct3d_hook.get_original<decltype(&hkEndScene)>(index::EndScene);
 
+		static uintptr_t gameoverlay_return_address = 0;
+
+		if (!gameoverlay_return_address)
+		{
+			MEMORY_BASIC_INFORMATION info;
+			VirtualQuery(_ReturnAddress(), &info, sizeof(MEMORY_BASIC_INFORMATION));
+
+			char mod[MAX_PATH];
+			GetModuleFileNameA((HMODULE)info.AllocationBase, mod, MAX_PATH);
+
+			if (strstr(mod, "gameoverlay"))
+				gameoverlay_return_address = (uintptr_t)(_ReturnAddress());
+		}
+
+		if (gameoverlay_return_address != (uintptr_t)(_ReturnAddress()) && true)
+			return oEndScene(pDevice);
+
 		static ConVar* Sky3D = g_CVar->FindVar("r_3dsky");/*
 		static ConVar* malr = g_CVar->FindVar("mat_ambient_light_r");
 		static ConVar* malg = g_CVar->FindVar("mat_ambient_light_g");
@@ -579,6 +596,36 @@ namespace Hooks
 		ThirdPerson::OverrideView();
 		CameraFOV(vsView);
 		ViewmodelFOV(vsView);
+
+		static bool first = true; static QAngle oAngle = QAngle(0, 0, 0); static float timeremaining = 1000.f; static float maxtime = 0.4f;
+
+		if (!g_Input->m_fCameraInThirdPerson) {
+			if (!aimAngle.IsZero())
+			{
+				if ((vsView->angles - aimAngle).Length() < 1.f || timeremaining < 0.f) { aimAngle = oaimAngle = oAngle = QAngle(0, 0, 0); first = true; timeremaining = 1000.f; return ofunc(g_ClientMode, edx, vsView); }
+				auto Viewmodel = (C_BaseEntity*)C_BaseEntity::get_entity_from_handle(g_LocalPlayer->m_hViewModel());
+
+				if (Viewmodel)
+				{
+					if (first || oAngle != oaimAngle)
+					{
+						oAngle = aimAngle;
+						first = false;
+						timeremaining = maxtime;
+					}
+
+					auto deltaAngle = aimAngle - vsView->angles;
+					Math::ClampAngles(deltaAngle);
+
+					Viewmodel->SetAbsAngles(vsView->angles + deltaAngle);
+
+					timeremaining -= g_GlobalVars->absolute_frametime;
+
+					aimAngle = oAngle;
+					Math::ClampAngles(aimAngle);
+				}
+			}
+		}
 
 		ofunc(g_ClientMode, edx, vsView);
 	}

@@ -51,7 +51,7 @@ void Backtrack::UpdateEntities()
 	{
 		C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-		if (!pl || pl == g_LocalPlayer || !pl->IsAlive()) {
+		if (!pl || pl == g_LocalPlayer || !pl->IsAlive() || pl->IsDormant()) {
 			records[i].clear();
 
 			continue;

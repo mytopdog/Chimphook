@@ -943,7 +943,6 @@ void Chams::SceneEnd()
 							QAngle origAngle = g_LocalPlayer->GetAngles();
 
 							g_LocalPlayer->SetAbsAngles(QAngle(0, CreateMove::FakeAngles.yaw, 0));
-							g_RenderView->SetColorModulation(0.f, 0.f, 0.f);
 							mat->ColorModulate(0.f, 0.f, 0.f);
 							g_MdlRender->ForcedMaterialOverride(mat);
 							g_LocalPlayer->DrawModel(1, 255);
@@ -1020,11 +1019,16 @@ void Chams::SceneEnd()
 
 						Color col = Settings::Visuals::Chams::Players::Enemies::Visible;
 						g_RenderView->SetColorModulation(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
+						mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
 
 						if (Settings::Backtrack::Enabled && Backtrack::Get().selectedpl && Backtrack::Get().selectedr && Backtrack::Get().selectedpl == pl->EntIndex())
+						{
 							g_RenderView->SetBlend(0.05f);
+						}
 						else
+						{
 							g_RenderView->SetBlend(1.f);
+						}
 
 						mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
 						mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
@@ -1116,8 +1120,8 @@ void Chams::SceneEnd()
 			C_BaseGrenadeProjectile* gren = (C_BaseGrenadeProjectile*)ent;
 			IMaterial* mat = GetMaterial(0);
 
-			g_RenderView->SetColorModulation(255, 255, 255);
-			mat->ColorModulate(255, 255, 255);
+			g_RenderView->SetColorModulation(1.f, 1.f, 1.f);
+			mat->ColorModulate(1.f, 1.f, 1.f);
 			mat->IncrementReferenceCount();
 			mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
 			g_MdlRender->ForcedMaterialOverride(mat);
@@ -1224,7 +1228,7 @@ void Chams::OnDME(
 
 				mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
 				mat->AlphaModulate(col.a() / 255.f);
-				mat->SetMaterialVarFlag(MATERIAL_VAR_TRANSLUCENT, true);
+				mat->SetMaterialVarFlag(MATERIAL_VAR_ALPHATEST, true);
 				mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
 				mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, Settings::Visuals::Chams::Viewmodel::Weapons::Wireframe);
 
@@ -1431,7 +1435,7 @@ void grenade_prediction::Paint()
 	{
 		C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-		if (!pl || !pl->IsAlive() || pl == g_LocalPlayer)
+		if (!pl || !pl->IsAlive() || pl == g_LocalPlayer || pl->IsDormant())
 			continue;
 
 		C_BaseCombatWeapon* plwep = pl->m_hActiveWeapon();

@@ -77,6 +77,11 @@ int Settings::Misc::ClantagScroller::Delay = 250;
 bool Settings::Visuals::Nightmode::Enabled = false;
 float Settings::Visuals::Nightmode::Intensity = 0.f;
 
+bool Settings::Misc::ViewmodelOffset::Enabled = false;
+float Settings::Misc::ViewmodelOffset::X = 0.f;
+float Settings::Misc::ViewmodelOffset::Y = 0.f;
+float Settings::Misc::ViewmodelOffset::Z = 0.f;
+
 void InfiniteDuck(CUserCmd* cmd)
 {
 	if (!Settings::Misc::InfiniteDuck)
@@ -839,13 +844,35 @@ void CameraFOV(CViewSetup* vsView)
 
 void ViewmodelFOV(CViewSetup* vsView)
 {
-	static ConVar* viewmodelFov = g_CVar->FindVar("viewmodel_fov");
-	viewmodelFov->m_fnChangeCallbacks.m_Size = 0;
+	static ConVar* viewmodel_fov = g_CVar->FindVar("viewmodel_fov");
+	viewmodel_fov->m_fnChangeCallbacks.m_Size = 0;
+
+	static ConVar* viewmodel_offset_x = g_CVar->FindVar("viewmodel_offset_x");
+	viewmodel_offset_x->m_fnChangeCallbacks.m_Size = 0;
+
+	static ConVar* viewmodel_offset_y = g_CVar->FindVar("viewmodel_offset_y");
+	viewmodel_offset_y->m_fnChangeCallbacks.m_Size = 0;
+
+	static ConVar* viewmodel_offset_z = g_CVar->FindVar("viewmodel_offset_z");
+	viewmodel_offset_z->m_fnChangeCallbacks.m_Size = 0;
 
 	if (Settings::Misc::ViewmodelFOV::Enabled)
-		viewmodelFov->SetValue(Settings::Misc::ViewmodelFOV::FOV);
+		viewmodel_fov->SetValue(Settings::Misc::ViewmodelFOV::FOV);
 	else
-		viewmodelFov->SetValue(68);
+		viewmodel_fov->SetValue(60);
+
+	if (Settings::Misc::ViewmodelOffset::Enabled)
+	{
+		viewmodel_offset_x->SetValue(Settings::Misc::ViewmodelOffset::X);
+		viewmodel_offset_y->SetValue(Settings::Misc::ViewmodelOffset::Y);
+		viewmodel_offset_z->SetValue(Settings::Misc::ViewmodelOffset::Z);
+	}
+	else
+	{
+		viewmodel_offset_x->SetValue(0);
+		viewmodel_offset_y->SetValue(0);
+		viewmodel_offset_z->SetValue(0);
+	}
 }
 
 void AdjustBrightness()

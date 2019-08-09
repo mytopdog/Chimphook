@@ -242,6 +242,14 @@ namespace Settings
 			extern bool Enabled;
 			extern int Amount;
 		}
+
+		namespace ViewmodelOffset
+		{
+			extern bool Enabled;
+			extern float X;
+			extern float Y;
+			extern float Z;
+		}
 	}
 
 	namespace Visuals

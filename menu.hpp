@@ -4,6 +4,7 @@
 #define IMGUI_DEFINE_MATH_OPERATORS
 
 #include <string>
+#include <deque>
 #include "singleton.hpp"
 #include "imgui/imgui.h"
 
@@ -209,12 +210,7 @@ public:
 
 	bool IsVisible() const { return _visible; }
 
-	void AddRecord(player_record_t record)
-	{
-		g_playerRecords.push_back(record);
-	}
-
-	std::vector<player_record_t>    g_playerRecords;
+	std::deque<player_record_t> playerRecords;
 
 	bool shouldupdate = false;
 private:

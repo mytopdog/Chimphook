@@ -118,6 +118,11 @@ public:
 	OPTION(bool, miscthirdpersonrealangles, &Settings::Misc::ThirdPerson::RealAngles);
 	OPTION(int, miscthirdpersoncameraoffset, &Settings::Misc::ThirdPerson::CameraOffset);
 
+	OPTION(bool, miscviewmodeloffset, &Settings::Misc::ViewmodelOffset::Enabled);
+	OPTION(float, miscviewmodeloffsetx, &Settings::Misc::ViewmodelOffset::X);
+	OPTION(float, miscviewmodeloffsety, &Settings::Misc::ViewmodelOffset::Y);
+	OPTION(float, miscviewmodeloffsetz, &Settings::Misc::ViewmodelOffset::Z);
+
 	OPTION(bool, miscfreelookenabled, &Settings::Misc::FreeLook::Enabled);
 
 	OPTION(bool, miscchatmimic, &Settings::Misc::ChatMimic::Enabled);
@@ -548,5 +553,11 @@ public:
 		}
 
 		fin.close();
+
+		if (Settings::Visuals::Nightmode::Enabled)
+			Nightmode::Get().Execute();
+
+		if (Settings::Visuals::WorldColour::Enabled)
+			WorldColour::Execute();
 	}
 };

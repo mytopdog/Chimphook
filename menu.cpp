@@ -562,6 +562,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						static char convarName[64];
 						static char convarNameS[64];
 						static char convarNVal[64];
+						static bool callbackcv;
 
 						ImGui::BeginGroup();
 						{
@@ -570,7 +571,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							if (ImGui::Button("Find Convar"))
 							{
 								memset(convarNVal, 0, sizeof convarNVal);
+
 								strcpy(convarNameS, convarName);
+								memset(convarNVal, 0, sizeof convarNVal);
 							}
 							ImGui::Columns(1, nullptr, false);
 						}
@@ -586,9 +589,12 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGui::InputText("Value##ConvarEditorNewValue", convarNVal, 64); ImGui::NextColumn();
 								if (ImGui::Button("Set Value"))
 								{
+									if (callbackcv)
+										selc->m_fnChangeCallbacks.m_Size = 0;
+
 									selc->SetValue(convarNVal);
-									memset(convarNVal, 0, sizeof convarNVal);
-								}
+								} ImGui::SameLine();
+								ImGui::Checkbox("No Callback", &callbackcv);
 								ImGui::Columns(1, nullptr, false);
 							}
 							ImGui::EndGroup();
@@ -973,6 +979,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							}
 						}
 						ImGui::EndGroup();
+						ImGui::Separator();
 						ImGui::BeginGroupBox("VisualsChamsAll", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 						{
 							switch (vsespselected)
@@ -1003,6 +1010,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::EndGroupBox();
 					}
 					ImGui::EndGroupBox();
+					ImGui::Text("Glow");
 					ImGui::BeginGroupBox("GlowPlayers", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
 						static int vsglowselected = 0;
@@ -1022,6 +1030,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							}
 						}
 						ImGui::EndGroup();
+						ImGui::Separator();
 						ImGui::BeginGroupBox("VisualsGlowAll", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 						{
 							switch (vsglowselected)
@@ -1073,7 +1082,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 
 						static int wepsel = 0;
 
-						ImGui::BeginGroupBox("Weapon Selector", ImVec2(0, 350));
+						ImGui::BeginGroupBox("Weapon Selector", ImVec2(0, 275));
 						{
 							ImGui::Columns(2, nullptr, false);
 							ImGui::Text("Weapon");
@@ -1147,20 +1156,72 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 					}
 					ImGui::EndGroupBox();
 					ImGui::Columns(2, nullptr, false);
-					ImGui::Checkbox("Arms##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Enabled); ImGui::SameLine();
-					ImGui::Checkbox("Wireframe##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Wireframe); ImGui::NextColumn();
-					ImGuiEx::ColorEdit3("Colour##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Colour); ImGui::SameLine();
-					ImGui::Combo("Material##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Material, "Regular\0Flat\0Glossy"); ImGui::NextColumn();
+					ImGui::Text("Chams");
+					ImGui::BeginGroupBox("ViewmodelChams", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						static int vsvmcselected = 0;
 
-					ImGui::Checkbox("Sleeves##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Enabled); ImGui::SameLine();
-					ImGui::Checkbox("Wireframe##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Wireframe);  ImGui::NextColumn();
-					ImGuiEx::ColorEdit3("Colour##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Colour); ImGui::SameLine();
-					ImGui::Combo("Material##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Material, "Regular\0Flat\0Glossy"); ImGui::NextColumn();
-
-					ImGui::Checkbox("Weapons##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Enabled); ImGui::SameLine();
-					ImGui::Checkbox("Wireframe##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Wireframe);  ImGui::NextColumn();
-					ImGuiEx::ColorEdit3("Colour##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Colour); ImGui::SameLine();
-					ImGui::Combo("Material##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Material, "Regular\0Flat\0Glossy"); ImGui::NextColumn();
+						ImGui::BeginGroup();
+						{
+							bool vcsel = vsvmcselected == 0;
+							if (ImGui::ToggleButton("Arms##VisualsVMC", &vcsel, ImVec2(ImGui::GetWindowSize().x / 3, 20)))
+							{
+								vsvmcselected = 0;
+							}
+							vcsel = vsvmcselected == 1;
+							ImGui::SameLine(0, 0);
+							if (ImGui::ToggleButton("Sleeves##VisualsVMC", &vcsel, ImVec2(ImGui::GetWindowSize().x / 3, 20)))
+							{
+								vsvmcselected = 1;
+							}
+							vcsel = vsvmcselected == 2;
+							ImGui::SameLine(0, 0);
+							if (ImGui::ToggleButton("Weapons##VisualsVMC", &vcsel, ImVec2(ImGui::GetWindowSize().x / 3, 20)))
+							{
+								vsvmcselected = 2;
+							}
+						}
+						ImGui::EndGroup();
+						ImGui::Separator();
+						ImGui::BeginGroupBox("ViewmodelChamsSelected", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+						{
+							ImGui::Columns(2, nullptr, false);
+							switch (vsvmcselected)
+							{
+							case 0:
+								ImGui::Checkbox("Arms##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Enabled); ImGui::NextColumn();
+								ImGuiEx::ColorEdit3("Colour##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Colour); ImGui::NextColumn();
+								ImGui::Checkbox("Wireframe##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Wireframe);
+								ImGui::Combo("Material##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Material, "Regular\0Flat\0Glossy");
+								break;
+							case 1:
+								ImGui::Checkbox("Sleeves##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Enabled); ImGui::NextColumn();
+								ImGuiEx::ColorEdit3("Colour##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Colour); ImGui::NextColumn();
+								ImGui::Checkbox("Wireframe##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Wireframe);
+								ImGui::Combo("Material##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Material, "Regular\0Flat\0Glossy");
+								break;
+							case 2:
+								ImGui::Checkbox("Weapons##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Enabled); ImGui::NextColumn();
+								ImGuiEx::ColorEdit3("Colour##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Colour); ImGui::NextColumn();
+								ImGui::Checkbox("Wireframe##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Wireframe); 
+								ImGui::Combo("Material##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Material, "Regular\0Flat\0Glossy");
+								break;
+							}
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroupBox();
+					}
+					ImGui::EndGroupBox();
+					ImGui::NextColumn();
+					ImGui::Text("Viewmodel Offset");
+					ImGui::BeginGroupBox("ViewmodelOffsetXYZ", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						ImGui::Checkbox("Enabled", &Settings::Misc::ViewmodelOffset::Enabled);
+						ImGui::SliderFloat("Offset X", &Settings::Misc::ViewmodelOffset::X, -15.f, 15.f, "%.1f");
+						ImGui::SliderFloat("Offset Y", &Settings::Misc::ViewmodelOffset::Y, -15.f, 15.f, "%.1f");
+						ImGui::SliderFloat("Offset Z", &Settings::Misc::ViewmodelOffset::Z, -15.f, 15.f, "%.1f");
+					}
+					ImGui::EndGroupBox();
 					ImGui::Columns(1, nullptr, false);
 					break;
 				case 3:
@@ -1248,7 +1309,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::NextColumn();
 							if (ImGuiEx::ColorEdit4("Colour##World", &Settings::Visuals::WorldColour::Colour))
 							{
-								if (g_EngineClient->IsInGame() && Settings::Visuals::Nightmode::Enabled)
+								if (g_EngineClient->IsInGame() && Settings::Visuals::WorldColour::Enabled)
 								{
 									WorldColour::Execute();
 								}
@@ -1917,7 +1978,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 												player_record_t rec;
 												rec.Init(info.steamID64, info.szName, Utils::GetEpochTime(), "");
 
-												AddRecord(rec);
+												playerRecords.push_front(rec);
 
 												tabSelected = 1;
 												selectedR = info.steamID64;
@@ -2091,7 +2152,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 									player_record_t rec;
 									rec.Init(info.steamID64, info.szName, Utils::GetEpochTime(), note);
 
-									AddRecord(rec);
+									playerRecords.push_front(rec);
 
 									tabSelected = 1;
 									selectedR = info.steamID64;
@@ -2165,9 +2226,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 				}
 
 				int realSelected = 0;
-				for (int i = 0; i < g_playerRecords.size(); i++)
+				for (int i = 0; i < playerRecords.size(); i++)
 				{
-					if (g_playerRecords.at(i).steamID64 == selectedR)
+					if (playerRecords[i].steamID64 == selectedR)
 						realSelected = i;
 				}
 
@@ -2186,9 +2247,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 					ImGui::Separator();
 					ImGui::Columns(4, nullptr, false);
 
-					for (int i = 1; i < g_playerRecords.size(); i++)
+					for (int i = 0; i < playerRecords.size(); i++)
 					{
-						if (!g_playerRecords.at(i).initialized)
+						if (!playerRecords[i].initialized)
 							continue;
 
 						if (term[0])
@@ -2209,20 +2270,20 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 
 						if (ImGui::Selectable(std::to_string(i).c_str(), (bool)(realSelected = i), ImGuiSelectableFlags_SpanAllColumns))
 						{
-							selectedR = g_playerRecords.at(i).steamID64;
+							selectedR = playerRecords[i].steamID64;
 						}
 						ImGui::NextColumn();
 
-						if (g_playerRecords.at(i).name) ImGui::Text(g_playerRecords.at(i).name);
+						if (playerRecords[i].name) ImGui::Text(playerRecords[i].name);
 						ImGui::NextColumn();
 
-						if (g_playerRecords.at(i).steamID64) ImGui::Text(std::to_string(g_playerRecords.at(i).steamID64).c_str());
+						if (playerRecords[i].steamID64) ImGui::Text(std::to_string(playerRecords[i].steamID64).c_str());
 						ImGui::NextColumn();
 
-						long date = g_playerRecords.at(i).initDate;
-						std::tm* local = std::localtime((time_t*)date);
-						std::string time = std::asctime(local);
-						if (g_playerRecords.at(i).initDate) ImGui::Text(time.c_str());
+						long date = playerRecords[i].initDate;
+						//std::tm* local = std::localtime((time_t*)date);
+						//std::string time = std::asctime(local);
+						if (playerRecords[i].initDate) ImGui::Text(std::to_string(date).c_str());
 						ImGui::NextColumn();
 					}
 					ImGui::Columns(1, nullptr, false);
