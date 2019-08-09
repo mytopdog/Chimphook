@@ -122,9 +122,9 @@ void AutoCowboy(CUserCmd* cmd)
 	if (cmd->buttons & IN_FORWARD || cmd->buttons & IN_BACK || cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_MOVERIGHT)
 		return;
 
-	C_BaseEntity* GroundEntity = g_LocalPlayer->m_hGroundEntity();
+	// C_BaseEntity* GroundEntity = g_LocalPlayer->m_hGroundEntity();
 
-	/*C_BaseEntity* GroundEntity = nullptr;
+	C_BaseEntity* GroundEntity = nullptr;
 
 	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
 	{
@@ -135,7 +135,7 @@ void AutoCowboy(CUserCmd* cmd)
 
 		GroundEntity = groundEntity;
 		break;
-	}*/
+	}
 
 	Vector ownPos = g_LocalPlayer->m_vecOrigin();
 
@@ -146,7 +146,7 @@ void AutoCowboy(CUserCmd* cmd)
 			C_BasePlayer* GroundPlayer = (C_BasePlayer*)(GroundEntity);
 			Vector entPos;
 
-			/*if (Settings::Backtrack::Enabled) {
+			if (Settings::Backtrack::Enabled) {
 				backtrack_record_t record;
 
 				if (GetClosestTickCenter(GroundPlayer, record))
@@ -161,9 +161,9 @@ void AutoCowboy(CUserCmd* cmd)
 				}
 			}
 			else
-			{*/
+			{
 				entPos = GroundPlayer->m_vecOrigin();
-			//}
+			}
 
 			float yaw = cmd->viewangles.yaw;
 			Vector VecForward = ownPos - entPos;

@@ -968,8 +968,6 @@ void AutoRevolver(CUserCmd* cmd)
 		static int RevolverDelay = 0;
 		RevolverDelay++;
 
-		Utils::ConsolePrint("Auto Revolver");
-
 		if (RevolverDelay <= 15)
 			cmd->buttons |= IN_ATTACK;
 		else {

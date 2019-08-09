@@ -69,7 +69,7 @@ void Render::BeginScene()
 	draw_list->PushClipRectFullScreen();
 
 
-	Render::Get().RenderText("ChimpHook", ImVec2(10, 5), 12.f, Color(255, 255, 255, 255), false, false, f_Verdana);
+	Render::Get().RenderText("Chimphook", ImVec2(10, 5), 12.f, Color(255, 255, 255, 255), false, false, f_Verdana);
 
 	SniperCrosshair();
 	WallbangCrosshair();
