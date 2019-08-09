@@ -762,7 +762,9 @@ void DrawC4Damage(C_BaseEntity* c4ent)
 
 	if (bombTimer > 0.f && c4->m_bBombTicking())
 	{
+		Utils::ConsolePrint("Bombsite: ");
 		Utils::ConsolePrint(c4->m_nBombSite());
+		Utils::ConsolePrint("\n");
 
 		int SWIDTH, SHEIGHT;
 		g_EngineClient->GetScreenSize(SWIDTH, SHEIGHT);

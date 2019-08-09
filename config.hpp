@@ -223,7 +223,7 @@ public:
 	OPTION(Color, systemtexttheme, &Settings::System::TextTheme);
 	OPTION(Color, systemwindowtheme, &Settings::System::WindowTheme);
 	OPTION(bool, systemantiuntrust, &Settings::System::AntiUntrust);
-	OPTION(bool,  systemantiobs, &Settings::System::AntiOBS);
+	OPTION(bool, systemantiobs, &Settings::System::AntiOBS);
 	OPTION(bool, systemplayerlistshowlocalplayer, &Settings::System::PlayerList::ShowLocalplayer);
 	OPTION(bool, systemplayerlistshowenemies, &Settings::System::PlayerList::ShowEnemies);
 	OPTION(bool, systemplayerlistshowbots, &Settings::System::PlayerList::ShowBots);
