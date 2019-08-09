@@ -28,6 +28,7 @@
 
 bool Settings::System::Unload = false;
 bool Settings::System::AntiUntrust = true;
+bool Settings::System::AntiOBS = true;
 bool Settings::Misc::RemoveFootsteps = false;
 bool Settings::Misc::AutoAccept = true;
 bool Settings::Misc::TranslateBot = false;
@@ -599,7 +600,7 @@ namespace Hooks
 
 		static bool first = true; static QAngle oAngle = QAngle(0, 0, 0); static float timeremaining = 1000.f; static float maxtime = 0.4f;
 
-		if (!g_Input->m_fCameraInThirdPerson) {
+		if (AimbotTarget && !g_Input->m_fCameraInThirdPerson) {
 			if (!aimAngle.IsZero())
 			{
 				if ((vsView->angles - aimAngle).Length() < 1.f || timeremaining < 0.f) { aimAngle = oaimAngle = oAngle = QAngle(0, 0, 0); first = true; timeremaining = 1000.f; return ofunc(g_ClientMode, edx, vsView); }
@@ -614,7 +615,7 @@ namespace Hooks
 						timeremaining = maxtime;
 					}
 
-					auto deltaAngle = aimAngle - vsView->angles;
+					QAngle deltaAngle = aimAngle - vsView->angles;
 					Math::ClampAngles(deltaAngle);
 
 					Viewmodel->SetAbsAngles(vsView->angles + deltaAngle);
@@ -625,6 +626,10 @@ namespace Hooks
 					Math::ClampAngles(aimAngle);
 				}
 			}
+		}
+		else
+		{
+			aimAngle.Init(0, 0, 0);
 		}
 
 		ofunc(g_ClientMode, edx, vsView);

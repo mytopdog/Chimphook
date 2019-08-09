@@ -225,6 +225,7 @@ public:
 	NETVAR(float, m_flDefuseLength, "DT_PlantedC4", "m_flDefuseLength");
 	NETVAR(float, m_flDefuseCountDown, "DT_PlantedC4", "m_flDefuseCountDown");
 	NETVAR(CHandle<C_BasePlayer>, m_hBombDefuser, "DT_PlantedC4", "m_hBombDefuser");
+	NETVAR(int, m_nBombSite, "DT_PlantedC4", "m_nBombSite");
 };
 
 class C_BaseAttributableItem : public C_BaseEntity

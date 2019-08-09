@@ -708,8 +708,10 @@ bool CanTrigger(CUserCmd* cmd, QAngle viewAngles)
 
 void DoAim(CUserCmd* cmd, bool& bSendPacket)
 {
-	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !g_EngineClient->IsInGame() || !g_LocalPlayer->m_hActiveWeapon())
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive() || !g_EngineClient->IsInGame() || !g_LocalPlayer->m_hActiveWeapon()) {
+		AimbotTarget = nullptr;
 		return;
+	}
 
 	QAngle oldAngle = cmd->viewangles;
 	float oldForward = cmd->forwardmove;
@@ -720,14 +722,17 @@ void DoAim(CUserCmd* cmd, bool& bSendPacket)
 
 	ConVar* recoil_scale = g_CVar->FindVar("weapon_recoil_scale");
 
-	if (cmd->buttons & IN_USE)
+	if (cmd->buttons & IN_USE) {
+		AimbotTarget = nullptr;
 		return;
+	}
 
 	if (Settings::AntiAim::Pitch::Type != 0 || Settings::AntiAim::Yaw::Type != 0)
 	{
 		if (!Settings::Aim::TestAimbot::Enabled || !Settings::Aim::TestAimbot::_enabled) {
 			if (!CanFire(cmd))
 			{
+				AimbotTarget = nullptr;
 				return AntiAim(cmd, bSendPacket);
 			}
 		}
@@ -736,6 +741,7 @@ void DoAim(CUserCmd* cmd, bool& bSendPacket)
 		{
 			if (!CanFire(cmd))
 			{
+				AimbotTarget = nullptr;
 				return AntiAim(cmd, bSendPacket);
 			}
 		}
@@ -816,10 +822,12 @@ void DoAim(CUserCmd* cmd, bool& bSendPacket)
 			{
 				if (!CanFire(cmd))
 				{
+					AimbotTarget = nullptr;
 					return AntiAim(cmd, bSendPacket);
 				}
 			}
 
+			AimbotTarget = nullptr;
 			RCS(cmd);
 		}
 	}
@@ -829,10 +837,12 @@ void DoAim(CUserCmd* cmd, bool& bSendPacket)
 		{
 			if (!CanFire(cmd))
 			{
+				AimbotTarget = nullptr;
 				return AntiAim(cmd, bSendPacket);
 			}
 		}
 
+		AimbotTarget = nullptr;
 		RCS(cmd);
 	}
 }

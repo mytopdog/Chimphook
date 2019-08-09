@@ -749,7 +749,7 @@ void DrawC4Damage(C_BaseEntity* c4ent)
 	int SWidth, SHeight;
 	g_EngineClient->GetScreenSize(SWidth, SHeight);
 
-	if (c4Damage > 0) {
+	if (c4Damage > 0.f) {
 		Render::Get().RenderText(dmgs, ImVec2(20, SHeight / 2), 32.f, Color(255, 255, 255, 255), false, true, f_Verdana);
 		ImVec2 sz = f_Verdana->CalcTextSizeA(32.f, FLT_MAX, 0.f, dmgs.c_str());
 
@@ -762,6 +762,8 @@ void DrawC4Damage(C_BaseEntity* c4ent)
 
 	if (bombTimer > 0.f && c4->m_bBombTicking())
 	{
+		Utils::ConsolePrint(c4->m_nBombSite());
+
 		int SWIDTH, SHEIGHT;
 		g_EngineClient->GetScreenSize(SWIDTH, SHEIGHT);
 
