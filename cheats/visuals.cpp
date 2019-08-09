@@ -732,6 +732,9 @@ float CSGO_Armor(float flDamage, int ArmorValue)
 
 void DrawC4Damage(C_BaseEntity* c4ent)
 {
+	if (!Settings::ESP::Others::C4::Enabled)
+		return;
+
 	C_PlantedC4* c4 = (C_PlantedC4*)c4ent;
 
 	float flDistance = g_LocalPlayer->m_vecOrigin().DistTo(c4->m_vecOrigin());
@@ -762,9 +765,11 @@ void DrawC4Damage(C_BaseEntity* c4ent)
 
 	if (bombTimer > 0.f && c4->m_bBombTicking())
 	{
-		Utils::ConsolePrint("Bombsite: ");
-		Utils::ConsolePrint(c4->m_nBombSite());
-		Utils::ConsolePrint("\n");
+		std::string bombsite = "Bombsite ";
+		if (c4->m_nBombSite())
+			bombsite += "B";
+		else
+			bombsite += "A";
 
 		int SWIDTH, SHEIGHT;
 		g_EngineClient->GetScreenSize(SWIDTH, SHEIGHT);
@@ -775,6 +780,7 @@ void DrawC4Damage(C_BaseEntity* c4ent)
 		float perc = bombTimer / 40 * 100;
 		std::string timer = std::to_string(bombTimer);
 
+		Render::Get().RenderText(bombsite, ImVec2(SWIDTH / 2, SHEIGHT / 48 * 7.5), 10.f, Color(255, 255, 255, 255), true, false, f_Verdana);
 		Render::Get().RenderBoxFilled(startPos.x, startPos.y, endPos.x, endPos.y, Color(35, 35, 35, 200), 1, 12.f);
 		Render::Get().RenderBoxFilled(startPos.x + 3, startPos.y + 2, startPos.x + (width / 100 * perc), endPos.y - 2, Color(255, 140, 0, 230), 1, 12.f);
 		Render::Get().RenderText(timer, ImVec2(SWIDTH / 2, SHEIGHT / 48 * 8.5), 10.f, Color(255, 255, 255, 255), true, false, f_Verdana);
