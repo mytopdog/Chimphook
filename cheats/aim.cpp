@@ -878,7 +878,12 @@ void Triggerbot(CUserCmd* pCmd)
 
 	g_EngineTrace->TraceRay(ray, MASK_SHOT, &pTraceFilter, &tr);
 
-	C_BasePlayer * pl = (C_BasePlayer*)tr.hit_entity;
+	C_BaseEntity* ent = (C_BaseEntity*)tr.hit_entity;
+
+	if (!ent || !ent->IsPlayer())
+		return;
+
+	C_BasePlayer* pl = (C_BasePlayer*)tr.hit_entity;
 
 	if (pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum())
 		return;
