@@ -210,7 +210,7 @@ namespace Hooks
 				gameoverlay_return_address = (uintptr_t)(_ReturnAddress());
 		}
 
-		if (gameoverlay_return_address != (uintptr_t)(_ReturnAddress()) && true)
+		if (gameoverlay_return_address != (uintptr_t)(_ReturnAddress()) && Settings::System::AntiOBS)
 			return oEndScene(pDevice);
 
 		static ConVar* Sky3D = g_CVar->FindVar("r_3dsky");/*

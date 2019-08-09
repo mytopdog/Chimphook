@@ -425,6 +425,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 				{
 				case 0:
 					ImGui::Checkbox("Anti Untrust", &Settings::System::AntiUntrust);
+					ImGui::Checkbox("Anti OBS", &Settings::System::AntiOBS);
 					/*	if (ImGui::Button("Queue Dust2"))
 						{
 							Utils::QueueDust2();

@@ -469,6 +469,7 @@ namespace Settings
 		extern Color WindowTheme;
 		extern bool Unload;
 		extern bool AntiUntrust;
+		extern bool AntiOBS;
 
 		extern float SpectatorPosX;
 		extern float SpectatorPosY;
