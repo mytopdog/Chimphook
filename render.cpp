@@ -1,10 +1,12 @@
 #include "render.hpp"
-#include "cheats/visuals.hpp"
-#include "cheats/misc.hpp"
+#include "cheats/Visuals/Visuals.hpp"
+#include "cheats/Misc/Misc.hpp"
 #include "fonts/andalemono.h"
+#include "fonts/arial.h"
 #include "fonts/verdana.h"
 
 ImFont* f_Courier;
+ImFont* f_Arial;
 ImFont* f_Verdana;
 ImFont* f_AndaleMono;
 
@@ -37,9 +39,15 @@ void Render::InitFonts()
 		0,
 	};
 
+	f_Arial= ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(arial_compressed_data,
+		arial_compressed_size,
+		10.f,
+		nullptr,
+		ranges);
+
 	f_Verdana = ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(verdana_compressed_data,
 		verdana_compressed_size,
-		12.f,
+		10.f,
 		nullptr,
 		ranges);
 
@@ -49,9 +57,9 @@ void Render::InitFonts()
 		nullptr,
 		ranges);
 
-	ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(verdana_compressed_data,
-		verdana_compressed_size,
-		12.f,
+	ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(andalemono_compressed_data,
+		andalemono_compressed_size,
+		10.f,
 		nullptr,
 		ranges);
 }
@@ -69,7 +77,7 @@ void Render::BeginScene()
 	draw_list->PushClipRectFullScreen();
 
 
-	Render::Get().RenderText("Chimphook", ImVec2(10, 5), 12.f, Color(255, 255, 255, 255), false, false, f_Verdana);
+	Render::Get().RenderText("Chimphook", ImVec2(10, 5), 12.f, Color(255, 255, 255, 255), false, false, f_Arial);
 
 	SniperCrosshair();
 	WallbangCrosshair();
@@ -80,7 +88,7 @@ void Render::BeginScene()
 		Visuals::Get().AddToDrawList();
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->IsAlive())
-		grenade_prediction::Get().Paint();
+		GrenadePrediction::Get().Paint();
 
 	if (g_EngineClient->IsInGame() && g_LocalPlayer && g_LocalPlayer->SelfOrObs()->IsAlive())
 		ZeusRange();

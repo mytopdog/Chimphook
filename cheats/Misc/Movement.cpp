@@ -1,115 +1,8 @@
-#include "movement.hpp"
-#include "backtracking.hpp"
-#include "../helpers/math.hpp"
+#include "Movement.hpp"
 
-bool Settings::Misc::BunnyHop = false;
-bool Settings::Misc::AutoStrafer = false;
 
 bool Settings::Misc::AutoCowboy = false;
 bool Settings::Misc::ReverseCowboy = false;
-
-bool Settings::Misc::BlockBot = false;
-
-void BunnyHop(CUserCmd* cmd)
-{
-	if (!Settings::Misc::BunnyHop)
-		return;
-
-	static bool jumped_last_tick = false;
-	static bool should_fake_jump = false;
-
-	if (!jumped_last_tick && should_fake_jump)
-	{
-		should_fake_jump = false;
-		cmd->buttons |= IN_JUMP;
-	}
-	else if (cmd->buttons & IN_JUMP)
-	{
-		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
-		{
-			jumped_last_tick = true;
-			should_fake_jump = true;
-		}
-		else
-		{
-			cmd->buttons &= ~IN_JUMP;
-			jumped_last_tick = false;
-		}
-	}
-	else
-	{
-		jumped_last_tick = false;
-		should_fake_jump = false;
-	}
-}
-
-float get_delta(float hspeed, float maxspeed, float airaccelerate)
-{
-	auto term = (30.f - (airaccelerate * (float)maxspeed / 66.f)) / hspeed;
-
-	if (term < 1.0f && term > -1.0f)
-	{
-		return acos(term);
-	}
-
-	return 0.f;
-}
-
-void AutoStrafer(CUserCmd* cmd)
-{
-	if (!Settings::Misc::AutoStrafer)
-		return;
-
-	if (!g_EngineClient->IsInGame() || !g_LocalPlayer->IsAlive() || g_LocalPlayer->m_nMoveType() & MOVETYPE_NOCLIP)
-		return;
-
-	if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND)) {
-		if (cmd->mousedx > 1 || cmd->mousedx < -1)
-		{
-			cmd->sidemove = cmd->mousedx < 0.f ? -400.f : 400.f;
-		}
-		else
-		{
-			cmd->forwardmove = 5850.f / g_LocalPlayer->m_vecVelocity().Length2D();
-			cmd->sidemove = (cmd->command_number % 2) == 0 ? -400.f : 400.f;
-		}
-	}
-}
-
-float distance(float x1, float y1, float x2, float y2)
-{
-	return sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
-}
-
-bool GetClosestTickCenter(C_BasePlayer* pl, backtrack_record_t& pRecord)
-{
-	float dist = FLT_MAX;
-	backtrack_record_t closest;
-	bool found = false;
-
-	for (int i = 0; i < Backtrack::Get().records[pl->EntIndex()].size(); i++)
-	{
-		backtrack_record_t record = Backtrack::Get().records[pl->EntIndex()][i];
-
-		if (!Backtrack::Get().IsValidTick(record.simtime))
-			continue;
-
-		float distt = distance(g_LocalPlayer->m_vecOrigin().x, g_LocalPlayer->m_vecOrigin().y, record.origin.x, record.origin.y);
-
-		if (distt < dist) {
-			closest = record;
-			dist = distt;
-			found = true;
-		}
-	}
-
-	if (found)
-	{
-		pRecord = closest;
-	}
-
-	return found;
-}
 
 void AutoCowboy(CUserCmd* cmd)
 {
@@ -124,20 +17,6 @@ void AutoCowboy(CUserCmd* cmd)
 
 	C_BaseEntity* GroundEntity = g_LocalPlayer->m_hGroundEntity();
 
-	/*
-	C_BaseEntity* GroundEntity = nullptr;
-
-	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
-	{
-		C_BaseEntity* groundEntity = C_BaseEntity::GetEntityByIndex(i);
-
-		if (!groundEntity || !groundEntity->IsPlayer() || groundEntity->IsDormant() || groundEntity == g_LocalPlayer)
-			continue;
-
-		GroundEntity = groundEntity;
-		break;
-	}
-	*/
 	Vector ownPos = g_LocalPlayer->m_vecOrigin();
 
 	if (GroundEntity)
@@ -147,24 +26,7 @@ void AutoCowboy(CUserCmd* cmd)
 			C_BasePlayer* GroundPlayer = (C_BasePlayer*)(GroundEntity);
 			Vector entPos;
 
-		/*	if (Settings::Backtrack::Enabled) {
-				backtrack_record_t record;
-
-				if (GetClosestTickCenter(GroundPlayer, record))
-				{
-					entPos = GroundPlayer->m_vecOrigin();
-
-					cmd->tick_count = record.simtime;
-				}
-				else
-				{
-					entPos = GroundPlayer->m_vecOrigin();
-				}
-			}
-			else
-			{*/
-				entPos = GroundPlayer->m_vecOrigin();
-			//}
+			entPos = GroundPlayer->m_vecOrigin();
 
 			float yaw = cmd->viewangles.yaw;
 			Vector VecForward = ownPos - entPos;
@@ -192,7 +54,7 @@ void AutoCowboy(CUserCmd* cmd)
 				continue;
 
 			Vector plPos = pl->m_vecOrigin();
-			C_BaseEntity * GroundEntity = pl->m_hGroundEntity();
+			C_BaseEntity* GroundEntity = pl->m_hGroundEntity();
 
 			if (GroundEntity)
 			{
@@ -221,6 +83,32 @@ void AutoCowboy(CUserCmd* cmd)
 		}
 	}
 }
+
+bool Settings::Misc::AutoStrafer = false;
+
+void AutoStrafer(CUserCmd* cmd)
+{
+	if (!Settings::Misc::AutoStrafer)
+		return;
+
+	if (!g_EngineClient->IsInGame() || !g_LocalPlayer->IsAlive() || g_LocalPlayer->m_nMoveType() & MOVETYPE_NOCLIP)
+		return;
+
+	if (!(g_LocalPlayer->m_fFlags() & FL_ONGROUND))
+	{
+		if (cmd->mousedx > 1 || cmd->mousedx < -1)
+		{
+			cmd->sidemove = cmd->mousedx < 0.f ? -400.f : 400.f;
+		}
+		else
+		{
+			cmd->forwardmove = 5850.f / g_LocalPlayer->m_vecVelocity().Length2D();
+			cmd->sidemove = (cmd->command_number % 2) == 0 ? -400.f : 400.f;
+		}
+	}
+}
+
+bool Settings::Misc::BlockBot = false;
 
 void BlockBot(CUserCmd* cmd)
 {
@@ -263,26 +151,42 @@ void BlockBot(CUserCmd* cmd)
 	g_EngineClient->SetViewAngles(&angles);
 }
 
+bool Settings::Misc::BunnyHop = false;
 
-// EdgeJumper, not perfect as it also jumps when you're not running towards where you want to jump off, prob trace a ray 
-// and check if it hits the ground infront.
-void EdgeJumper(CUserCmd* cmd)
+void Bunnyhop(CUserCmd* cmd)
 {
-	if (!Settings::Misc::EdgeJumper)
+	if (!Settings::Misc::BunnyHop)
 		return;
 
-	float vel = g_LocalPlayer->m_vecVelocity().Length2D();
+	static bool jumped_last_tick = false;
+	static bool should_fake_jump = false;
 
-	if (vel > 135)
+	if (!jumped_last_tick && should_fake_jump)
 	{
-		int flags = g_LocalPlayer->m_fFlags();
-
-		if (flags & FL_PARTIALGROUND)
+		should_fake_jump = false;
+		cmd->buttons |= IN_JUMP;
+	}
+	else if (cmd->buttons & IN_JUMP)
+	{
+		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
 		{
-			cmd->buttons |= IN_JUMP;
+			jumped_last_tick = true;
+			should_fake_jump = true;
+		}
+		else
+		{
+			cmd->buttons &= ~IN_JUMP;
+			jumped_last_tick = false;
 		}
 	}
+	else
+	{
+		jumped_last_tick = false;
+		should_fake_jump = false;
+	}
 }
+
+bool Settings::Misc::MoonWalk = false;
 
 void MoonWalk(CUserCmd* cmd)
 {
@@ -307,3 +211,113 @@ void MoonWalk(CUserCmd* cmd)
 		g_EngineClient->ExecuteClientCmd("bind w +forward; bind s +back; bind a +moveleft; bind d +moveright");
 	}
 }
+
+bool Settings::Misc::SlowWalk::Enabled = false;
+int Settings::Misc::SlowWalk::Amount = 100;
+
+void SlowWalk(CUserCmd* cmd)
+{
+	if (!Settings::Misc::SlowWalk::Enabled || !GetAsyncKeyState(VK_SHIFT))
+		return;
+
+	C_BaseCombatWeapon* weapon_handle = g_LocalPlayer->m_hActiveWeapon().Get();
+
+	if (!weapon_handle)
+		return;
+
+	float amount = 0.0034f * Settings::Misc::SlowWalk::Amount;
+
+	Vector velocity = g_LocalPlayer->m_vecVelocity();
+	QAngle direction;
+
+	Math::VectorAngles(velocity, direction);
+
+	float speed = velocity.Length2D();
+
+	direction.yaw = cmd->viewangles.yaw - direction.yaw;
+
+	Vector forward;
+
+	Math::AngleVectors(direction, forward);
+
+	Vector source = forward * -speed;
+
+	if (speed >= (weapon_handle->GetCSWeaponData()->max_speed * amount))
+	{
+		cmd->forwardmove = source.x;
+		cmd->sidemove = source.y;
+	}
+}
+
+bool Settings::Misc::InfiniteDuck = false;
+
+void InfiniteDuck(CUserCmd* cmd)
+{
+	if (!Settings::Misc::InfiniteDuck)
+		return;
+
+	cmd->buttons |= IN_BULLRUSH;
+}
+
+bool Settings::Misc::FakeLag::Enabled = false;
+int Settings::Misc::FakeLag::Choke = 0;
+
+void FakeLag(CUserCmd* cmd, bool& bSendPacket)
+{
+	if (!Settings::Misc::FakeLag::Enabled || !g_EngineClient->IsInGame() || !g_LocalPlayer)
+		return;
+
+	if (cmd->buttons & IN_ATTACK) return;
+	if (g_LocalPlayer->m_vecVelocity() == Vector(0, 0, 0)) return;
+
+	int iChoke = Settings::Misc::FakeLag::Choke;
+
+	static int iFakeLag = -1;
+	iFakeLag++;
+
+	if (iFakeLag <= iChoke && iFakeLag > -1)
+	{
+		bSendPacket = false;
+	}
+	else
+	{
+		bSendPacket = true;
+		iFakeLag = -1;
+	}
+}
+
+bool Settings::Misc::FakeDuck::Enabled = false;
+
+void FakeDuck(CUserCmd* cmd, bool& bSendPacket)
+{
+	if (!Settings::Misc::FakeDuck::Enabled)
+		return;
+
+	if (!g_LocalPlayer->IsAlive())
+		return;
+
+	static bool counter = false;
+
+	bool once = false;
+
+	if (Settings::Misc::FakeDuck::_enabled)
+	{
+		static bool counter = false;
+		static int counters = 0;
+		if (counters == 9)
+		{
+			counters = 0;
+			counter = !counter;
+		}
+		counters++;
+		if (counter)
+		{
+			cmd->buttons |= IN_DUCK;
+			bSendPacket = true;
+		}
+		else
+			cmd->buttons &= ~IN_DUCK;
+	}
+}
+
+bool Settings::Misc::EdgeJumper = false;

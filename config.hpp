@@ -4,7 +4,7 @@
 #include <memory>
 #include <unordered_map>
 #include <vector>
-#include "cheats/misc.hpp"
+#include "cheats/Misc/Misc.hpp"
 #include "valve_sdk/sdk.hpp"
 #include "singleton.hpp"
 #include "helpers/utils.hpp"
@@ -182,19 +182,19 @@ public:
 
 	OPTION(bool, esplocalplayerenabled, &Settings::ESP::Players::Localplayer::Enabled);
 	OPTION(bool, esplocalplayeroccluded, &Settings::ESP::Players::Localplayer::Occluded);
-	OPTION(bool, esplocalplayerboxes, &Settings::ESP::Players::Localplayer::Boxes);
-	OPTION(bool, esplocalplayerskeletons, &Settings::ESP::Players::Localplayer::Skeletons);
-	OPTION(bool, esplocalplayernames, &Settings::ESP::Players::Localplayer::Names);
+	OPTION(bool, esplocalplayerboxes, &Settings::ESP::Players::Localplayer::Box);
+	OPTION(bool, esplocalplayerskeletons, &Settings::ESP::Players::Localplayer::Skeleton);
+	OPTION(bool, esplocalplayernames, &Settings::ESP::Players::Localplayer::Name);
 	OPTION(bool, esplocalplayerhealth, &Settings::ESP::Players::Localplayer::Health);
-	OPTION(bool, esplocalplayerweapons, &Settings::ESP::Players::Localplayer::Weapons);
-	OPTION(bool, esplocalplayerpositions, &Settings::ESP::Players::Localplayer::Positions);
+	OPTION(bool, esplocalplayerweapons, &Settings::ESP::Players::Localplayer::Weapon);
+	OPTION(bool, esplocalplayerpositions, &Settings::ESP::Players::Localplayer::Position);
 
-	OPTION(Color, esplocalplayercolourboxes, &Settings::ESP::Players::Localplayer::Colours::Boxes);
-	OPTION(Color, esplocalplayercolourskeletons, &Settings::ESP::Players::Localplayer::Colours::Skeletons);
-	OPTION(Color, esplocalplayercolournames, &Settings::ESP::Players::Localplayer::Colours::Names);
+	OPTION(Color, esplocalplayercolourboxes, &Settings::ESP::Players::Localplayer::Colours::Box);
+	OPTION(Color, esplocalplayercolourskeletons, &Settings::ESP::Players::Localplayer::Colours::Skeleton);
+	OPTION(Color, esplocalplayercolournames, &Settings::ESP::Players::Localplayer::Colours::Name);
 	OPTION(Color, esplocalplayercolourhealth, &Settings::ESP::Players::Localplayer::Colours::Health);
-	OPTION(Color, esplocalplayercolourweapons, &Settings::ESP::Players::Localplayer::Colours::Weapons);
-	OPTION(Color, esplocalplayercolourpositions, &Settings::ESP::Players::Localplayer::Colours::Positions);
+	OPTION(Color, esplocalplayercolourweapons, &Settings::ESP::Players::Localplayer::Colours::Weapon);
+	OPTION(Color, esplocalplayercolourpositions, &Settings::ESP::Players::Localplayer::Colours::Position);
 
 	OPTION(bool, glowteammatesenabled, &Settings::ESP::Glow::Players::Teammates::Enabled);
 	OPTION(bool, glowteammatescover, &Settings::ESP::Glow::Players::Teammates::Cover);

@@ -1,4 +1,4 @@
-﻿#include "backtracking.hpp"
+#include "backtracking.hpp"
 #include "../helpers/math.hpp"
 
 convars cvars;
@@ -40,7 +40,8 @@ bool Backtrack::IsValidTick(float simtime)
 
 void Backtrack::UpdateEntities()
 {
-	if (!Settings::Backtrack::Enabled || !g_LocalPlayer || !g_LocalPlayer->IsAlive()) {
+	if (!Settings::Backtrack::Enabled || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
+	{
 		if (records->empty())
 			records->clear();
 
@@ -51,7 +52,8 @@ void Backtrack::UpdateEntities()
 	{
 		C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-		if (!pl || pl == g_LocalPlayer || !pl->IsAlive() || pl->IsDormant()) {
+		if (!pl || pl == g_LocalPlayer || !pl->IsAlive() || pl->IsDormant())
+		{
 			records[i].clear();
 
 			continue;
@@ -64,7 +66,7 @@ void Backtrack::UpdateEntities()
 		int vars_count = *(int*)((uintptr_t)var_map + 0x14);
 
 		for (int j = 0; j < vars_count; j++)
-			*(uintptr_t*)(*(uintptr_t*)var_map + j * 0xC) = 0;
+			* (uintptr_t*)(*(uintptr_t*)var_map + j * 0xC) = 0;
 
 		backtrack_record_t record;
 		record.angs = pl->GetAngles();
@@ -85,7 +87,7 @@ void Backtrack::UpdateEntities()
 		while (records[i].size() > 3 && records[i].size() > (size_t)TIME_TO_TICKS((float)Settings::Backtrack::ms / 1000.f))
 			records[i].pop_back();
 
-		if (auto invalid = std::find_if(std::cbegin(records[i]), std::cend(records[i]), [](const backtrack_record_t & rec) { return !Backtrack::Get().IsValidTick(rec.simtime); }); invalid != std::cend(records[i]))
+		if (auto invalid = std::find_if(std::cbegin(records[i]), std::cend(records[i]), [](const backtrack_record_t& rec) { return !Backtrack::Get().IsValidTick(rec.simtime); }); invalid != std::cend(records[i]))
 			records[i].erase(invalid, std::cend(records[i]));
 	}
 }
@@ -170,79 +172,3 @@ void Backtrack::Run(CUserCmd* cmd)
 		selectedr = 0;
 	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

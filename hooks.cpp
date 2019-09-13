@@ -10,15 +10,17 @@
 #include "settings.hpp"
 #include "helpers/input.hpp"
 #include "helpers/utils.hpp"
+
 #include "cheats/hotkeys.hpp"
-#include "cheats/movement.hpp"
-#include "cheats/visuals.hpp"
-#include "cheats/misc.hpp"
+#include "cheats/Misc/Movement.hpp"
+#include "cheats/Visuals/Visuals.hpp"
+#include "cheats/Misc/Misc.hpp"
 #include "cheats/aim.hpp"
 #include "cheats/chattranslator.h"
-#include "cheats/backtracking.hpp"
+#include "cheats/Aimbot/Backtracking.hpp"
 
 #include "helpers/skinchangerparser.hpp"
+#include "helpers/protobuff.hpp"
 #include "cheats/chamsPreview/test.cpp"
 
 #include "imgui/impl/imgui_impl_dx9.h"
@@ -26,12 +28,16 @@
 
 #pragma intrinsic(_ReturnAddress)  
 
+// Other settings that don't belong in a class such as Misc, Visuals.
 bool Settings::System::Unload = false;
 bool Settings::System::AntiUntrust = true;
 bool Settings::System::AntiOBS = true;
+
 bool Settings::Misc::RemoveFootsteps = false;
+bool Settings::Misc::RankReveal = true;
 bool Settings::Misc::AutoAccept = true;
 bool Settings::Misc::TranslateBot = false;
+
 bool Settings::Misc::ViewmodelFOV::Enabled = false;
 int Settings::Misc::ViewmodelFOV::FOV = 68;
 bool Settings::Misc::CameraFOV::Enabled = false;
@@ -135,21 +141,6 @@ namespace Hooks
 			o_nSequence = (RecvVarProxyFn)seq->m_ProxyFn;
 			seq->m_ProxyFn = (RecvVarProxyFn)SkinChanger::nSequence;
 		}
-
-		/*
-		g_MatSystem->forceBeginRenderTargetAllocation();
-		mirrorTexture = g_MatSystem->CreateNamedRenderTargetTextureEx(
-			"mirrorcam_rt", 1, 1, RT_SIZE_FULL_FRAME_BUFFER, g_MatSystem->GetBackBufferFormat(),
-			MATERIAL_RT_DEPTH_SHARED, TEXTUREFLAGS_CLAMPS | TEXTUREFLAGS_CLAMPT,
-			CREATERENDERTARGETFLAGS_HDR
-		);
-		g_MatSystem->forceEndRenderTargetAllocation();
-
-		std::ofstream("csgo\\materials\\mirrorcam.vmt") << R"#("UnlitGeneric" {
-			"$basetexture" "mirrorcam_rt"
-		})#";
-
-		mirrorMaterial = g_MatSystem->FindMaterial("mirrorcam.vmt");*/
 	}
 	//--------------------------------------------------------------------------------
 	void Shutdown()
@@ -268,7 +259,6 @@ namespace Hooks
 		static auto oSceneEnd = viewrender_hook.get_original<decltype(&hkSceneEnd)>(index::SceneEnd);
 
 		Chams::SceneEnd();
-		draw_test();
 
 		oSceneEnd(thisptr, edx);
 	}
@@ -310,11 +300,14 @@ namespace Hooks
 		if (!cmd || !cmd->command_number)
 			return;
 
+		static QAngle old;
+		QAngle oldang = cmd->viewangles;
+
 		AutoRevolver(cmd);
 		MoonWalk(cmd);
 		AutoDefuse(cmd);
 		Triggerbot(cmd);
-		BunnyHop(cmd);
+		Bunnyhop(cmd);
 		AutoStrafer(cmd);
 		AutoCowboy(cmd);
 		BlockBot(cmd);
@@ -323,7 +316,7 @@ namespace Hooks
 		AutoReload(cmd);
 		SelfNade(cmd);
 		SlowWalk(cmd);
-		EdgeJumper(cmd);
+		// EdgeJumper(cmd); // Needs fixing pl0x
 
 		RadarHack();
 		RecoilCrosshair();
@@ -340,7 +333,7 @@ namespace Hooks
 
 		ChatSpammer::Get().OnCreateMove();
 		ClantagScroller::Get().OnCreateMove();
-		grenade_prediction::Get().View();
+		GrenadePrediction::Get().View();
 
 		FakeLag(cmd, bSendPacket);
 		FakeDuck(cmd, bSendPacket);
@@ -366,6 +359,17 @@ namespace Hooks
 			CreateMove::lastTickViewAngles = cmd->viewangles;
 			CreateMove::lastbuttons = cmd->buttons;
 		}
+
+		if (std::abs(cmd->viewangles.yaw - old.yaw) > 32.f)
+		{
+			//cmd->upmove = NAN;
+			//cmd->sidemove = NAN;
+			///cmd->forwardmove = NAN;
+
+			//Utils::ConsolePrint("UP/SIDE/FORWARDMOVE set to NaN, %i\n", rand() % 1000);
+		}
+
+		old = cmd->viewangles;
 
 		for (int i = 0; i < g_EntityList->GetMaxEntities(); i++)
 		{
@@ -574,11 +578,12 @@ namespace Hooks
 
 		ofunc(g_CHLClient, edx, stage);
 
+		/*
 		if (pAimPunch != nullptr && pViewPunch != nullptr)
 		{
 			*pAimPunch = vecAimPunch;
 			*pViewPunch = vecViewPunch;
-		}
+		}*/
 	}
 	//--------------------------------------------------------------------------------
 	void __fastcall hkOverrideView(void* _this, int edx, CViewSetup* vsView)
@@ -705,11 +710,6 @@ namespace Hooks
 			{
 				return false;
 			}
-		}
-
-		if (type == CS_UM_VoteStart && Settings::Misc::AntiKick)
-		{
-			AntiKick(msg_data, length);
 		}
 
 		return oDispatchUserMessage(ecx, type, a3, length, msg_data);

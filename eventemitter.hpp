@@ -1,8 +1,11 @@
  #pragma once
 #include "valve_sdk/csgostructs.hpp";
-#include "cheats/misc.hpp"
-#include "cheats/visuals.hpp"
+#include "cheats/Misc/Misc.hpp"
+#include "cheats/Visuals/Visuals.hpp"
 #include "menu.hpp"
+
+bool Settings::Misc::Sounds::HitSound::Enabled = false;
+int Settings::Misc::Sounds::HitSound::Sound = 0;
 
 static constexpr const char* hitSounds[4]{
 	"play physics/metal/metal_solid_impact_bullet2",

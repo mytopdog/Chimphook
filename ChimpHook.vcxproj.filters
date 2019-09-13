@@ -225,9 +225,6 @@
     <ClInclude Include="hooks.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="cheats\movement.hpp">
-      <Filter>Source Files\cheats</Filter>
-    </ClInclude>
     <ClInclude Include="settings.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -265,12 +262,6 @@
       <Filter>Source Files\helpers</Filter>
     </ClInclude>
     <ClInclude Include="cheats\hotkeys.hpp">
-      <Filter>Source Files\cheats</Filter>
-    </ClInclude>
-    <ClInclude Include="cheats\misc.hpp">
-      <Filter>Source Files\cheats</Filter>
-    </ClInclude>
-    <ClInclude Include="cheats\visuals.hpp">
       <Filter>Source Files\cheats</Filter>
     </ClInclude>
     <ClInclude Include="config.hpp">
@@ -411,10 +402,55 @@
     <ClInclude Include="cheats\grenadedata.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cheats\backtracking.hpp">
+    <ClInclude Include="valve_sdk\interfaces\IGameTypes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="valve_sdk\interfaces\IGameTypes.hpp">
+    <ClInclude Include="fonts\arial.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\common_includes.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Visuals\ESP.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Visuals\GrenadePrediction.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Visuals\Chams.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Visuals\SkinChanger.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Visuals\Screen.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Visuals\Glow.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\Backtracking.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Visuals\Visuals.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Misc\Movement.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Misc\Thirdperson.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Misc\Combat.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Misc\Visual.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Misc\Fun.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Misc\Misc.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -473,12 +509,6 @@
     <ClCompile Include="hooks.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cheats\movement.cpp">
-      <Filter>Source Files\cheats</Filter>
-    </ClCompile>
-    <ClCompile Include="menu.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="imgui\imgui.cpp">
       <Filter>Source Files\imgui</Filter>
     </ClCompile>
@@ -503,12 +533,6 @@
     <ClCompile Include="cheats\hotkeys.cpp">
       <Filter>Source Files\cheats</Filter>
     </ClCompile>
-    <ClCompile Include="cheats\misc.cpp">
-      <Filter>Source Files\cheats</Filter>
-    </ClCompile>
-    <ClCompile Include="cheats\visuals.cpp">
-      <Filter>Source Files\cheats</Filter>
-    </ClCompile>
     <ClCompile Include="cheats\aim.cpp">
       <Filter>Source Files\cheats</Filter>
     </ClCompile>
@@ -530,7 +554,43 @@
     <ClCompile Include="helpers\skinchangerparser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="cheats\backtracking.cpp">
+    <ClCompile Include="cheats\Visuals\ESP.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Visuals\GrenadePrediction.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Visuals\Chams.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Visuals\SkinChanger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Visuals\Screen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Visuals\Glow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\Backtracking.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Misc\Movement.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Misc\Thirdperson.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Misc\Combat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Misc\Visual.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Misc\Fun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="menu.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -544,5 +604,6 @@
     <None Include="packages.config" />
     <None Include="valve_sdk\misc\UtlMemory.hpp" />
     <None Include=".gitignore" />
+    <None Include="README.md" />
   </ItemGroup>
 </Project>

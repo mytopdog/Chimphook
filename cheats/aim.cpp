@@ -1,7 +1,7 @@
 #include "aim.hpp"
 #include "autowall.hpp"
 #include "aimsett.h"
-#include "misc.hpp"
+#include "Misc/Misc.hpp"
 
 #define M_PI   3.14159265358979323846
 #define XM_2PI 6.283185307f

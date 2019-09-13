@@ -4,7 +4,7 @@
 #include "imgui/pfd.h"
 #include "menu.hpp"
 
-#include "cheats/misc.hpp"
+#include "cheats/Misc/Misc.hpp"
 #include "config.hpp"
 #include "convarc.hpp"
 #include "helpers/hotkey.hpp"
@@ -19,6 +19,8 @@
 Color Settings::System::Theme = Color(100, 0, 0, 255);
 Color Settings::System::TextTheme = Color(255, 255, 255, 255);
 Color Settings::System::WindowTheme = Color(25, 25, 25, 255);
+
+bool Settings::Misc::SpectatorList = false;
 
 bool Settings::System::PlayerList::ShowBots = false;
 bool Settings::System::PlayerList::ShowEnemies = false;
@@ -334,7 +336,7 @@ void RenderSpectatorList()
 void RenderWeapon(int* selected, int i, const char* name)
 {
 	if (ImGui::Selectable(name, (bool)(*selected == i), ImGuiSelectableFlags_SpanAllColumns))
-		* selected = i;
+		*selected = i;
 
 	ImGui::NextColumn();
 	ImGui::Text(parser_skins[*allskins[i]].name.c_str());
@@ -356,7 +358,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 		return texturesToRelease;
 
 	ImGui::SetNextWindowPos(ImVec2{ 0, 0 }, ImGuiSetCond_Once);
-	ImGui::SetNextWindowSize(ImVec2{ 750, 850 }, ImGuiSetCond_Once);
+	ImGui::SetNextWindowSize(ImVec2{ 625, 715 }, ImGuiSetCond_Once);
 
 	if (ImGui::Begin("Chimphook",
 		&_visible,
@@ -469,7 +471,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 					ImGui::Text("Server");
 					ImGui::BeginGroupBox("ServerSettings", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
-						static char sname[64] = "";
+						static char sname[120] = "";
 						static char sclantag[32] = "";
 						static char fk[80] = "Valve Announcement: CSGO maintenance at 3pm tomorrow. Press F1 to close.";
 						static char fakemsg[128] = "";
@@ -481,7 +483,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							{
 								Utils::SetName("\n\xAD\xAD\xAD");
 							} ImGui::NextColumn(); ImGui::NewLine(); ImGui::NextColumn();
-							ImGui::InputText("Name##ServerSettings", sname, 64); ImGui::NextColumn();
+							ImGui::InputText("Name##ServerSettings", sname, 120); ImGui::NextColumn();
 							if (ImGui::Button("Set Name##ServerSettings"))
 							{
 								Utils::SetName(sname);
@@ -491,8 +493,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							if (ImGui::Button("Set Clantag##ServerSettings"))
 							{
 								Utils::SetClantag(sclantag);
-							}
-							ImGui::NextColumn();
+							} ImGui::NextColumn();
 							ImGui::InputText("Fake Kick", fk, 80); ImGui::NextColumn();
 							if (ImGui::Button("Set Name##fkk"))
 							{
@@ -506,9 +507,11 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 									Utils::SetName(n.c_str());
 								}
 							}
-							ImGui::NextColumn();
-							// ImGui::InputText("Fake Message", fakemsg, 128); ImGui::NextColumn();
-						/*	if (ImGui::Button("Set Name##fkn"))
+							ImGui::Columns(1, nullptr, false);
+							ImGui::Text("(Make sure to patch name first. Max 80 chars.)");
+							ImGui::Columns(2, nullptr, false);
+							ImGui::InputText("Fake Message", fakemsg, 128); ImGui::NextColumn();
+							if (ImGui::Button("Set Name##fkn"))
 							{
 								if (g_EngineClient->IsInGame() && g_LocalPlayer)
 								{
@@ -528,6 +531,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 									&P  - Pink,
 									&DO - Dark Orange,
 									&O  - Orange
+									*/
 
 									replaceAll(fk_s, "&W", "\x01");
 									replaceAll(fk_s, "&R", "\x02");
@@ -544,17 +548,17 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 									replaceAll(fk_s, "&DO", "\x0F");
 									replaceAll(fk_s, "&O", "\x10");
 									std::string n;
+									n += " ";
 									n += fk_s;
-									n += "                             ";
+									n += "                             \x01";
 									Utils::ConsolePrint("Set Name");
 									Utils::SetName(n.c_str());
 								}
-							}*/
+							}
 						}
 						ImGui::EndGroup();
 						ImGui::Columns(1, nullptr, false);
-						ImGui::Text("(Make sure to patch name first. Max 80 chars.)");
-						ImGui::Text("Fake message: attack a teammate after setting name for this to work.");
+						ImGui::Text("(Patch Name, Attack a teammate after setting name)");
 					}
 					ImGui::EndGroupBox();
 					ImGui::Text("Convar Editor");
@@ -652,26 +656,6 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						}
 					}
 					ImGui::EndGroupBox();
-					ImGui::Text("Clantag Scroll");
-					ImGui::BeginGroupBox("ClantagScroll", ImVec2(0, -ImGui::GetContentRegionAvail().y));
-					{
-						ImGui::Checkbox("Enabled", &Settings::Misc::ClantagScroller::Enabled); ImGui::NextColumn();
-						ImGui::BeginGroup();
-						{
-							ImGui::Columns(2, nullptr, false);
-							ImGuiEx::InputText("Clantag", &Settings::Misc::ClantagScroller::Clantag); ImGui::NextColumn();
-							if (ImGui::Button("Refresh"))
-							{
-								ClantagScroller::Get().tag = Settings::Misc::ClantagScroller::Clantag;
-								ClantagScroller::Get().tag += " ";
-							}
-							ImGui::NextColumn();
-							ImGui::Columns(1, nullptr, false);
-						}
-						ImGui::EndGroup();
-						ImGui::SliderInt("Delay", &Settings::Misc::ClantagScroller::Delay, 250, 1000);
-					}
-					ImGui::EndGroupBox();
 					ImGui::NextColumn();
 					ImGui::Text("Combat");
 					ImGui::BeginGroupBox("MiscCombat", ImVec2(0, -ImGui::GetContentRegionAvail().y));
@@ -693,32 +677,8 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 					ImGui::BeginGroupBox("MiscVisuals", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
 						ImGui::Checkbox("Rank Reveal", &Settings::Misc::RankReveal);
-						ImGui::Checkbox("Recoil Crosshair", &Settings::Misc::RecoilCrosshair);
-						ImGui::Checkbox("Sniper Crosshair", &Settings::Misc::SniperCrosshair);
-						ImGui::Checkbox("Spectator List", &Settings::Misc::SpectatorList);
-						ImGui::BeginGroup();
-						{
-							ImGui::Columns(2, nullptr, false);
-
-							ImGui::Checkbox("Adjust Brightness", &Settings::Misc::Brightness::Enabled); ImGui::NextColumn();
-							ImGui::SliderInt("%##Brightness", &Settings::Misc::Brightness::Perc, 1, 100); ImGui::NextColumn();
-							ImGui::Columns(1, nullptr, false);
-						}
-						ImGui::EndGroup();
-						ImGui::Checkbox("No Decals", &Settings::Misc::NoDecals);
 						ImGui::Checkbox("Free Look", &Settings::Misc::FreeLook::Enabled);
 						ImGui::Checkbox("Fake Zoom", &Settings::Misc::FakeZoom::Enabled);
-						ImGui::BeginGroup();
-						{
-							ImGui::Columns(2, nullptr, false);
-							ImGui::Checkbox("Camera FOV", &Settings::Misc::CameraFOV::Enabled); ImGui::NextColumn();
-							ImGui::SliderInt("CameraFOVInt", &Settings::Misc::CameraFOV::FOV, 0, 70); ImGui::NextColumn();
-
-							ImGui::Checkbox("Viewmodel FOV", &Settings::Misc::ViewmodelFOV::Enabled); ImGui::NextColumn();
-							ImGui::SliderInt("FOV##ViewmodelFOVInt", &Settings::Misc::ViewmodelFOV::FOV, 60, 160); ImGui::NextColumn();
-							ImGui::Columns(1, nullptr, false);
-						}
-						ImGui::EndGroup();
 						ImGui::Checkbox("Third Person Spectate", &Settings::Misc::ThirdPersonSpectate::Enabled);
 					}
 					ImGui::EndGroupBox();
@@ -728,7 +688,6 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::Checkbox("Infinite Duck", &Settings::Misc::InfiniteDuck);
 						ImGui::Checkbox("Auto Defuse", &Settings::Misc::AutoDefuse::Enabled);
 						ImGui::Checkbox("Radar Hack", &Settings::Misc::RadarHack);
-						ImGui::Checkbox("Bullet Impacts", &Settings::Misc::BulletImpacts);
 						ImGui::BeginGroup();
 						{
 							ImGui::Columns(2, nullptr, false);
@@ -738,7 +697,6 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						}
 						ImGui::EndGroup();
 						ImGui::Checkbox("Auto Accept", &Settings::Misc::AutoAccept);
-						ImGui::Checkbox("Anti Kick", &Settings::Misc::AntiKick);
 						ImGui::Checkbox("Translate Bot", &Settings::Misc::TranslateBot);
 						ImGui::Checkbox("Fake Duck", &Settings::Misc::FakeDuck::Enabled);
 						ImGui::Checkbox("Self Nade helper", &Settings::Misc::SelfNade);
@@ -751,6 +709,26 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::Checkbox("Enabled", &Settings::Misc::FakeLag::Enabled); ImGui::NextColumn();
 						ImGui::SliderInt("Choke", &Settings::Misc::FakeLag::Choke, 0, 62); ImGui::NextColumn();
 						ImGui::Columns(1, nullptr, false);
+					}
+					ImGui::EndGroupBox();
+					ImGui::Text("Clantag Scroll");
+					ImGui::BeginGroupBox("ClantagScroll", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						ImGui::Checkbox("Enabled", &Settings::Misc::ClantagScroller::Enabled); ImGui::NextColumn();
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							ImGuiEx::InputText("Clantag", &Settings::Misc::ClantagScroller::Clantag); ImGui::NextColumn();
+							if (ImGui::Button("Refresh"))
+							{
+								ClantagScroller::Get().tag = Settings::Misc::ClantagScroller::Clantag;
+								ClantagScroller::Get().tag += " ";
+							}
+							ImGui::NextColumn();
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
+						ImGui::SliderInt("Delay", &Settings::Misc::ClantagScroller::Delay, 250, 1000);
 					}
 					ImGui::EndGroupBox();
 					break;
@@ -930,21 +908,21 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGui::Checkbox("Enabled##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Enabled);
 								ImGui::Checkbox("Occluded##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Occluded);
 								ImGui::Columns(2, nullptr, false);
-								ImGui::Checkbox("Boxes##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Boxes);
-								ImGui::Checkbox("Skeletons##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Skeletons);
-								ImGui::Checkbox("Name##ESPLocalplayers", &Settings::ESP::Players::Localplayer::Names);
+								ImGui::Checkbox("Box##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Box);
+								ImGui::Checkbox("Skeleton##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Skeleton);
+								ImGui::Checkbox("Name##ESPLocalplayers", &Settings::ESP::Players::Localplayer::Name);
 								ImGui::Checkbox("Health##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Health);
-								ImGui::Checkbox("Weapons##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Weapons);
-								ImGui::Checkbox("Positions##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Positions);
+								ImGui::Checkbox("Weapon##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Weapon);
+								ImGui::Checkbox("Position##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Position);
 
 								ImGui::NextColumn();
 
-								ImGuiEx::ColorEdit4("##ESPLocalplayerBoxesColour", &Settings::ESP::Players::Localplayer::Colours::Boxes);
-								ImGuiEx::ColorEdit4("##ESPLocalplayerSkeletonsColour", &Settings::ESP::Players::Localplayer::Colours::Skeletons);
-								ImGuiEx::ColorEdit4("##ESPLocalplayerNamesColour", &Settings::ESP::Players::Localplayer::Colours::Names);
+								ImGuiEx::ColorEdit4("##ESPLocalplayerBoxColour", &Settings::ESP::Players::Localplayer::Colours::Box);
+								ImGuiEx::ColorEdit4("##ESPLocalplayerSkeletonColour", &Settings::ESP::Players::Localplayer::Colours::Skeleton);
+								ImGuiEx::ColorEdit4("##ESPLocalplayerNameColour", &Settings::ESP::Players::Localplayer::Colours::Name);
 								ImGuiEx::ColorEdit4("##ESPLocalplayerHealthColour", &Settings::ESP::Players::Localplayer::Colours::Health);
-								ImGuiEx::ColorEdit4("##ESPLocalplayerWeaponsColour", &Settings::ESP::Players::Localplayer::Colours::Weapons);
-								ImGuiEx::ColorEdit4("##ESPLocalplayerPositionsColour", &Settings::ESP::Players::Localplayer::Colours::Positions);
+								ImGuiEx::ColorEdit4("##ESPLocalplayerWeaponColour", &Settings::ESP::Players::Localplayer::Colours::Weapon);
+								ImGuiEx::ColorEdit4("##ESPLocalplayerPositionColour", &Settings::ESP::Players::Localplayer::Colours::Position);
 								ImGui::Columns(1, nullptr, false);
 								break;
 							}
@@ -1221,6 +1199,9 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::SliderFloat("Offset X", &Settings::Misc::ViewmodelOffset::X, -15.f, 15.f, "%.1f");
 						ImGui::SliderFloat("Offset Y", &Settings::Misc::ViewmodelOffset::Y, -15.f, 15.f, "%.1f");
 						ImGui::SliderFloat("Offset Z", &Settings::Misc::ViewmodelOffset::Z, -15.f, 15.f, "%.1f");
+
+						ImGui::Checkbox("Viewmodel FOV", &Settings::Misc::ViewmodelFOV::Enabled); ImGui::NextColumn();
+						ImGui::SliderInt("FOV##ViewmodelFOVInt", &Settings::Misc::ViewmodelFOV::FOV, 60, 160); ImGui::NextColumn();
 					}
 					ImGui::EndGroupBox();
 					ImGui::Columns(1, nullptr, false);
@@ -1252,28 +1233,62 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::Checkbox("Shadows", &Settings::Misc::Removals::Shadows);
 					}
 					ImGui::EndGroupBox();
-					ImGui::Text("Others");
-					ImGui::BeginGroupBox("Others", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					ImGui::Text("Screen");
+					ImGui::BeginGroupBox("Screen", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
-						ImGui::BeginGroup();
-						{
-							ImGui::Columns(2, nullptr, false); 
-							ImGui::Checkbox("Grenade Prediction", &Settings::ESP::GrenadePrediction::Enabled); ImGui::NextColumn();
-							ImGui::Checkbox("Only local", &Settings::ESP::GrenadePrediction::OnlyLocal); ImGui::NextColumn();
-
-							ImGui::Checkbox("Bullet Tracers", &Settings::Visuals::BulletShots::Enabled); ImGui::NextColumn();
-							ImGuiEx::ColorEdit3("Colour", &Settings::Visuals::BulletShots::Colour); ImGui::NextColumn();
-							ImGui::Columns(1, nullptr, false);
-						}
-						ImGui::EndGroup();
 						ImGui::Checkbox("Wallbang Crosshair", &Settings::Misc::WallbangCrosshair);
 						ImGui::BeginGroup();
 						{
 							ImGui::Columns(2, nullptr, false);
 							ImGui::Checkbox("Smoke Assist", &Settings::Misc::SmokeHelper::Enabled); ImGui::NextColumn();
 							ImGui::Combo("Type", &Settings::Misc::SmokeHelper::TypeHelp, "Visuals\0Visuals + Assist\0Visuals + Aimbot\0Visuals + Smoke Bot"); ImGui::NextColumn();
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
+						ImGui::Checkbox("Recoil Crosshair", &Settings::Misc::RecoilCrosshair);
+						ImGui::Checkbox("Sniper Crosshair", &Settings::Misc::SniperCrosshair);
+						ImGui::Checkbox("Spectator List", &Settings::Misc::SpectatorList);
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							ImGui::Checkbox("Camera FOV", &Settings::Misc::CameraFOV::Enabled); ImGui::NextColumn();
+							ImGui::SliderInt("CameraFOVInt", &Settings::Misc::CameraFOV::FOV, 0, 70); ImGui::NextColumn();
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
+					}
+					ImGui::EndGroupBox();
+					ImGui::NextColumn();
+					ImGui::Text("Zeus Range");
+					ImGui::BeginGroupBox("ZeusRange", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						ImGui::Columns(2, nullptr, false);
+						ImGui::Checkbox("Enabled", &Settings::Misc::ZeusRange::Enabled);
+						ImGui::SliderFloat("Speed", &Settings::Misc::ZeusRange::Speed, 0, 5, "%.2f");
+						ImGui::SliderInt("Thickness", &Settings::Misc::ZeusRange::Thickness, 0, 5);
+						ImGui::SliderInt("Step", &Settings::Misc::ZeusRange::Step, 1, 30);
+						ImGui::Columns(1, nullptr, false);
+					}
+					ImGui::EndGroupBox();
+					ImGui::Text("World");
+					ImGui::BeginGroupBox("VisualsWorld", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					{
+						ImGui::Checkbox("No Decals", &Settings::Misc::NoDecals);
+						ImGui::Checkbox("Bullet Impacts", &Settings::Misc::BulletImpacts);
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
 
-							if (ImGui::Checkbox("Night Mode", &Settings::Visuals::Nightmode::Enabled)) {
+							ImGui::Checkbox("Adjust Brightness", &Settings::Misc::Brightness::Enabled); ImGui::NextColumn();
+							ImGui::SliderInt("%##Brightness", &Settings::Misc::Brightness::Perc, 1, 100); ImGui::NextColumn();
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							if (ImGui::Checkbox("Night Mode", &Settings::Visuals::Nightmode::Enabled))
+							{
 								if (g_EngineClient->IsInGame())
 								{
 									if (Settings::Visuals::Nightmode::Enabled)
@@ -1286,7 +1301,8 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								}
 							}
 							ImGui::NextColumn();
-							if (ImGui::SliderFloat("Intensity", &Settings::Visuals::Nightmode::Intensity, 0.f, 1.f, "%.2f")) {
+							if (ImGui::SliderFloat("Intensity", &Settings::Visuals::Nightmode::Intensity, 0.f, 1.f, "%.2f"))
+							{
 								if (g_EngineClient->IsInGame() && Settings::Visuals::Nightmode::Enabled)
 								{
 									Nightmode::Get().Execute();
@@ -1321,15 +1337,21 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						ImGui::EndGroup();
 					}
 					ImGui::EndGroupBox();
-					ImGui::NextColumn();
-					ImGui::Text("Zeus Range");
-					ImGui::BeginGroupBox("ZeusRange", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+					ImGui::Text("Players");
+					ImGui::BeginGroupBox("VisualsPlayers", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 					{
 						ImGui::Columns(2, nullptr, false);
-						ImGui::Checkbox("Enabled", &Settings::Misc::ZeusRange::Enabled);
-						ImGui::SliderFloat("Speed", &Settings::Misc::ZeusRange::Speed, 0, 5, "%.2f");
-						ImGui::SliderInt("Thickness", &Settings::Misc::ZeusRange::Thickness, 0, 5);
-						ImGui::SliderInt("Step", &Settings::Misc::ZeusRange::Step, 1, 30);
+						ImGui::BeginGroup();
+						{
+							ImGui::Columns(2, nullptr, false);
+							ImGui::Checkbox("Grenade Prediction", &Settings::ESP::GrenadePrediction::Enabled); ImGui::NextColumn();
+							ImGui::Checkbox("Only local", &Settings::ESP::GrenadePrediction::OnlyLocal); ImGui::NextColumn();
+
+							ImGui::Checkbox("Bullet Tracers", &Settings::Visuals::BulletShots::Enabled); ImGui::NextColumn();
+							ImGuiEx::ColorEdit3("Colour", &Settings::Visuals::BulletShots::Colour); ImGui::NextColumn();
+							ImGui::Columns(1, nullptr, false);
+						}
+						ImGui::EndGroup();
 						ImGui::Columns(1, nullptr, false);
 					}
 					ImGui::EndGroupBox();
@@ -1789,7 +1811,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 	ImGui::End();
 
 	ImGui::SetNextWindowPos(ImVec2{ 750, 0 }, ImGuiSetCond_Once);
-	ImGui::SetNextWindowSize(ImVec2{ 800, 600 }, ImGuiSetCond_Once);
+	ImGui::SetNextWindowSize(ImVec2{ 650, 450 }, ImGuiSetCond_Once);
 
 	static std::string note;
 

@@ -1,10 +1,8 @@
 #pragma once
+#include "../common_includes.hpp"
 
-#include "../valve_sdk/csgostructs.hpp"
-#include "../settings.hpp"
-#include <deque>
-
-struct convars {
+struct convars
+{
 	ConVar* interp_ratio;
 	ConVar* min_interp_ratio;
 	ConVar* max_interp_ratio;
@@ -15,10 +13,6 @@ struct convars {
 };
 
 extern convars cvars;
-
-#define TICK_INTERVAL			( g_GlobalVars->interval_per_tick )
-#define TIME_TO_TICKS( dt )		( floorf(( 0.5f + (float)(dt) / TICK_INTERVAL ) ) )
-#define TICKS_TO_TIME( t )		( TICK_INTERVAL *( t ) )
 
 struct backtrack_record_t
 {

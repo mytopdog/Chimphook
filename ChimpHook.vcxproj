@@ -168,19 +168,31 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="cheats\aim.hpp" />
+    <ClInclude Include="cheats\Aimbot\Backtracking.hpp" />
     <ClInclude Include="cheats\aimsett.h" />
     <ClInclude Include="cheats\autowall.hpp" />
-    <ClInclude Include="cheats\backtracking.hpp" />
     <ClInclude Include="cheats\chattranslator.h" />
+    <ClInclude Include="cheats\common_includes.hpp" />
     <ClInclude Include="cheats\grenadedata.hpp" />
     <ClInclude Include="cheats\hotkeys.hpp" />
-    <ClInclude Include="cheats\misc.hpp" />
-    <ClInclude Include="cheats\movement.hpp" />
-    <ClInclude Include="cheats\visuals.hpp" />
+    <ClInclude Include="cheats\Misc\Combat.hpp" />
+    <ClInclude Include="cheats\Misc\Fun.hpp" />
+    <ClInclude Include="cheats\Misc\Misc.hpp" />
+    <ClInclude Include="cheats\Misc\Movement.hpp" />
+    <ClInclude Include="cheats\Misc\Thirdperson.hpp" />
+    <ClInclude Include="cheats\Misc\Visual.hpp" />
+    <ClInclude Include="cheats\Visuals\Chams.hpp" />
+    <ClInclude Include="cheats\Visuals\ESP.hpp" />
+    <ClInclude Include="cheats\Visuals\Glow.hpp" />
+    <ClInclude Include="cheats\Visuals\GrenadePrediction.hpp" />
+    <ClInclude Include="cheats\Visuals\Screen.hpp" />
+    <ClInclude Include="cheats\Visuals\SkinChanger.hpp" />
+    <ClInclude Include="cheats\Visuals\Visuals.hpp" />
     <ClInclude Include="config.hpp" />
     <ClInclude Include="convarc.hpp" />
     <ClInclude Include="eventemitter.hpp" />
     <ClInclude Include="fonts\andalemono.h" />
+    <ClInclude Include="fonts\arial.h" />
     <ClInclude Include="fonts\verdana.h" />
     <ClInclude Include="helpers\hotkey.hpp" />
     <ClInclude Include="helpers\protoparse\pbwrap.hpp" />
@@ -298,14 +310,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="cheats\aim.cpp" />
+    <ClCompile Include="cheats\Aimbot\Backtracking.cpp" />
     <ClCompile Include="cheats\autowall.cpp" />
-    <ClCompile Include="cheats\backtracking.cpp" />
     <ClCompile Include="cheats\chamsPreview\test.cpp" />
     <ClCompile Include="cheats\chattranslator.cpp" />
     <ClCompile Include="cheats\hotkeys.cpp" />
-    <ClCompile Include="cheats\misc.cpp" />
-    <ClCompile Include="cheats\movement.cpp" />
-    <ClCompile Include="cheats\visuals.cpp" />
+    <ClCompile Include="cheats\Misc\Combat.cpp" />
+    <ClCompile Include="cheats\Misc\Fun.cpp" />
+    <ClCompile Include="cheats\Misc\Movement.cpp" />
+    <ClCompile Include="cheats\Misc\Thirdperson.cpp" />
+    <ClCompile Include="cheats\Misc\Visual.cpp" />
+    <ClCompile Include="cheats\Visuals\Chams.cpp" />
+    <ClCompile Include="cheats\Visuals\ESP.cpp" />
+    <ClCompile Include="cheats\Visuals\Glow.cpp" />
+    <ClCompile Include="cheats\Visuals\GrenadePrediction.cpp" />
+    <ClCompile Include="cheats\Visuals\Screen.cpp" />
+    <ClCompile Include="cheats\Visuals\SkinChanger.cpp" />
     <ClCompile Include="helpers\hotkey.cpp" />
     <ClCompile Include="helpers\protobuff.hpp" />
     <ClCompile Include="helpers\skinchangerparser.cpp" />
@@ -343,6 +363,7 @@
   <ItemGroup>
     <None Include=".gitignore" />
     <None Include="packages.config" />
+    <None Include="README.md" />
     <None Include="valve_sdk\misc\UtlMemory.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

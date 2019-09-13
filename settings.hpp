@@ -77,8 +77,8 @@ namespace Settings
 		extern bool BlockBot;
 		extern bool InfiniteDuck;
 		extern bool SelfNade;
-
 		extern bool AutoRevolver;
+
 		extern bool AutoPistol;
 		extern bool AutoReload;
 		extern bool DeagleSpinner;
@@ -97,7 +97,6 @@ namespace Settings
 		extern bool BulletImpacts;
 		extern bool NoDecals;
 
-		extern bool AntiKick;
 		extern bool AutoAccept;
 		extern bool TranslateBot;
 		extern bool SpectatorList;
@@ -442,21 +441,21 @@ namespace Settings
 				extern bool Enabled;
 				extern bool Occluded;
 
-				extern bool Boxes;
-				extern bool Skeletons;
-				extern bool Names;
+				extern bool Box;
+				extern bool Skeleton;
+				extern bool Name;
 				extern bool Health;
-				extern bool Weapons;
-				extern bool Positions;
+				extern bool Weapon;
+				extern bool Position;
 
 				namespace Colours
 				{
-					extern Color Boxes;
-					extern Color Skeletons;
-					extern Color Names;
+					extern Color Box;
+					extern Color Skeleton;
+					extern Color Name;
 					extern Color Health;
-					extern Color Weapons;
-					extern Color Positions;
+					extern Color Weapon;
+					extern Color Position;
 				}
 			}
 		}
