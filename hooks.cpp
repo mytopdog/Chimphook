@@ -578,12 +578,11 @@ namespace Hooks
 
 		ofunc(g_CHLClient, edx, stage);
 
-		/*
 		if (pAimPunch != nullptr && pViewPunch != nullptr)
 		{
 			*pAimPunch = vecAimPunch;
 			*pViewPunch = vecViewPunch;
-		}*/
+		}
 	}
 	//--------------------------------------------------------------------------------
 	void __fastcall hkOverrideView(void* _this, int edx, CViewSetup* vsView)

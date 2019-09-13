@@ -18,7 +18,7 @@ float Settings::Aim::RCS::ScaleY = 2;
 bool Settings::Misc::Triggerbot::Enabled = false;
 int Settings::Misc::Triggerbot::Delay = 0;
 
-static QAngle RCSLastPunch;
+inline QAngle RCSLastPunch;
 
 inline void RandomSeed(int seed)
 {
@@ -46,7 +46,7 @@ void RCS(CUserCmd* cmd)
 
 	QAngle CurrentPunch = g_LocalPlayer->m_aimPunchAngle();
 
-	ConVar * recoil_scale = g_CVar->FindVar("weapon_recoil_scale");
+	ConVar* recoil_scale = g_CVar->FindVar("weapon_recoil_scale");
 
 	Vector vecForward, vecRight, vecUp, vecAntiDir;
 	float flSpread, flInaccuracy, flSpreadX, flSpreadY;
@@ -118,8 +118,6 @@ void RCS(CUserCmd* cmd)
 
 		}
 	}
-
-	RCSLastPunch = CurrentPunch;
 
 	RCSLastPunch = CurrentPunch;
 }
