@@ -38,10 +38,10 @@ public:
 	OPTION(bool, miscautostrafer, &Settings::Misc::AutoStrafer);
 	OPTION(bool, miscautocowboy, &Settings::Misc::AutoCowboy);
 	OPTION(bool, miscreversecowboy, &Settings::Misc::ReverseCowboy);
-	OPTION(bool, miscblockbot, &Settings::Misc::BlockBot);
+	OPTION(bool, miscblockbot, &Settings::Misc::Blockbot::Enabled);
 	OPTION(bool, miscinfiniteduck, &Settings::Misc::InfiniteDuck);
 	OPTION(bool, miscselfnade, &Settings::Misc::SelfNade);
-	OPTION(bool, miscedgejumper, &Settings::Misc::EdgeJumper);
+	OPTION(bool, miscedgejumper, &Settings::Misc::EdgeJumper::Enabled);
 
 	OPTION(bool, misczeusrange, &Settings::Misc::ZeusRange::Enabled);
 	OPTION(float, misczeusrangespeed, &Settings::Misc::ZeusRange::Speed);
@@ -270,12 +270,44 @@ public:
 	OPTION(int, chamsviewmodelweaponsmaterial, &Settings::Visuals::Chams::Viewmodel::Weapons::Material);
 	OPTION(Color, chamsviewmodelweaponscolour, &Settings::Visuals::Chams::Viewmodel::Weapons::Colour);
 
-	OPTION(int, antiaimpitchtype, &Settings::AntiAim::Pitch::Type);
-	OPTION(int, antiaimyawtype, &Settings::AntiAim::Yaw::Type);
-	OPTION(int, antiaimyawangle, &Settings::AntiAim::Yaw::Angle);
-	OPTION(int, antiaimyawjitter, &Settings::AntiAim::Yaw::Jitter);
-	OPTION(int, antiaimyawlkey, &Settings::AntiAim::Yaw::LKey);
-	OPTION(int, antiaimyawrkey, &Settings::AntiAim::Yaw::RKey);
+	OPTION(bool, antiaimenabled, &Settings::AntiAim::Enabled);
+
+	OPTION(int, antiaimstandingpitchtype, &Settings::AntiAim::Standing::Pitch::Type);
+	OPTION(int, antiaimstandingyawtype, &Settings::AntiAim::Standing::Yaw::Type);
+	OPTION(int, antiaimstandingyawcustomangle, &Settings::AntiAim::Standing::Yaw::Custom::Angle);
+	OPTION(bool, antiaimstandingyawcustomstatic, &Settings::AntiAim::Standing::Yaw::Custom::Static);
+	OPTION(int, antiaimstandingyawmanuallkey, &Settings::AntiAim::Standing::Yaw::Manual::LKey);
+	OPTION(int, antiaimstandingyawmanualrkey, &Settings::AntiAim::Standing::Yaw::Manual::RKey);
+	OPTION(int, antiaimstandingyawmanualbkey, &Settings::AntiAim::Standing::Yaw::Manual::BKey);
+	OPTION(int, antiaimstandingyawaddtype, &Settings::AntiAim::Standing::YawAdd::Type);
+	OPTION(int, antiaimstandingyawaddcustom, &Settings::AntiAim::Standing::YawAdd::Custom::Angle);
+	OPTION(int, antiaimstandingyawaddjitterrange, &Settings::AntiAim::Standing::YawAdd::Jitter::AngleRange);
+	OPTION(bool, antiaimstandingyawaddjitterswitch, &Settings::AntiAim::Standing::YawAdd::Jitter::Switch);
+
+	OPTION(int, antiaimmovingminvelocity, &Settings::AntiAim::Moving::MinVelocity);
+	OPTION(int, antiaimmovingpitchtype, &Settings::AntiAim::Moving::Pitch::Type);
+	OPTION(int, antiaimmovingyawtype, &Settings::AntiAim::Moving::Yaw::Type);
+	OPTION(int, antiaimmovingyawcustomangle, &Settings::AntiAim::Moving::Yaw::Custom::Angle);
+	OPTION(bool, antiaimmovingyawcustomstatic, &Settings::AntiAim::Moving::Yaw::Custom::Static);
+	OPTION(int, antiaimmovingyawmanuallkey, &Settings::AntiAim::Moving::Yaw::Manual::LKey);
+	OPTION(int, antiaimmovingyawmanualrkey, &Settings::AntiAim::Moving::Yaw::Manual::RKey);
+	OPTION(int, antiaimmovingyawmanualbkey, &Settings::AntiAim::Moving::Yaw::Manual::BKey);
+	OPTION(int, antiaimmovingyawaddtype, &Settings::AntiAim::Moving::YawAdd::Type);
+	OPTION(int, antiaimmovingyawaddcustom, &Settings::AntiAim::Moving::YawAdd::Custom::Angle);
+	OPTION(int, antiaimmovingyawaddjitterrange, &Settings::AntiAim::Moving::YawAdd::Jitter::AngleRange);
+	OPTION(bool, antiaimmovingyawaddjitterswitch, &Settings::AntiAim::Moving::YawAdd::Jitter::Switch);
+	
+	OPTION(int, antiaimairpitchtype, &Settings::AntiAim::Air::Pitch::Type);
+	OPTION(int, antiaimairyawtype, &Settings::AntiAim::Air::Yaw::Type);
+	OPTION(int, antiaimairyawcustomangle, &Settings::AntiAim::Air::Yaw::Custom::Angle);
+	OPTION(bool, antiaimairyawcustomstatic, &Settings::AntiAim::Air::Yaw::Custom::Static);
+	OPTION(int, antiaimairyawmanuallkey, &Settings::AntiAim::Air::Yaw::Manual::LKey);
+	OPTION(int, antiaimairyawmanualrkey, &Settings::AntiAim::Air::Yaw::Manual::RKey);
+	OPTION(int, antiaimairyawmanualbkey, &Settings::AntiAim::Air::Yaw::Manual::BKey);
+	OPTION(int, antiaimairyawaddtype, &Settings::AntiAim::Air::YawAdd::Type);
+	OPTION(int, antiaimairyawaddcustom, &Settings::AntiAim::Air::YawAdd::Custom::Angle);
+	OPTION(int, antiaimairyawaddjitterrange, &Settings::AntiAim::Air::YawAdd::Jitter::AngleRange);
+	OPTION(bool, antiaimairyawaddjitterswitch, &Settings::AntiAim::Air::YawAdd::Jitter::Switch);
 	
 	OPTION(bool, testaimbotenabled, &Settings::Aim::TestAimbot::Enabled);
 	OPTION(bool, testaimbotonshoot, &Settings::Aim::TestAimbot::OnShoot);
@@ -370,6 +402,8 @@ public:
 	OPTION(int, triggerbotkey, &Settings::KeyBinds::Triggerbot::Key);
 	OPTION(int, fakezoomkey, &Settings::KeyBinds::FakeZoom::Key);
 	OPTION(int, fakezoomtype, &Settings::KeyBinds::FakeZoom::Type);
+	OPTION(int, blockbotkey, &Settings::KeyBinds::Blockbot::Key);
+	OPTION(int, blockbottype, &Settings::KeyBinds::Blockbot::Type);
 	OPTION(int, aimbotkey, &Settings::KeyBinds::Aimbot::Key);
 	OPTION(int, aimbottype, &Settings::KeyBinds::Aimbot::Type);
 
@@ -433,7 +467,7 @@ public:
 	void SaveUser()
 	{
 		std::stringstream filename;
-		filename << "$CHIMPUSER.chimps";
+		filename << "user.chimps";
 		std::ofstream fout(filename.str().c_str(), std::ios::binary);
 		const auto sz = sizeof(Useropt);
 		const auto var_sz = sizeof(Var<bool>);
@@ -454,13 +488,12 @@ public:
 
 	void LoadUser()
 	{
-		if (!exists("$CHIMPUSER.chimps"))
+		if (!exists("user.chimps"))
 			return;
 
-		std::ifstream fin("$CHIMPUSER.chimps", std::ios::binary);
+		std::ifstream fin("user.chimps", std::ios::binary);
 		std::stringstream ss;
 		ss << fin.rdbuf();
-
 
 		auto lines = Utils::Split(ss.str(), "\n");
 
@@ -503,10 +536,10 @@ public:
 		fin.close();
 	}
 
-	void Save(char name[32])
+	void Save(const char* name)
 	{
 		std::stringstream filename;
-		filename << "$CHIMPHOOK_" << name << ".chimps";
+		filename << "Chimphook\\" << name;
 		std::ofstream fout(filename.str().c_str(), std::ios::binary);
 		const auto sz = sizeof(Options);
 		const auto var_sz = sizeof(Var<bool>);
@@ -522,10 +555,10 @@ public:
 	}
 
 
-	void Load(char name[32])
+	void Load(const char* name)
 	{
 		std::stringstream filename;
-		filename << "$CHIMPHOOK_" << name << ".chimps";
+		filename << "Chimphook\\" << name;
 		std::ifstream fin(filename.str().c_str(), std::ios::binary);
 		std::stringstream ss;
 		ss << fin.rdbuf();

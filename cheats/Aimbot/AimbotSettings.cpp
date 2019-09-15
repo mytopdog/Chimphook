@@ -1,4 +1,4 @@
-#include "../settings.hpp"
+#include "AimbotSettings.hpp"
 
 bool Settings::Aim::TestAimbot::Enabled = false;
 bool Settings::Aim::TestAimbot::TargetTeammates = false;
@@ -73,7 +73,6 @@ int Settings::Aim::TestAimbot::Other::MinDamage = 0;
 float Settings::Aim::TestAimbot::Other::HitChance = 0.f;
 bool Settings::Aim::TestAimbot::Other::Prioritise = false;
 int Settings::Aim::TestAimbot::Other::Prioritised = 0;
-
 
 float GetWeaponHitChance(C_BaseCombatWeapon* weapon)
 {
@@ -206,7 +205,7 @@ bool GetWeaponAutoScope(C_BaseCombatWeapon* weapon)
 	else if (weapon->IsAuto())
 		return Settings::Aim::TestAimbot::Auto::AutoScope;
 
-	else 
+	else
 		return false;
 }
 
@@ -240,6 +239,7 @@ bool GetWeaponPrioritiseHitbox(C_BaseCombatWeapon* weapon)
 		return Settings::Aim::TestAimbot::Other::Prioritise;
 
 }
+
 Hitbox GetWeaponPrioritisedHitbox(C_BaseCombatWeapon* weapon)
 {
 	if (weapon->IsSMG())

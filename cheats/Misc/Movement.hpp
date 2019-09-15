@@ -4,7 +4,7 @@
 
 void AutoCowboy(CUserCmd* cmd);
 void AutoStrafer(CUserCmd* cmd);
-void BlockBot(CUserCmd* cmd);
+void Blockbot(CUserCmd* cmd);
 void Bunnyhop(CUserCmd* cmd);
 void EdgeJumper(CUserCmd* cmd);
 void MoonWalk(CUserCmd* cmd);

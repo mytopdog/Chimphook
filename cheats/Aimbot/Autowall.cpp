@@ -1,5 +1,5 @@
-#include "autowall.hpp"
-#include "aim.hpp"
+#include "Autowall.hpp"
+#include "Aimbot.hpp"
 
 static float GetHitgroupDamageMultiplier(HitGroups iHitGroup)
 {
@@ -151,7 +151,7 @@ bool Autowall::HandleBulletPenetration(CCSWeaponInfo* weaponInfo, Autowall::Fire
 	if (!TraceToExit(dummy, &data.enter_trace, data.enter_trace.endpos, data.direction, &trace_exit))
 		return false;
 
-	surfacedata_t * exit_surface_data = g_PhysSurface->GetSurfaceData(trace_exit.surface.surfaceProps);
+	surfacedata_t* exit_surface_data = g_PhysSurface->GetSurfaceData(trace_exit.surface.surfaceProps);
 	int exit_material = exit_surface_data->game.material;
 
 	float exit_surf_penetration_mod = exit_surface_data->game.flPenetrationModifier;
@@ -200,7 +200,7 @@ bool Autowall::HandleBulletPenetration(CCSWeaponInfo* weaponInfo, Autowall::Fire
 	return true;
 }
 
-static void TraceLine(Vector vecAbsStart, Vector vecAbsEnd, unsigned int mask, C_BaseEntity * ignore, trace_t * ptr)
+static void TraceLine(Vector vecAbsStart, Vector vecAbsEnd, unsigned int mask, C_BaseEntity* ignore, trace_t* ptr)
 {
 	Ray_t ray;
 	ray.Init(vecAbsStart, vecAbsEnd);
@@ -257,7 +257,7 @@ static bool SimulateFireBullet(C_BasePlayer* fromPL, C_BaseCombatWeapon* pWeapon
 
 	return false;
 }
-float Autowall::GetDamage(C_BasePlayer* fromPL, const Vector & point, bool teamCheck, FireBulletData& fData)
+float Autowall::GetDamage(C_BasePlayer* fromPL, const Vector& point, bool teamCheck, FireBulletData& fData)
 {
 	float damage = 0.f;
 	Vector dst = point;

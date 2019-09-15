@@ -167,14 +167,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="cheats\aim.hpp" />
+    <ClInclude Include="cheats\Aimbot\Aim.hpp" />
+    <ClInclude Include="cheats\Aimbot\Aimbot.hpp" />
+    <ClInclude Include="cheats\Aimbot\AimbotSettings.hpp" />
+    <ClInclude Include="cheats\Aimbot\AntiAim.hpp" />
+    <ClInclude Include="cheats\Aimbot\AntiAim\AirAA.hpp" />
+    <ClInclude Include="cheats\Aimbot\AntiAim\MovingAA.hpp" />
+    <ClInclude Include="cheats\Aimbot\AntiAim\StandingAA.hpp" />
+    <ClInclude Include="cheats\Aimbot\Autowall.hpp" />
     <ClInclude Include="cheats\Aimbot\Backtracking.hpp" />
-    <ClInclude Include="cheats\aimsett.h" />
-    <ClInclude Include="cheats\autowall.hpp" />
+    <ClInclude Include="cheats\Aimbot\GetHitchance.hpp" />
+    <ClInclude Include="cheats\Aimbot\RCS.hpp" />
+    <ClInclude Include="cheats\Aimbot\Triggerbot.hpp" />
     <ClInclude Include="cheats\chattranslator.h" />
     <ClInclude Include="cheats\common_includes.hpp" />
-    <ClInclude Include="cheats\grenadedata.hpp" />
+    <ClInclude Include="cheats\Visuals\GrenadeData.hpp" />
     <ClInclude Include="cheats\hotkeys.hpp" />
+    <ClInclude Include="cheats\json.hpp" />
     <ClInclude Include="cheats\Misc\Combat.hpp" />
     <ClInclude Include="cheats\Misc\Fun.hpp" />
     <ClInclude Include="cheats\Misc\Misc.hpp" />
@@ -194,6 +203,7 @@
     <ClInclude Include="fonts\andalemono.h" />
     <ClInclude Include="fonts\arial.h" />
     <ClInclude Include="fonts\verdana.h" />
+    <ClInclude Include="helpers\colmanip.hpp" />
     <ClInclude Include="helpers\hotkey.hpp" />
     <ClInclude Include="helpers\protoparse\pbwrap.hpp" />
     <ClInclude Include="helpers\protoparse\ProtobuffMessages.h" />
@@ -309,10 +319,16 @@
     <ClInclude Include="valve_sdk\sdk.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="cheats\aim.cpp" />
+    <ClCompile Include="cheats\Aimbot\Aimbot.cpp" />
+    <ClCompile Include="cheats\Aimbot\AimbotSettings.cpp" />
+    <ClCompile Include="cheats\Aimbot\AntiAim.cpp" />
+    <ClCompile Include="cheats\Aimbot\AntiAim\AirAA.cpp" />
+    <ClCompile Include="cheats\Aimbot\AntiAim\MovingAA.cpp" />
+    <ClCompile Include="cheats\Aimbot\AntiAim\StandingAA.cpp" />
+    <ClCompile Include="cheats\Aimbot\Autowall.cpp" />
     <ClCompile Include="cheats\Aimbot\Backtracking.cpp" />
-    <ClCompile Include="cheats\autowall.cpp" />
-    <ClCompile Include="cheats\chamsPreview\test.cpp" />
+    <ClCompile Include="cheats\Aimbot\RCS.cpp" />
+    <ClCompile Include="cheats\Aimbot\Triggerbot.cpp" />
     <ClCompile Include="cheats\chattranslator.cpp" />
     <ClCompile Include="cheats\hotkeys.cpp" />
     <ClCompile Include="cheats\Misc\Combat.cpp" />

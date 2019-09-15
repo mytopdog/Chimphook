@@ -1,13 +1,12 @@
 #pragma once
 
-#include "../valve_sdk/sdk.hpp"
-#include "../settings.hpp"
+#include "../common_includes.hpp"
 
 namespace Autowall
 {
 	struct FireBulletData
 	{
-	//public:
+		//public:
 		Vector src;
 		trace_t enter_trace;
 		Vector direction;

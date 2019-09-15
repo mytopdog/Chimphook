@@ -1,6 +1,6 @@
 #include "Screen.hpp"
 
-#include "../autowall.hpp"
+#include "../Aimbot/Autowall.hpp"
 
 bool Settings::Misc::WallbangCrosshair = false;
 

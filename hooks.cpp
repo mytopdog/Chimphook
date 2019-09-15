@@ -1,9 +1,11 @@
+#define NOMINMAX
+
 #include "hooks.hpp"
 #include "render.hpp"
-#include <intrin.h>  
 
-#define NOMINMAX
 #include <Windows.h>
+#include <intrin.h>  
+#include <filesystem>
 
 #include "menu.hpp"
 #include "eventemitter.hpp"
@@ -15,13 +17,12 @@
 #include "cheats/Misc/Movement.hpp"
 #include "cheats/Visuals/Visuals.hpp"
 #include "cheats/Misc/Misc.hpp"
-#include "cheats/aim.hpp"
+#include "cheats/Aimbot/Aim.hpp"
 #include "cheats/chattranslator.h"
 #include "cheats/Aimbot/Backtracking.hpp"
 
 #include "helpers/skinchangerparser.hpp"
 #include "helpers/protobuff.hpp"
-#include "cheats/chamsPreview/test.cpp"
 
 #include "imgui/impl/imgui_impl_dx9.h"
 #include "imgui/impl/imgui_impl_win32.h"
@@ -172,16 +173,6 @@ namespace Hooks
 	{
 		static auto oRenderView = viewrender_hook.get_original<decltype(&hkRenderView)>(index::RenderView);
 		oRenderView(this0, EDX, view, hudViewSetup, nClearFlags, whatToDraw);
-
-		CViewSetup mirrorView = view;
-		mirrorView.x = mirrorView.x_old = 0;
-		mirrorView.y = mirrorView.y_old = 0;
-		mirrorView.width = mirrorView.width_old = 480;
-		mirrorView.height = mirrorView.height_old = 300;
-		mirrorView.angles = view.angles + QAngle(180.f, 0, 0);
-		mirrorView.m_flAspectRatio = float(mirrorView.width) / float(mirrorView.height);
-
-		RenderCustomView(mirrorView, mirrorTexture);
 	}
 	//--------------------------------------------------------------------------------
 	long __stdcall hkEndScene(IDirect3DDevice9* pDevice)
@@ -310,13 +301,13 @@ namespace Hooks
 		Bunnyhop(cmd);
 		AutoStrafer(cmd);
 		AutoCowboy(cmd);
-		BlockBot(cmd);
+		Blockbot(cmd);
 		InfiniteDuck(cmd);
 		AutoPistol(cmd);
 		AutoReload(cmd);
 		SelfNade(cmd);
 		SlowWalk(cmd);
-		// EdgeJumper(cmd); // Needs fixing pl0x
+		EdgeJumper(cmd);
 
 		RadarHack();
 		RecoilCrosshair();
@@ -756,6 +747,33 @@ namespace Hooks
 	}
 }
 
+inline bool exists(const std::string& name)
+{
+	struct stat buffer;
+	return (stat(name.c_str(), &buffer) == 0);
+}
+
+inline void replaceAll(std::string& source, const std::string& from, const std::string& to)
+{
+	std::string newString;
+	newString.reserve(source.length());
+
+	std::string::size_type lastPos = 0;
+	std::string::size_type findPos;
+
+	while (std::string::npos != (findPos = source.find(from, lastPos)))
+	{
+		newString.append(source, lastPos, findPos - lastPos);
+		newString += to;
+		lastPos = findPos + from.length();
+	}
+
+	// Care for the rest after last occurrence
+	newString += source.substr(lastPos);
+
+	source.swap(newString);
+}
+
 DWORD WINAPI OnDllAttach(LPVOID base)
 {
 	// 
@@ -799,7 +817,41 @@ DWORD WINAPI OnDllAttach(LPVOID base)
 			Menu::Get().Toggle();
 		});
 
-		g_GameUI->CreateCommandMsgBox("ChimpHook", "ChimpHook has been hooked.");
+		if (!exists("ch.read"))
+		{
+			g_GameUI->CreateCommandMsgBox("Chimphook", "You are reading this message for the first time, the config file name format for Chimphook has changed and the files are now in <csgo folder>/Chimphook/. Your configs have been moved.");
+			std::ofstream ostream("ch.read");
+			ostream << "";
+			ostream.close();
+
+			std::vector<std::string> filenames;
+			for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator("."))
+				filenames.push_back(entry.path().string());
+
+			std::vector<std::string> newfilenames;
+			for (int i = 0; i < filenames.size(); i++)
+			{
+				if (!strstr(filenames[i].c_str(), "$CHIMPHOOK"))
+					continue;
+
+				newfilenames.push_back(filenames[i]);
+			}
+
+			for (int i = 0; i < newfilenames.size(); i++)
+			{
+				std::string newfn = "Chimphook/";
+				newfn += newfilenames[i];
+				replaceAll(newfn, "$CHIMPHOOK_", "");
+				replaceAll(newfn, ".chimps", "");
+
+				printf("newfn: %s\n", newfn.c_str());
+
+				if (!std::rename(newfilenames[i].c_str(), newfn.c_str()))
+					continue;
+			}
+		}
+		else
+			g_GameUI->CreateCommandMsgBox("Chimphook", "Chimphook has been hooked.");
 
 		while (!Settings::System::Unload)
 			Sleep(100);

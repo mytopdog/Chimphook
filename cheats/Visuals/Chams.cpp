@@ -155,7 +155,7 @@ void Chams::SceneEnd()
 
 						ent->DrawModel(1, 255);
 
-						if (Settings::AntiAim::Yaw::Type == 3)
+						/*if (Settings::AntiAim::Yaw::Type == 3)
 						{
 							QAngle origAngle = g_LocalPlayer->GetAngles();
 
@@ -165,7 +165,7 @@ void Chams::SceneEnd()
 							g_LocalPlayer->DrawModel(1, 255);
 							g_MdlRender->ForcedMaterialOverride(nullptr);
 							g_LocalPlayer->SetAbsAngles(QAngle(0, origAngle.yaw, 0));
-						}
+						}*/
 					}
 				}
 				else if (!is_localplayer && is_enemy)

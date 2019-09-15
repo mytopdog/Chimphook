@@ -14,10 +14,9 @@ bool Settings::Misc::FakeDuck::_enabled = false;
 bool Settings::Misc::AutoDefuse::_enabled = false;
 bool Settings::Misc::FakeZoom::_enabled = false;
 bool Settings::Misc::Triggerbot::_enabled = false;
+bool Settings::Misc::Blockbot::_enabled = false;
+bool Settings::Misc::EdgeJumper::_enabled = false;
 bool Settings::Aim::TestAimbot::_enabled = false;
-
-int Settings::KeyBinds::Aimbot::Key = 0;
-int Settings::KeyBinds::Aimbot::Type = 0;
 
 int Settings::KeyBinds::ThirdPerson::Key = 0;
 int Settings::KeyBinds::ThirdPerson::Type = 0;
@@ -39,6 +38,15 @@ int Settings::KeyBinds::Triggerbot::Type = 0;
 
 int Settings::KeyBinds::FakeZoom::Key = 0;
 int Settings::KeyBinds::FakeZoom::Type = 0;
+
+int Settings::KeyBinds::Blockbot::Key = 0;
+int Settings::KeyBinds::Blockbot::Type = 0;
+
+int Settings::KeyBinds::EdgeJumper::Key = 0;
+int Settings::KeyBinds::EdgeJumper::Type = 0;
+
+int Settings::KeyBinds::Aimbot::Key = 0;
+int Settings::KeyBinds::Aimbot::Type = 0;
 
 void Hotkeys::Run(const char* name, int key, bool* option, bool toggle, bool* storage, bool alert)
 {
@@ -92,7 +100,7 @@ void Hotkeys::Run(const char* name, int key, bool* option, bool toggle, bool* st
 			*option = false;
 		}
 
-		if (old != *option && alert && Settings::System::ChimpHookNotifications) {
+		/*if (old != *option && alert && Settings::System::ChimpHookNotifications) {
 			std::string str = "[CHIMPHOOK] ";
 
 			if (*option)
@@ -109,7 +117,7 @@ void Hotkeys::Run(const char* name, int key, bool* option, bool toggle, bool* st
 				str += "disabled.";
 
 			g_HUDChat->ChatPrintf(0, 0, str.c_str());
-		}
+		}*/
 	}
 }
 
@@ -135,7 +143,13 @@ void Hotkeys::Begin()
 
 	if (Settings::Misc::FakeZoom::Enabled && Settings::KeyBinds::FakeZoom::Key)
 		Hotkeys::Run("FakeZoom", Settings::KeyBinds::FakeZoom::Key, &Settings::Misc::FakeZoom::_enabled, (bool)(Settings::KeyBinds::FakeZoom::Type == 1), &kb_fakezoom_storage, false);
-		
+
+	if (Settings::Misc::Blockbot::Enabled && Settings::KeyBinds::Blockbot::Key)
+		Hotkeys::Run("Blockbot", Settings::KeyBinds::Blockbot::Key, &Settings::Misc::Blockbot::_enabled, (bool)(Settings::KeyBinds::Blockbot::Type == 1), &kb_blockbot_storage, true);
+	
+	if (Settings::Misc::EdgeJumper::Enabled && Settings::KeyBinds::EdgeJumper::Key)
+		Hotkeys::Run("Edge Jumper", Settings::KeyBinds::EdgeJumper::Key, &Settings::Misc::EdgeJumper::_enabled, (bool)(Settings::KeyBinds::EdgeJumper::Type == 1), &kb_edgejumper_storage, true);
+
 	if (Settings::Aim::TestAimbot::Enabled && Settings::KeyBinds::Aimbot::Key)
 		Hotkeys::Run("Aimbot", Settings::KeyBinds::Aimbot::Key, &Settings::Aim::TestAimbot::_enabled, (bool)(Settings::KeyBinds::Aimbot::Type == 1), &kb_aimbot_storage, true);
 
@@ -160,16 +174,12 @@ void Hotkeys::Begin()
 	if (!Settings::KeyBinds::FakeZoom::Key)
 		Settings::Misc::FakeZoom::_enabled = true;
 
+	if (!Settings::KeyBinds::Blockbot::Key)
+		Settings::Misc::Blockbot::_enabled = true;
+
+	if (!Settings::KeyBinds::EdgeJumper::Key)
+		Settings::Misc::EdgeJumper::_enabled = true;
+
 	if (!Settings::KeyBinds::Aimbot::Key)
 		Settings::Aim::TestAimbot::_enabled = true;
-
-	if (GetAsyncKeyState(Settings::AntiAim::Yaw::LKey))
-	{
-		Settings::AntiAim::Yaw::__lkey = true;
-	}
-
-	if (GetAsyncKeyState(Settings::AntiAim::Yaw::RKey))
-	{
-		Settings::AntiAim::Yaw::__lkey = false;
-	}
 }

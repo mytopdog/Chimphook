@@ -126,7 +126,6 @@ bool C_BaseCombatWeapon::IsTaser()
 
 bool C_BaseCombatWeapon::IsKnife()
 {
-	if (this->m_Item().m_iItemDefinitionIndex() == WEAPON_TASER) return false;
 	return GetCSWeaponData()->iWeaponType == WEAPONTYPE_KNIFE;
 }
 

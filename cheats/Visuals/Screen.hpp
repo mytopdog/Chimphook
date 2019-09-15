@@ -1,6 +1,6 @@
 #pragma once
 #include "../common_includes.hpp"
-#include "../grenadedata.hpp"
+#include "GrenadeData.hpp"
 
 void DrawC4Damage(C_BaseEntity* c4ent);
 void WallbangCrosshair();

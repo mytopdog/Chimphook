@@ -108,47 +108,53 @@ void AutoStrafer(CUserCmd* cmd)
 	}
 }
 
-bool Settings::Misc::BlockBot = false;
+bool Settings::Misc::Blockbot::Enabled = false;
 
-void BlockBot(CUserCmd* cmd)
+void Blockbot(CUserCmd* cmd)
 {
-	if (!Settings::Misc::BlockBot)
+	if (!Settings::Misc::Blockbot::Enabled && Settings::Misc::Blockbot::_enabled)
 		return;
 
-	constexpr auto degreesToRadians = [](float degrees) noexcept { return degrees * static_cast<float>(M_PI) / 180; };
-	constexpr float doorRange{ 250.0f };
-	Vector viewAngles{ cos(degreesToRadians(cmd->viewangles.yaw)) * cos(degreesToRadians(cmd->viewangles.pitch)) * doorRange,
-					   cos(degreesToRadians(cmd->viewangles.yaw)) * sin(degreesToRadians(cmd->viewangles.pitch)) * doorRange,
-					  -sin(degreesToRadians(cmd->viewangles.yaw)) * doorRange };
+	float bestdist = 150.f;
+	int index = -1;
 
-	Ray_t Ray;
-	Ray.Init(g_LocalPlayer->GetEyePos(), g_LocalPlayer->GetEyePos() + viewAngles);
-	trace_t trace;
-	CTraceFilter filter;
-	filter.pSkip = g_LocalPlayer;
+	for (int i = 1; i < g_EngineClient->GetMaxClients(); i++)
+	{
+		C_BasePlayer* entity = C_BasePlayer::GetPlayerByIndex(i);
 
-	g_EngineTrace->TraceRay(Ray, MASK_SHOT, &filter, &trace);
+		if (!entity)
+			continue;
 
-	if (!trace.hit_entity)
+		if (!entity->IsAlive() || entity->IsDormant() || entity == g_LocalPlayer)
+			continue;
+
+		float dist = entity->m_vecOrigin().DistTo(g_LocalPlayer->m_vecOrigin());
+
+		if (dist < bestdist)
+		{
+			bestdist = dist;
+			index = i;
+		}
+	}
+
+	if (index == -1)
 		return;
 
-	C_BasePlayer* pl = (C_BasePlayer*)trace.hit_entity;
+	C_BasePlayer* target = C_BasePlayer::GetPlayerByIndex(index);
 
-	if (!pl || !pl->IsPlayer() || !pl->IsAlive() || pl->IsDormant())
+	if (!target)
 		return;
 
-	Utils::ConsolePrint(pl->GetPlayerInfo().szName);
+	Vector vOriginScreen;
+	Math::WorldToScreen(target->m_vecOrigin(), vOriginScreen);
 
-	QAngle angles = Math::CalcAngle(g_LocalPlayer->m_vecOrigin(), pl->m_vecOrigin());
-	angles.yaw -= g_LocalPlayer->m_angEyeAngles().yaw;
-	angles.Normalize();
+	INT SWIDTH, SHEIGHT;
+	g_EngineClient->GetScreenSize(SWIDTH, SHEIGHT);
 
-	if (angles.yaw < 0.f)
+	if (SWIDTH / 2.f < vOriginScreen.x - 10)
 		cmd->sidemove = 450.f;
-	if (angles.yaw > 0.f)
+	else if (SWIDTH / 2.f > vOriginScreen.x + 10)
 		cmd->sidemove = -450.f;
-
-	g_EngineClient->SetViewAngles(&angles);
 }
 
 bool Settings::Misc::BunnyHop = false;
@@ -213,7 +219,7 @@ void MoonWalk(CUserCmd* cmd)
 }
 
 bool Settings::Misc::SlowWalk::Enabled = false;
-int Settings::Misc::SlowWalk::Amount = 100;
+int Settings::Misc::SlowWalk::Amount = 130;
 
 void SlowWalk(CUserCmd* cmd)
 {
@@ -320,4 +326,25 @@ void FakeDuck(CUserCmd* cmd, bool& bSendPacket)
 	}
 }
 
-bool Settings::Misc::EdgeJumper = false;
+bool Settings::Misc::EdgeJumper::Enabled = false;
+
+void EdgeJumper(CUserCmd* cmd)
+{
+	if (!Settings::Misc::EdgeJumper::Enabled && Settings::Misc::EdgeJumper::_enabled)
+		return;
+
+	Ray_t ray;
+	ray.Init(g_LocalPlayer->m_vecOrigin(), g_LocalPlayer->m_vecOrigin() - Vector(0, 0, 32));
+
+	trace_t trace;
+
+	CTraceFilter filter;
+	filter.pSkip = g_LocalPlayer;
+
+	g_EngineTrace->TraceRay(ray, MASK_PLAYERSOLID_BRUSHONLY, &filter, &trace);
+
+	if (trace.fraction == 1.0f)
+	{
+		cmd->buttons |= IN_JUMP;
+	}
+}

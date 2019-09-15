@@ -1,6 +1,14 @@
 ﻿#define NOMINMAX
 #define IMGUI_DEFINE_MATH_OPERATORS
 
+#include <iostream>
+#include <chrono>
+#include <iomanip>
+#include <fstream>
+#include <filesystem>
+
+using namespace std::chrono_literals;
+
 #include "imgui/pfd.h"
 #include "menu.hpp"
 
@@ -78,7 +86,13 @@ bool CopyImageToTexture(UCHAR* pSrc, int xWidth, int yHeight, LPDIRECT3DTEXTURE9
 	return true;
 }
 
-void replaceAll(std::string & source, const std::string & from, const std::string & to)
+std::string utf16ToUtf8(const std::wstring& utf16Str)
+{
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> conv;
+	return conv.to_bytes(utf16Str);
+}
+
+inline void replaceAll(std::string & source, const std::string & from, const std::string & to)
 {
 	std::string newString;
 	newString.reserve(source.length());
@@ -446,8 +460,8 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::Columns(1, nullptr, false);
 						}
 						ImGui::EndGroup();
-						ImGui::Checkbox("Block Bot", &Settings::Misc::BlockBot);
-						ImGui::Checkbox("Edge Jumper", &Settings::Misc::EdgeJumper);
+						ImGui::Checkbox("Block Bot", &Settings::Misc::Blockbot::Enabled);
+						ImGui::Checkbox("Edge Jumper", &Settings::Misc::EdgeJumper::Enabled);
 					}
 					ImGui::EndGroupBox();
 					ImGui::Text("Third Person");
@@ -692,7 +706,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						{
 							ImGui::Columns(2, nullptr, false);
 							ImGui::Checkbox("Slow Walk", &Settings::Misc::SlowWalk::Enabled); ImGui::NextColumn();
-							ImGui::SliderInt("Amount##SlowWalkAmount", &Settings::Misc::SlowWalk::Amount, 0, 100); ImGui::NextColumn();
+							ImGui::SliderInt("Amount##SlowWalkAmount", &Settings::Misc::SlowWalk::Amount, 0, 130); ImGui::NextColumn();
 							ImGui::Columns(1, nullptr, false);
 						}
 						ImGui::EndGroup();
@@ -707,7 +721,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 					{
 						ImGui::Columns(2, nullptr, false);
 						ImGui::Checkbox("Enabled", &Settings::Misc::FakeLag::Enabled); ImGui::NextColumn();
-						ImGui::SliderInt("Choke", &Settings::Misc::FakeLag::Choke, 0, 62); ImGui::NextColumn();
+						ImGui::SliderInt("Choke", &Settings::Misc::FakeLag::Choke, 0, 14); ImGui::NextColumn();
 						ImGui::Columns(1, nullptr, false);
 					}
 					ImGui::EndGroupBox();
@@ -1557,51 +1571,251 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 				ImGui::Columns(1, nullptr, false);
 				break;
 			case 3:
-				ImGui::Text("Pitch");
-				ImGui::BeginGroupBox("AntiAimPitchSettings", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+				ImGui::Columns(2, nullptr, false);
+				ImGui::Text("AntiAim");
+				ImGui::BeginGroupBox("AntiAimMain", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 				{
-					ImGui::PushItemWidth(100);
-					ImGui::Combo("Pitch", &Settings::AntiAim::Pitch::Type, "None\0Down\0Up\0Switch");
-					ImGui::PopItemWidth();
-				}
-				ImGui::EndGroupBox();
-				ImGui::Text("Yaw");
-				ImGui::BeginGroupBox("AntiAimYawSettings", ImVec2(0, -ImGui::GetContentRegionAvail().y));
-				{
-					ImGui::PushItemWidth(100);
-					ImGui::Combo("Yaw", &Settings::AntiAim::Yaw::Type, "None\0Backwards\0Manual\0Desync\0Custom");
-					switch (Settings::AntiAim::Yaw::Type)
+					ImGui::Checkbox("Enabled", &Settings::AntiAim::Enabled);
+
+					static int antiaimtabselected = 0;
+					ImGui::BeginGroup();
 					{
-					case 2:
-						ImGui::Separator();
-						ImGui::Text("Left Key: "); ImGui::SameLine(); ImGui::Hotkey("Left Key", &Settings::AntiAim::Yaw::LKey);
-						ImGui::Text("Right Key: "); ImGui::SameLine(); ImGui::Hotkey("Right Key", &Settings::AntiAim::Yaw::RKey);
+						bool issel = antiaimtabselected == 0;
+						if (ImGui::ToggleButton("Standing##AntiAim", &issel, ImVec2(ImGui::GetWindowSize().x / 3, 20)))
+						{
+							antiaimtabselected = 0;
+						}
+						issel = antiaimtabselected == 1;
+						ImGui::SameLine(0, 0);
+						if (ImGui::ToggleButton("Moving##AntiAim", &issel, ImVec2(ImGui::GetWindowSize().x / 3, 20)))
+						{
+							antiaimtabselected = 1;
+						}
+						issel = antiaimtabselected == 2;
+						ImGui::SameLine(0, 0);
+						if (ImGui::ToggleButton("In Air##AntiAIm", &issel, ImVec2(ImGui::GetWindowSize().x / 3, 20)))
+						{
+							antiaimtabselected = 2;
+						}
+					}
+					ImGui::EndGroup();
+					ImGui::Separator();
+					switch (antiaimtabselected)
+					{
+					case 0:
+						ImGui::Text("Pitch");
+						ImGui::BeginGroupBox("AntiAimMainPitch", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+						{
+							ImGui::Combo("Pitch Angle", &Settings::AntiAim::Standing::Pitch::Type, "None\0Emotion\0Up\0Zero\0Switch\0Random");
+						}
+						ImGui::EndGroupBox();
+						ImGui::BeginGroupBox("AntiAimMainYaw", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+						{
+							ImGui::Combo("Yaw Angle", &Settings::AntiAim::Standing::Yaw::Type, "None\0Left\0Right\0Back\0Manual\0Automatic\0Random\0Spin\0Custom");
+							switch (Settings::AntiAim::Standing::Yaw::Type)
+							{
+							case 4:
+								ImGui::Text("Left"); ImGui::SameLine(); ImGui::Hotkey("Left", &Settings::AntiAim::Standing::Yaw::Manual::LKey);
+								ImGui::Text("Right"); ImGui::SameLine(); ImGui::Hotkey("Right", &Settings::AntiAim::Standing::Yaw::Manual::RKey);
+								ImGui::Text("Back"); ImGui::SameLine(); ImGui::Hotkey("Back", &Settings::AntiAim::Standing::Yaw::Manual::BKey);
+								break;
+							case 7:
+								ImGui::SliderInt("Spin Speed", &Settings::AntiAim::Standing::Yaw::Spin::Speed, -130, 130);
+								break;
+							case 8:
+								ImGui::SliderInt("Custom Angle", &Settings::AntiAim::Standing::Yaw::Custom::Angle, -180, 180);
+								ImGui::Checkbox("Static", &Settings::AntiAim::Standing::Yaw::Custom::Static);
+								break;
+							}
+
+							ImGui::BeginGroupBox("AntiAimMainYawAdd", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+							{
+								ImGui::Combo("Yaw Add Angle", &Settings::AntiAim::Standing::YawAdd::Type, "None\0Reverse\0Jitter\0Custom");
+								switch (Settings::AntiAim::Standing::YawAdd::Type)
+								{
+								case 2:
+									ImGui::SliderInt("Angle Range", &Settings::AntiAim::Standing::YawAdd::Jitter::AngleRange, 0, 65);
+									ImGui::Checkbox("Switch", &Settings::AntiAim::Standing::YawAdd::Jitter::Switch);
+									break;
+								case 3:
+									ImGui::SliderInt("Custom Angle", &Settings::AntiAim::Standing::YawAdd::Custom::Angle, -180, 180);
+									break;
+								}
+							}
+							ImGui::EndGroupBox();
+						}
+						ImGui::EndGroupBox();
 						break;
-					case 4:
-						ImGui::Separator();
-						ImGui::SliderInt("Angle", &Settings::AntiAim::Yaw::Angle, -180, 180);
+					case 1:
+						ImGui::SliderInt("Minimum Velocity", &Settings::AntiAim::Moving::MinVelocity, 0, 160);
+						ImGui::Text("Pitch");
+						ImGui::BeginGroupBox("AntiAimMainPitch", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+						{
+							ImGui::Combo("Pitch Angle", &Settings::AntiAim::Moving::Pitch::Type, "None\0Emotion\0Up\0Zero\0Switch\0Random");
+						}
+						ImGui::EndGroupBox();
+						ImGui::BeginGroupBox("AntiAimMainYaw", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+						{
+							ImGui::Combo("Yaw Angle", &Settings::AntiAim::Moving::Yaw::Type, "None\0Left\0Right\0Back\0Manual\0Automatic\0Random\0Spin\0Custom");
+							switch (Settings::AntiAim::Moving::Yaw::Type)
+							{
+							case 4:
+								ImGui::Text("Left"); ImGui::SameLine(); ImGui::Hotkey("Left", &Settings::AntiAim::Moving::Yaw::Manual::LKey);
+								ImGui::Text("Right"); ImGui::SameLine(); ImGui::Hotkey("Right", &Settings::AntiAim::Moving::Yaw::Manual::RKey);
+								ImGui::Text("Back"); ImGui::SameLine(); ImGui::Hotkey("Back", &Settings::AntiAim::Moving::Yaw::Manual::BKey);
+								break;
+							case 7:
+								ImGui::SliderInt("Spin Speed", &Settings::AntiAim::Moving::Yaw::Spin::Speed, -130, 130);
+								break;
+							case 8:
+								ImGui::SliderInt("Custom Angle", &Settings::AntiAim::Moving::Yaw::Custom::Angle, -180, 180);
+								ImGui::Checkbox("Static", &Settings::AntiAim::Moving::Yaw::Custom::Static);
+								break;
+							}
+
+							ImGui::BeginGroupBox("AntiAimMainYawAdd", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+							{
+								ImGui::Combo("Yaw Add Angle", &Settings::AntiAim::Moving::YawAdd::Type, "None\0Reverse\0Jitter\0Custom");
+								switch (Settings::AntiAim::Moving::YawAdd::Type)
+								{
+								case 2:
+									ImGui::SliderInt("Angle Range", &Settings::AntiAim::Moving::YawAdd::Jitter::AngleRange, 0, 65);
+									ImGui::Checkbox("Switch", &Settings::AntiAim::Moving::YawAdd::Jitter::Switch);
+									break;
+								case 3:
+									ImGui::SliderInt("Custom Angle", &Settings::AntiAim::Moving::YawAdd::Custom::Angle, -180, 180);
+									break;
+								}
+							}
+							ImGui::EndGroupBox();
+						}
+						ImGui::EndGroupBox();
+						break;
+					case 2:
+						ImGui::Text("Pitch");
+						ImGui::BeginGroupBox("AntiAimMainPitch", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+						{
+							ImGui::Combo("Pitch Angle", &Settings::AntiAim::Air::Pitch::Type, "None\0Emotion\0Up\0Zero\0Switch\0Random");
+						}
+						ImGui::EndGroupBox();
+						ImGui::BeginGroupBox("AntiAimMainYaw", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+						{
+							ImGui::Combo("Yaw Angle", &Settings::AntiAim::Air::Yaw::Type, "None\0Left\0Right\0Back\0Manual\0Automatic\0Random\0Spin\0Custom");
+							switch (Settings::AntiAim::Air::Yaw::Type)
+							{
+							case 4:
+								ImGui::Text("Left"); ImGui::SameLine(); ImGui::Hotkey("Left", &Settings::AntiAim::Air::Yaw::Manual::LKey);
+								ImGui::Text("Right"); ImGui::SameLine(); ImGui::Hotkey("Right", &Settings::AntiAim::Air::Yaw::Manual::RKey);
+								ImGui::Text("Back"); ImGui::SameLine(); ImGui::Hotkey("Back", &Settings::AntiAim::Air::Yaw::Manual::BKey);
+								break;
+							case 7:
+								ImGui::SliderInt("Spin Speed", &Settings::AntiAim::Air::Yaw::Spin::Speed, -130, 130);
+								break;
+							case 8:
+								ImGui::SliderInt("Custom Angle", &Settings::AntiAim::Air::Yaw::Custom::Angle, -180, 180);
+								ImGui::Checkbox("Static", &Settings::AntiAim::Air::Yaw::Custom::Static);
+								break;
+							}
+
+							ImGui::BeginGroupBox("AntiAimMainYawAdd", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+							{
+								ImGui::Combo("Yaw Add Angle", &Settings::AntiAim::Air::YawAdd::Type, "None\0Reverse\0Jitter\0Custom");
+								switch (Settings::AntiAim::Air::YawAdd::Type)
+								{
+								case 2:
+									ImGui::SliderInt("Angle Range", &Settings::AntiAim::Air::YawAdd::Jitter::AngleRange, 0, 65);
+									ImGui::Checkbox("Switch", &Settings::AntiAim::Air::YawAdd::Jitter::Switch);
+									break;
+								case 3:
+									ImGui::SliderInt("Custom Angle", &Settings::AntiAim::Air::YawAdd::Custom::Angle, -180, 180);
+									break;
+								}
+							}
+							ImGui::EndGroupBox();
+						}
+						ImGui::EndGroupBox();
 						break;
 					}
-					ImGui::SliderInt("Jitter", &Settings::AntiAim::Yaw::Jitter, 0, 45);
-					ImGui::PopItemWidth();
 				}
 				ImGui::EndGroupBox();
+				ImGui::NextColumn();
+				ImGui::Text("Fake Angles");
+				ImGui::BeginGroupBox("AntiAimFakes", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+				{
+
+				}
+				ImGui::EndGroupBox();
+				ImGui::Columns(1, nullptr, false);
 				break;
 			case 4:
-				static char configname[32] = "default";
-				ImGui::InputText("Config Name", configname, 32);
-				if (ImGui::Button("Save"))
+				std::vector<std::string> filenames;
+				for (const std::filesystem::directory_entry& entry : std::filesystem::directory_iterator("Chimphook/"))
+					filenames.push_back(Utils::Split(entry.path().string(), "/")[1]);
+
+				ImGui::Columns(2, nullptr, false);
+				static int selectedcfg = 0;
+
+				ImGui::Text("Configs");
+				ImGui::BeginGroupBox("ConfigList", ImVec2(0, 150));
 				{
-					Config::Get().Save(configname);
+					ImGui::Columns(2, nullptr, false);
+					ImGui::Text("Config");
+					ImGui::NextColumn();
+					ImGui::Text("Last Modified");
+					ImGui::NextColumn();
+					ImGui::Separator();
+
+					for (int i = 0; i < filenames.size(); i++)
+					{
+						std::string filename = filenames[i];
+
+						if (ImGui::Selectable(filename.c_str(), (bool)(selectedcfg == i), ImGuiSelectableFlags_SpanAllColumns))
+						{
+							selectedcfg = i;
+						}
+						ImGui::NextColumn();
+						//ImGui::Text(timess.str().c_str());
+						ImGui::NextColumn();
+					}
+					ImGui::Columns(1, nullptr, false);
 				}
-				ImGui::SameLine();
-				if (ImGui::Button("Load"))
+				ImGui::EndGroupBox();
+
+				ImGui::NextColumn();
+				ImGui::Text("Actions");
+				ImGui::BeginGroupBox("ConfigActions", ImVec2(0, 150));
 				{
-					Config::Get().Load(configname);
+					static char createFile[128];
+					ImGui::InputText("##CreateNewConfig", createFile, 128); ImGui::SameLine();
+					if (ImGui::Button("Create"))
+						Config::Get().Save(createFile);
+
+					if (ImGui::Button("Save"))
+					{
+						Config::Get().Save(filenames[selectedcfg].c_str());
+					}
+					if (ImGui::Button("Load"))
+					{
+						Config::Get().Load(filenames[selectedcfg].c_str());
+					}
+					if (ImGui::Button("Delete"))
+					{
+						std::string removef = "Chimphook/";
+						removef += filenames[selectedcfg];
+						std::remove(removef.c_str());
+					}
 				}
-				ImGuiEx::ColorEdit3("System Theme", &Settings::System::Theme);
-				ImGuiEx::ColorEdit3("Text Colour", &Settings::System::TextTheme);
-				ImGuiEx::ColorEdit3("Window Colour", &Settings::System::WindowTheme);
+				ImGui::EndGroupBox();
+				ImGui::NextColumn();
+				ImGui::Columns(1, nullptr, false);
+				ImGui::Text("Colours");
+				ImGui::BeginGroupBox("ConfigColours", ImVec2(0, -ImGui::GetContentRegionAvail().y));
+				{
+					ImGuiEx::ColorEdit3("System Theme", &Settings::System::Theme);
+					ImGuiEx::ColorEdit3("Text Colour", &Settings::System::TextTheme);
+					ImGuiEx::ColorEdit3("Window Colour", &Settings::System::WindowTheme);
+				}
+				ImGui::EndGroupBox();
 				ImGui::Text("Keybinds");
 				ImGui::BeginGroupBox("KeyBinds##KeyBindsGroupInit", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 				{
@@ -1682,8 +1896,24 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							ImGui::Text((bool)(Settings::KeyBinds::Triggerbot::Type == 1) ? "Toggle" : "Hold");
 							ImGui::NextColumn();
 
-							if (ImGui::Selectable("Aimbot", (bool)(selectedKb == 7), ImGuiSelectableFlags_SpanAllColumns))
+							if (ImGui::Selectable("Blockbot", (bool)(selectedKb == 7), ImGuiSelectableFlags_SpanAllColumns))
 								selectedKb = 7;
+							ImGui::NextColumn();
+							ImGui::Text(KeyNames[Settings::KeyBinds::Blockbot::Key]);
+							ImGui::NextColumn();
+							ImGui::Text((bool)(Settings::KeyBinds::Blockbot::Type == 1) ? "Toggle" : "Hold");
+							ImGui::NextColumn();
+
+							if (ImGui::Selectable("Edge Jumper", (bool)(selectedKb == 8), ImGuiSelectableFlags_SpanAllColumns))
+								selectedKb = 8;
+							ImGui::NextColumn();
+							ImGui::Text(KeyNames[Settings::KeyBinds::EdgeJumper::Key]);
+							ImGui::NextColumn();
+							ImGui::Text((bool)(Settings::KeyBinds::EdgeJumper::Type == 1) ? "Toggle" : "Hold");
+							ImGui::NextColumn();
+
+							if (ImGui::Selectable("Aimbot", (bool)(selectedKb == 8), ImGuiSelectableFlags_SpanAllColumns))
+								selectedKb = 9;
 							ImGui::NextColumn();
 							ImGui::Text(KeyNames[Settings::KeyBinds::Aimbot::Key]);
 							ImGui::NextColumn();
@@ -1778,6 +2008,28 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								Config::Get().SaveUser();
 							break;
 						case 7:
+							ImGui::Text("Blockbot");
+
+							if (ImGui::Combo("Type##Blockbot", &Settings::KeyBinds::Blockbot::Type, "Hold\0Toggle"))
+								Config::Get().SaveUser();
+
+							ImGui::Text("Key"); ImGui::SameLine();
+
+							if (ImGui::Hotkey("KeyInput##Blockbot", &Settings::KeyBinds::Blockbot::Key))
+								Config::Get().SaveUser();
+							break;
+						case 8:
+							ImGui::Text("Edge Jumper");
+
+							if (ImGui::Combo("Type##EdgeJumper", &Settings::KeyBinds::EdgeJumper::Type, "Hold\0Toggle"))
+								Config::Get().SaveUser();
+
+							ImGui::Text("Key"); ImGui::SameLine();
+
+							if (ImGui::Hotkey("KeyInput##EdgeJumper", &Settings::KeyBinds::EdgeJumper::Key))
+								Config::Get().SaveUser();
+							break;
+						case 9:
 							ImGui::Text("Aimbot");
 							
 							if (ImGui::Combo("Type##Aimbot", &Settings::KeyBinds::Aimbot::Type, "Hold\0Toggle"))
@@ -1811,7 +2063,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 	ImGui::End();
 
 	ImGui::SetNextWindowPos(ImVec2{ 750, 0 }, ImGuiSetCond_Once);
-	ImGui::SetNextWindowSize(ImVec2{ 650, 450 }, ImGuiSetCond_Once);
+	ImGui::SetNextWindowSize(ImVec2{ 750, 550 }, ImGuiSetCond_Once);
 
 	static std::string note;
 

@@ -65,16 +65,26 @@ namespace Settings
 			extern int Type;
 			extern int Key;
 		}
+
+		namespace Blockbot
+		{
+			extern int Type;
+			extern int Key;
+		}
+
+		namespace EdgeJumper
+		{
+			extern int Type;
+			extern int Key;
+		}
 	}
 
 	namespace Misc
 	{
 		extern bool BunnyHop;
 		extern bool AutoStrafer;
-		extern bool EdgeJumper;
 		extern bool AutoCowboy;
 		extern bool ReverseCowboy;
-		extern bool BlockBot;
 		extern bool InfiniteDuck;
 		extern bool SelfNade;
 		extern bool AutoRevolver;
@@ -103,6 +113,18 @@ namespace Settings
 		
 		extern bool FUCK;
 		extern bool DebugMode;
+
+		namespace EdgeJumper
+		{
+			extern bool Enabled;
+			extern bool _enabled;
+		}
+
+		namespace Blockbot
+		{
+			extern bool Enabled;
+			extern bool _enabled;
+		}
 
 		namespace ThirdPersonSpectate
 		{
@@ -617,21 +639,149 @@ namespace Settings
 
 	namespace AntiAim
 	{
-		namespace Pitch
+		extern bool Enabled;
+
+		namespace Standing
 		{
-			extern int Type;
+			namespace Pitch
+			{
+				extern int Type;
+			}
+
+			namespace Yaw
+			{
+				extern int Type;
+
+				namespace Manual
+				{
+					extern int LKey;
+					extern int RKey;
+					extern int BKey;
+				}
+
+				namespace Spin
+				{
+					extern int Speed;
+				}
+
+				namespace Custom
+				{
+					extern int Angle;
+					extern bool Static;
+				}
+			}
+
+			namespace YawAdd
+			{
+				extern int Type;
+
+				namespace Jitter
+				{
+					extern int AngleRange;
+					extern bool Switch;
+				}
+
+				namespace Custom
+				{
+					extern int Angle;
+				}
+			}
+		}
+		
+		namespace Moving
+		{
+			extern int MinVelocity;
+
+			namespace Pitch
+			{
+				extern int Type;
+			}
+
+			namespace Yaw
+			{
+				extern int Type;
+
+				namespace Manual
+				{
+					extern int LKey;
+					extern int RKey;
+					extern int BKey;
+				}
+
+				namespace Spin
+				{
+					extern int Speed;
+				}
+
+				namespace Custom
+				{
+					extern int Angle;
+					extern bool Static;
+				}
+			}
+
+			namespace YawAdd
+			{
+				extern int Type;
+
+				namespace Jitter
+				{
+					extern int AngleRange;
+					extern bool Switch;
+				}
+
+				namespace Custom
+				{
+					extern int Angle;
+				}
+			}
 		}
 
-		namespace Yaw
+		namespace Air
 		{
-			extern int Type;
-			extern int Angle;
-			extern int Jitter;
+			namespace Pitch
+			{
+				extern int Type;
+			}
 
-			extern int LKey;
-			extern int RKey;
+			namespace Yaw
+			{
+				extern int Type;
 
-			extern bool __lkey;
+				namespace Manual
+				{
+					extern int LKey;
+					extern int RKey;
+					extern int BKey;
+				}
+
+				namespace Spin
+				{
+					extern int Speed;
+				}
+
+				namespace Custom
+				{
+					extern int Angle;
+					extern bool Static;
+				}
+			}
+
+			namespace YawAdd
+			{
+				extern int Type;
+
+				namespace Jitter
+				{
+					extern int AngleRange;
+					extern bool Switch;
+				}
+
+				namespace Custom
+				{
+					extern int Angle;
+				}
+			}
 		}
 	}
 

@@ -270,9 +270,6 @@
     <ClInclude Include="convarc.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="cheats\aim.hpp">
-      <Filter>Source Files\cheats</Filter>
-    </ClInclude>
     <ClInclude Include="eventemitter.hpp">
       <Filter>Source Files</Filter>
     </ClInclude>
@@ -287,12 +284,6 @@
     </ClInclude>
     <ClInclude Include="valve_sdk\interfaces\CSPlayerResources.hpp">
       <Filter>Source Files\SDK</Filter>
-    </ClInclude>
-    <ClInclude Include="cheats\autowall.hpp">
-      <Filter>Source Files\cheats</Filter>
-    </ClInclude>
-    <ClInclude Include="cheats\aimsett.h">
-      <Filter>Source Files\cheats</Filter>
     </ClInclude>
     <ClInclude Include="valve_sdk\misc\clientleafsystem.hpp">
       <Filter>Source Files\SDK</Filter>
@@ -399,9 +390,6 @@
     <ClInclude Include="valve_sdk\interfaces\IStudioRender.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="cheats\grenadedata.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="valve_sdk\interfaces\IGameTypes.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -451,6 +439,48 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="cheats\Misc\Misc.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\RCS.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\Aimbot.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\Autowall.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\AntiAim.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\GetHitchance.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\AimbotSettings.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\Triggerbot.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\Aim.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\json.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Visuals\GrenadeData.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="helpers\colmanip.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\AntiAim\StandingAA.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\AntiAim\MovingAA.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="cheats\Aimbot\AntiAim\AirAA.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -533,20 +563,11 @@
     <ClCompile Include="cheats\hotkeys.cpp">
       <Filter>Source Files\cheats</Filter>
     </ClCompile>
-    <ClCompile Include="cheats\aim.cpp">
-      <Filter>Source Files\cheats</Filter>
-    </ClCompile>
     <ClCompile Include="helpers\protobuff.hpp">
       <Filter>Source Files\helpers</Filter>
     </ClCompile>
-    <ClCompile Include="cheats\autowall.cpp">
-      <Filter>Source Files\cheats</Filter>
-    </ClCompile>
     <ClCompile Include="cheats\chattranslator.cpp">
       <Filter>Source Files\cheats</Filter>
-    </ClCompile>
-    <ClCompile Include="cheats\chamsPreview\test.cpp">
-      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="valve_sdk\misc\KeyValues.cpp">
       <Filter>Source Files</Filter>
@@ -591,6 +612,33 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="menu.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\RCS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\Aimbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\Autowall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\AntiAim.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\Triggerbot.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\AimbotSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\AntiAim\StandingAA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\AntiAim\MovingAA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\AntiAim\AirAA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
