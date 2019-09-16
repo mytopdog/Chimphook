@@ -485,7 +485,7 @@ public:
 	}
 
 
-	float get_max_desync_delta()
+	float GetMaxDesyncDelta()
 	{
 
 		auto animstate = uintptr_t(this->GetPlayerAnimState());

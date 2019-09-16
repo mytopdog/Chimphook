@@ -483,6 +483,9 @@
     <ClInclude Include="cheats\Aimbot\AntiAim\AirAA.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="cheats\Aimbot\AntiAim\FakeAngles.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="valve_sdk\csgostructs.cpp">
@@ -639,6 +642,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="cheats\Aimbot\AntiAim\AirAA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cheats\Aimbot\AntiAim\FakeAngles.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

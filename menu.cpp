@@ -928,6 +928,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGui::Checkbox("Health##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Health);
 								ImGui::Checkbox("Weapon##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Weapon);
 								ImGui::Checkbox("Position##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Position);
+								ImGui::Checkbox("Angles##ESPLocalplayer", &Settings::ESP::Players::Localplayer::Angles);
 
 								ImGui::NextColumn();
 
@@ -937,6 +938,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGuiEx::ColorEdit4("##ESPLocalplayerHealthColour", &Settings::ESP::Players::Localplayer::Colours::Health);
 								ImGuiEx::ColorEdit4("##ESPLocalplayerWeaponColour", &Settings::ESP::Players::Localplayer::Colours::Weapon);
 								ImGuiEx::ColorEdit4("##ESPLocalplayerPositionColour", &Settings::ESP::Players::Localplayer::Colours::Position);
+								ImGui::NewLine();
 								ImGui::Columns(1, nullptr, false);
 								break;
 							}
@@ -1742,7 +1744,19 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 				ImGui::Text("Fake Angles");
 				ImGui::BeginGroupBox("AntiAimFakes", ImVec2(0, -ImGui::GetContentRegionAvail().y));
 				{
-
+					ImGui::Combo("Type", &Settings::AntiAim::Fake::Type, "None\0Legit\0Rage");
+					
+					switch (Settings::AntiAim::Fake::Type)
+					{
+					case 0:
+						break;
+					case 1:
+						ImGui::Combo("Side", &Settings::AntiAim::Fake::Legit::Side, "Left\0Right");
+						ImGui::Hotkey("Switch", &Settings::AntiAim::Fake::Legit::SideKey);
+						break;
+					case 2:
+						break;
+					}
 				}
 				ImGui::EndGroupBox();
 				ImGui::Columns(1, nullptr, false);
@@ -2107,11 +2121,6 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 				{
 					strcpy(term, searcher);
 				}
-				ImGui::SameLine();
-				if (ImGui::Button("Search"))
-				{
-					strcpy(term, searcher);
-				}
 
 				if (!g_LocalPlayer || !g_EngineClient->IsInGame() || !g_PlayerResource)
 				{
@@ -2124,7 +2133,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 					oldSel = selectedP;
 				}
 
-				ImGui::BeginGroupBox("PlayerListArray", ImVec2(0, ImGui::GetWindowSize().y / 2.25));
+				ImGui::BeginGroupBox("PlayerListArray", ImVec2(0, ImGui::GetWindowSize().y / 2.3));
 				{
 					ImGui::BeginGroup();
 					{
@@ -2234,7 +2243,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 
 											if (ImGui::Button("Steal Clan"))
 											{
-												const char* clantag = (const char*)(g_PlayerResource->GetClan(player->EntIndex()));
+												const char* clantag = g_PlayerResource->GetClan(player->EntIndex());
 
 												Utils::SetClantag(clantag);
 												ImGui::CloseCurrentPopup();
@@ -2260,6 +2269,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 												ImGui::CloseCurrentPopup();
 											}
 											ImGui::NextColumn();
+
 											int AvatarImage = g_SteamFriends->GetLargeFriendAvatar((CSteamID)(uint64)info.steamID64);
 
 											if (AvatarImage > 0)
@@ -2480,17 +2490,10 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 				ImGui::EndGroupBox();
 				break;
 			case 1:
-				// records
-
 				static char searchRec[128];
 				static char termRec[128];
 
 				if (ImGui::InputText("Search##PlayerRecords", searchRec, 128))
-				{
-					strcpy(termRec, searchRec);
-				}
-				ImGui::SameLine();
-				if (ImGui::Button("Search"))
 				{
 					strcpy(termRec, searchRec);
 				}
@@ -2513,7 +2516,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 					{
 						ImGui::Columns(4, nullptr, false);
 						ImGui::Text("#recordid"); ImGui::NextColumn();
-						ImGui::Text("First known name"); ImGui::NextColumn();
+						ImGui::Text("Last known name"); ImGui::NextColumn();
 						ImGui::Text("SteamID64"); ImGui::NextColumn();
 						ImGui::Text("Date"); ImGui::NextColumn();
 						ImGui::Columns(1, nullptr, false);
@@ -2543,8 +2546,10 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							}
 						}
 
-						if (ImGui::Selectable(std::to_string(i).c_str(), (bool)(realSelected = i), ImGuiSelectableFlags_SpanAllColumns))
+						if (ImGui::Selectable(std::to_string(i).c_str(), (bool)(realSelected == i), ImGuiSelectableFlags_SpanAllColumns))
 						{
+							printf("Selected");
+
 							selectedR = playerRecords[i].steamID64;
 						}
 						ImGui::NextColumn();
@@ -2561,6 +2566,128 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 						if (playerRecords[i].initDate) ImGui::Text(std::to_string(date).c_str());
 						ImGui::NextColumn();
 					}
+					ImGui::Columns(1, nullptr, false);
+				}
+				ImGui::EndGroupBox();
+				ImGui::BeginGroupBox("RecordListOptions", ImVec2(0, 0));
+				{
+					ImGui::Columns(2, nullptr, false);
+					ImGui::BeginGroupBox("RecordListOptionsInfo", ImVec2(0, 0));
+					{
+						if (realSelected > -1)
+						{
+							player_record_t info = playerRecords[realSelected];
+
+							if (info.initialized)
+							{
+								std::string temp = "";
+								temp += "Name: ";
+								temp += info.name;
+								ImGui::Text(temp.c_str());
+
+								temp = "";
+								temp += "SteamID: ";
+								temp += std::to_string(info.steamID64);
+								ImGui::Text(temp.c_str());
+
+								temp = "";
+								temp += "Note: ";
+								temp += info.note;
+								ImGui::Text(temp.c_str());
+							}
+						}
+					}
+					ImGui::EndGroupBox();
+					ImGui::NextColumn();
+
+					ImGui::BeginGroupBox("PlayerListOptionsActions", ImVec2(0, 0));
+					{
+						ImGui::Columns(2, nullptr, false);
+						if (selectedP > -1)
+						{
+							player_record_t info = playerRecords[realSelected];
+
+							if (info.initialized)
+							{
+								if (ImGui::Button("Steal Name"))
+								{
+									std::string f;
+									f += info.name;
+									f += " ";
+									Utils::SetName(f.c_str());
+								}
+
+								if (ImGui::Button("Open Profile"))
+								{
+									g_SteamFriends->ActivateGameOverlayToUser("steamid", (CSteamID)(uint64)info.steamID64);
+
+									_visible = false;
+								}
+
+								static std::shared_ptr<pfd::select_folder> open_folder;
+
+								if (ImGui::Button("Save Profile"))
+								{
+									open_folder = std::make_shared<pfd::select_folder>("Select Folder", "");
+								}
+
+								if (open_folder && open_folder->ready())
+								{
+									Utils::ConsolePrint("Output: %s\n", open_folder->result().c_str());
+
+									std::stringstream ss;
+									ss << open_folder->result() << "\\" << info.name << "_" << std::to_string(info.steamID64) << ".txt";
+
+									std::ofstream fileout(ss.str().c_str());
+									fileout << "Name: " << info.name << "\n";
+									fileout << "SteamID64: " << info.steamID64 << "\n";
+									fileout << "Note: " << info.note << "\n";
+									fileout.close();
+
+									open_folder = nullptr;
+								}
+
+								ImGui::NextColumn();
+
+								int AvatarImage = g_SteamFriends->GetLargeFriendAvatar((CSteamID)(uint64)info.steamID64);
+
+								if (AvatarImage > 0)
+								{
+									uint32 WIDTH = 0, HEIGHT = 0;
+									g_SteamUtils->GetImageSize(AvatarImage, &WIDTH, &HEIGHT);
+
+									if (WIDTH > 0 && HEIGHT > 0)
+									{
+										int sz = WIDTH * HEIGHT * 4;
+
+										uint8* dest = (uint8*)malloc(sz);
+
+										if (dest)
+										{
+											if (g_SteamUtils->GetImageRGBA(AvatarImage, dest, sz))
+											{
+												LPDIRECT3DTEXTURE9 texture;
+												D3DXCreateTexture(pDevice, WIDTH, HEIGHT, 0, D3DUSAGE_DYNAMIC, D3DFORMAT::D3DFMT_A8R8G8B8, D3DPOOL_DEFAULT, &texture);
+
+												if (texture)
+												{
+													CopyImageToTexture(dest, WIDTH, HEIGHT, texture, 0, 0);
+
+													ImGui::Image((void*)(uintptr_t)texture, ImVec2(128, 128));
+
+													texturesToRelease.push_back((ImTextureID)(void*)(uintptr_t)texture);
+												}
+											}
+
+											free(dest);
+										}
+									}
+								}
+							}
+						}
+						ImGui::Columns(1, nullptr, false);
+					}
+					ImGui::EndGroupBox();
 					ImGui::Columns(1, nullptr, false);
 				}
 				ImGui::EndGroupBox();

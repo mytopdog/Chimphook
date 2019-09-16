@@ -190,7 +190,7 @@ const char* const KeyNames[] = {
 };
 
 static int selectedP = -1;
-static long long selectedR = 0;
+static long long selectedR = -1;
 static int fvkstge = -1;
 
 struct IDirect3DDevice9;

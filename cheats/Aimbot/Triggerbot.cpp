@@ -46,9 +46,8 @@ void Triggerbot(CUserCmd* pCmd)
 
 	if (!pl->IsAlive())
 		return;
-	C_BasePlayer* test;
 
-	if (!CompareHitchance(pCmd, test, pl->GetHitboxPos(tr.hitgroup)))
+	if (!CompareHitchance(pCmd, pl, pl->GetHitboxPos(tr.hitgroup)))
 		return;
 
 	if (Settings::Misc::Triggerbot::Delay > 0)

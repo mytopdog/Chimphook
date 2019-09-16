@@ -188,6 +188,7 @@ public:
 	OPTION(bool, esplocalplayerhealth, &Settings::ESP::Players::Localplayer::Health);
 	OPTION(bool, esplocalplayerweapons, &Settings::ESP::Players::Localplayer::Weapon);
 	OPTION(bool, esplocalplayerpositions, &Settings::ESP::Players::Localplayer::Position);
+	OPTION(bool, esplocalplayerangles, &Settings::ESP::Players::Localplayer::Angles);
 
 	OPTION(Color, esplocalplayercolourboxes, &Settings::ESP::Players::Localplayer::Colours::Box);
 	OPTION(Color, esplocalplayercolourskeletons, &Settings::ESP::Players::Localplayer::Colours::Skeleton);
@@ -308,6 +309,9 @@ public:
 	OPTION(int, antiaimairyawaddcustom, &Settings::AntiAim::Air::YawAdd::Custom::Angle);
 	OPTION(int, antiaimairyawaddjitterrange, &Settings::AntiAim::Air::YawAdd::Jitter::AngleRange);
 	OPTION(bool, antiaimairyawaddjitterswitch, &Settings::AntiAim::Air::YawAdd::Jitter::Switch);
+
+	OPTION(int, antiaimfaketype, &Settings::AntiAim::Fake::Type);
+	OPTION(int, antiaimfakelegitside, &Settings::AntiAim::Fake::Legit::Side);
 	
 	OPTION(bool, testaimbotenabled, &Settings::Aim::TestAimbot::Enabled);
 	OPTION(bool, testaimbotonshoot, &Settings::Aim::TestAimbot::OnShoot);

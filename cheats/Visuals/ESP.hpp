@@ -33,6 +33,8 @@ public:
 		void RenderSnapline(Color col);
 		void RenderPosition(Color col);
 		void RenderEyeLine(Color col);
+
+		void RenderAngles();
 	};
 public:
 	void AddToDrawList();

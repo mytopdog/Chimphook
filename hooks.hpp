@@ -18,6 +18,8 @@ namespace CreateMove
 
 	extern QAngle FakeAngles;
 	extern QAngle RealAngles;
+	extern float CurrentLBY;
+	extern float GoalBreakDelta;
 }
 
 namespace index

@@ -274,7 +274,6 @@ void FakeLag(CUserCmd* cmd, bool& bSendPacket)
 		return;
 
 	if (cmd->buttons & IN_ATTACK) return;
-	if (g_LocalPlayer->m_vecVelocity() == Vector(0, 0, 0)) return;
 
 	int iChoke = Settings::Misc::FakeLag::Choke;
 

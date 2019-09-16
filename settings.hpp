@@ -469,6 +469,7 @@ namespace Settings
 				extern bool Health;
 				extern bool Weapon;
 				extern bool Position;
+				extern bool Angles;
 
 				namespace Colours
 				{
@@ -781,6 +782,17 @@ namespace Settings
 				{
 					extern int Angle;
 				}
+			}
+		}
+
+		namespace Fake
+		{
+			extern int Type;
+			
+			namespace Legit
+			{
+				extern int Side;
+				extern int SideKey;
 			}
 		}
 	}

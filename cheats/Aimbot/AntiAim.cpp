@@ -3,6 +3,7 @@
 #include "AntiAim/AirAA.hpp"
 #include "AntiAim/MovingAA.hpp"
 #include "AntiAim/StandingAA.hpp"
+#include "AntiAim/FakeAngles.hpp"
 
 bool Settings::AntiAim::Enabled = false;
 
@@ -28,14 +29,28 @@ bool IsFiring(CUserCmd* cmd)
 			return true;
 	}
 
-	if (g_LocalPlayer->m_flNextAttack() - g_GlobalVars->curtime <= 0.05f)
-	{
-		if (cmd->buttons & IN_ATTACK)
-			return (wep->m_flNextPrimaryAttack() - g_GlobalVars->curtime <= 0.05f);
-		else if (cmd->buttons & IN_ATTACK2)
-			return (wep->m_flNextSecondaryAttack() - g_GlobalVars->curtime <= 0.05f);
+	if(wep->IsKnife())
+		if (g_LocalPlayer->m_flNextAttack() - g_GlobalVars->curtime <= 0.05f)
+		{
+			if (cmd->buttons & IN_ATTACK)
+				return (wep->m_flNextPrimaryAttack() - g_GlobalVars->curtime <= 0.05f);
+			else if (cmd->buttons & IN_ATTACK2)
+				return (wep->m_flNextSecondaryAttack() - g_GlobalVars->curtime <= 0.05f);
 
-		else return false;
+			else return false;
+		}
+
+	if (!wep->IsKnife())
+	{
+		if (g_LocalPlayer->m_flNextAttack() < flServerTime)
+		{
+			if (cmd->buttons & IN_ATTACK)
+				return (wep->m_flNextPrimaryAttack() < flServerTime);
+			else if (cmd->buttons & IN_ATTACK2)
+				return (wep->m_flNextSecondaryAttack() < flServerTime);
+
+			else return false;
+		}
 	}
 
 	return false;
@@ -75,6 +90,8 @@ void AntiAim(CUserCmd* cmd, bool& bSendPacket)
 		{
 			DoAirAA(cmd, bSendPacket);
 		}
+
+		DoFakeAngs(cmd, bSendPacket);
 	}
 
 	Math::CorrectMovement(oldAng, cmd, oldFwd, oldSde);

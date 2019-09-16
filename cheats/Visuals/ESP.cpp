@@ -60,6 +60,7 @@ bool Settings::ESP::Players::Localplayer::Skeleton = false;
 bool Settings::ESP::Players::Localplayer::Health = false;
 bool Settings::ESP::Players::Localplayer::Weapon = false;
 bool Settings::ESP::Players::Localplayer::Position = false;
+bool Settings::ESP::Players::Localplayer::Angles = false;
 
 Color Settings::ESP::Players::Localplayer::Colours::Box = Color(255, 255, 255, 255);
 Color Settings::ESP::Players::Localplayer::Colours::Name = Color(255, 255, 255, 255);
@@ -269,6 +270,69 @@ void Visuals::Player::Begin(C_BasePlayer* pl)
 
 		if (Settings::ESP::Players::Localplayer::Position)
 			RenderPosition(Settings::ESP::Players::Localplayer::Colours::Position);
+
+		if (Settings::ESP::Players::Localplayer::Angles)
+			RenderAngles();
+	}
+}
+
+void Visuals::Player::RenderAngles()
+{
+	Vector origin;
+
+	if (Math::WorldToScreen(g_LocalPlayer->m_vecOrigin(), origin))
+	{
+		// Fake Yaw
+		{
+			Vector forward;
+			Math::AngleVectors(QAngle(0, CreateMove::FakeAngles.yaw, 0), forward);
+
+			Vector endpos = g_LocalPlayer->m_vecOrigin() + forward * 60.f;
+			Vector endposscr;
+
+			Math::WorldToScreen(endpos, endposscr);
+
+			Render::Get().RenderLine(origin.x, origin.y, endposscr.x, endposscr.y, Color(255, 0, 0), 1);
+		}
+
+		// RealYaw
+		{
+			Vector forward;
+			Math::AngleVectors(QAngle(0, CreateMove::RealAngles.yaw, 0), forward);
+
+			Vector endpos = g_LocalPlayer->m_vecOrigin() + forward * 60.f;
+			Vector endposscr;
+
+			Math::WorldToScreen(endpos, endposscr);
+
+			Render::Get().RenderLine(origin.x, origin.y, endposscr.x, endposscr.y, Color(0, 255, 0), 1);
+		}
+
+		// FeetYaw
+		{
+			Vector forward;
+			Math::AngleVectors(QAngle(0, CreateMove::CurrentLBY, 0), forward);
+
+			Vector endpos = g_LocalPlayer->m_vecOrigin() + forward * 60.f;
+			Vector endposscr;
+
+			Math::WorldToScreen(endpos, endposscr);
+
+			Render::Get().RenderLine(origin.x, origin.y, endposscr.x, endposscr.y, Color(0, 0, 255), 1);
+		}
+
+		// GoalDelta
+		{
+			Vector forward;
+			Math::AngleVectors(QAngle(0, CreateMove::GoalBreakDelta, 0), forward);
+
+			Vector endpos = g_LocalPlayer->m_vecOrigin() + forward * 60.f;
+			Vector endposscr;
+
+			Math::WorldToScreen(endpos, endposscr);
+
+			Render::Get().RenderLine(origin.x, origin.y, endposscr.x, endposscr.y, Color(0, 255, 255), 1);
+		}
 	}
 }
 

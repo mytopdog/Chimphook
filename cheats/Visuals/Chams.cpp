@@ -1,6 +1,7 @@
 #include "Chams.hpp"
 
 #include "../Aimbot/Backtracking.hpp"
+#include "../Aimbot/AntiAim/FakeAngles.hpp"
 
 bool Settings::Visuals::Chams::Players::Enabled;
 
@@ -126,49 +127,7 @@ void Chams::SceneEnd()
 				bool is_enemy = !is_teammate;
 				bool is_localplayer = pl == g_LocalPlayer;
 
-				if (is_localplayer)
-				{
-					if (Settings::Visuals::Chams::Players::Localplayer::Enabled)
-					{
-						IMaterial* mat = GetMaterial(Settings::Visuals::Chams::Players::Localplayer::Material);
-
-						if (Settings::Visuals::Chams::Players::Localplayer::DoOccluded)
-						{
-							Color col = Settings::Visuals::Chams::Players::Localplayer::Occluded;
-							g_RenderView->SetColorModulation(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
-							mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
-							mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
-							mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
-							mat->IncrementReferenceCount();
-							g_MdlRender->ForcedMaterialOverride(mat);
-
-							ent->DrawModel(1, 255);
-						}
-
-						Color col = Settings::Visuals::Chams::Players::Localplayer::Visible;
-						g_RenderView->SetColorModulation(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
-						mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
-						mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
-						mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
-						mat->IncrementReferenceCount();
-						g_MdlRender->ForcedMaterialOverride(mat);
-
-						ent->DrawModel(1, 255);
-
-						/*if (Settings::AntiAim::Yaw::Type == 3)
-						{
-							QAngle origAngle = g_LocalPlayer->GetAngles();
-
-							g_LocalPlayer->SetAbsAngles(QAngle(0, CreateMove::FakeAngles.yaw, 0));
-							mat->ColorModulate(0.f, 0.f, 0.f);
-							g_MdlRender->ForcedMaterialOverride(mat);
-							g_LocalPlayer->DrawModel(1, 255);
-							g_MdlRender->ForcedMaterialOverride(nullptr);
-							g_LocalPlayer->SetAbsAngles(QAngle(0, origAngle.yaw, 0));
-						}*/
-					}
-				}
-				else if (!is_localplayer && is_enemy)
+				if (!is_localplayer && is_enemy)
 				{
 					if (Settings::Visuals::Chams::Players::Enemies::Enabled)
 					{
@@ -366,8 +325,107 @@ void Chams::OnDME(
 	bool is_arm = strstr(mdl->szName, "arms");
 	bool is_sleeves = strstr(mdl->szName, "sleeve");
 	bool is_weapon = strstr(mdl->szName, "weapons/v_");
+	bool is_player = strstr(mdl->szName, "models/player");
 
-	if (is_sleeves)
+	if (is_player)
+	{
+		C_BasePlayer* ent = C_BasePlayer::GetPlayerByIndex(info.entity_index);
+
+		if (ent == g_LocalPlayer)
+		{
+			if (Settings::Visuals::Chams::Players::Localplayer::Enabled)
+			{
+				IMaterial* mat = GetMaterial(Settings::Visuals::Chams::Players::Localplayer::Material);
+
+				if (Settings::Visuals::Chams::Players::Localplayer::DoOccluded)
+				{
+					Color col = Settings::Visuals::Chams::Players::Localplayer::Occluded;
+
+					mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
+					mat->AlphaModulate(col.a() / 255.f);
+					mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
+					mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
+
+					g_MdlRender->ForcedMaterialOverride(mat);
+					fnDME(g_MdlRender, 0, ctx, state, info, matrix);
+				}
+
+				if (false)
+				{
+					mat->ColorModulate(1.f, 0.f, 0.f);
+					mat->AlphaModulate(1.f);
+					mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
+					mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
+
+					g_MdlRender->ForcedMaterialOverride(mat);
+
+					static matrix3x4_t FakeMatrix[128];
+					static CCSGOPlayerAnimState* FakeAnimState;
+					static CBaseHandle handle = g_LocalPlayer->GetRefEHandle();
+					static float spawn_time = g_LocalPlayer->m_flSpawnTime();
+
+					bool allocate = (!FakeAnimState),
+						change = (!allocate) && (g_LocalPlayer->GetRefEHandle() != handle),
+						reset = (!allocate && !change) && (g_LocalPlayer->m_flSpawnTime() != spawn_time);
+
+					if (change)
+						free(FakeAnimState);
+
+					if (reset)
+					{
+						g_LocalPlayer->ResetAnimationState(FakeAnimState);
+
+						spawn_time = g_LocalPlayer->m_flSpawnTime();
+					}
+
+					static float oldSimTime = 0.f;
+
+					if (allocate)
+					{
+						CCSGOPlayerAnimState* state = g_LocalPlayer->GetPlayerAnimState();
+
+						if (state != nullptr)
+							g_LocalPlayer->CreateAnimationState(state);
+
+						handle = g_LocalPlayer->GetRefEHandle();
+						spawn_time = g_LocalPlayer->m_flSpawnTime();
+
+						FakeAnimState = state;
+					}
+					else
+					{
+						AnimationLayer networked_layers[13];
+						memcpy(networked_layers, g_LocalPlayer->GetAnimOverlays(), 13);
+
+						QAngle backup_abs_angles = g_LocalPlayer->GetAngles();
+						std::array<float, 24> backup_poses = g_LocalPlayer->m_flPoseParameter();
+
+						g_LocalPlayer->UpdateAnimationState(FakeAnimState, CreateMove::RealAngles);
+						*g_LocalPlayer->GetPlayerAnimState() = *FakeAnimState;
+						g_LocalPlayer->SetupBones(FakeMatrix, 128, 0x7FF00, g_GlobalVars->curtime);
+
+						memcpy(g_LocalPlayer->GetAnimOverlays(), networked_layers, 13);
+
+						g_LocalPlayer->m_flPoseParameter() = backup_poses;
+						g_LocalPlayer->GetAngles() = backup_abs_angles;
+					}
+					oldSimTime = g_LocalPlayer->m_flSimulationTime();
+
+					fnDME(g_MdlRender, 0, ctx, state, info, FakeMatrix);
+				}
+
+				Color col = Settings::Visuals::Chams::Players::Localplayer::Visible;
+
+				mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
+				mat->AlphaModulate(col.a() / 255.f);
+				mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
+				mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, Settings::Visuals::Chams::Viewmodel::Sleeves::Wireframe);
+
+				g_MdlRender->ForcedMaterialOverride(mat);
+			}
+		}
+	}
+	else if (is_sleeves)
 	{
 		auto mat = g_MatSystem->FindMaterial(mdl->szName);
 		if (!mat)

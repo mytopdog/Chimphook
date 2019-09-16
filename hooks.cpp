@@ -20,6 +20,7 @@
 #include "cheats/Aimbot/Aim.hpp"
 #include "cheats/chattranslator.h"
 #include "cheats/Aimbot/Backtracking.hpp"
+#include "cheats/Aimbot/AntiAim/FakeAngles.hpp"
 
 #include "helpers/skinchangerparser.hpp"
 #include "helpers/protobuff.hpp"
@@ -58,13 +59,15 @@ std::vector<ClanTagMember> Settings::ClanTag::CustomTagEditor;
 
 EventListener* events = nullptr;
 
-bool CreateMove::sendPacket = true;
 QAngle CreateMove::lastTickViewAngles = QAngle(0, 0, 0);
+bool CreateMove::sendPacket = true;
 int CreateMove::lastbuttons = 0;
 int CreateMove::tick = 0;
 
 QAngle CreateMove::RealAngles = QAngle(0, 0, 0);
 QAngle CreateMove::FakeAngles = QAngle(0, 0, 0);
+float CreateMove::CurrentLBY = 0.f;
+float CreateMove::GoalBreakDelta = 0.f;
 
 bool Settings::Misc::FUCK = false;
 
@@ -346,9 +349,15 @@ namespace Hooks
 			cmd->viewangles.roll = 0.f;
 		}
 
-		if (bSendPacket) {
+		if (bSendPacket)
+		{
 			CreateMove::lastTickViewAngles = cmd->viewangles;
+			CreateMove::FakeAngles = cmd->viewangles;
 			CreateMove::lastbuttons = cmd->buttons;
+		}
+		else
+		{
+			CreateMove::RealAngles = cmd->viewangles;
 		}
 
 		if (std::abs(cmd->viewangles.yaw - old.yaw) > 32.f)
@@ -552,6 +561,8 @@ namespace Hooks
 
 		if (g_EngineClient->IsInGame() && stage == FRAME_NET_UPDATE_END)
 		{
+			ManageFakeAnimState();
+
 			Backtrack::Get().UpdateEntities();
 		}
 

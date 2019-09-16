@@ -201,7 +201,7 @@ C_BasePlayer* FindPlayer(bool& found, float& bestDamage, Bone& bestBone)
 
 			if (DoHitscan(pl, dmg, bone))
 			{
-				if (pl->CanSeePlayer(g_LocalPlayer, g_LocalPlayer->GetHitboxPos((int)(HITBOX_HEAD))));
+				if (pl->CanSeePlayer(g_LocalPlayer, g_LocalPlayer->GetHitboxPos((int)(HITBOX_HEAD))))
 				{
 					threatLvl++;
 				}

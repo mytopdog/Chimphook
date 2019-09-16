@@ -172,6 +172,7 @@
     <ClInclude Include="cheats\Aimbot\AimbotSettings.hpp" />
     <ClInclude Include="cheats\Aimbot\AntiAim.hpp" />
     <ClInclude Include="cheats\Aimbot\AntiAim\AirAA.hpp" />
+    <ClInclude Include="cheats\Aimbot\AntiAim\FakeAngles.hpp" />
     <ClInclude Include="cheats\Aimbot\AntiAim\MovingAA.hpp" />
     <ClInclude Include="cheats\Aimbot\AntiAim\StandingAA.hpp" />
     <ClInclude Include="cheats\Aimbot\Autowall.hpp" />
@@ -323,6 +324,7 @@
     <ClCompile Include="cheats\Aimbot\AimbotSettings.cpp" />
     <ClCompile Include="cheats\Aimbot\AntiAim.cpp" />
     <ClCompile Include="cheats\Aimbot\AntiAim\AirAA.cpp" />
+    <ClCompile Include="cheats\Aimbot\AntiAim\FakeAngles.cpp" />
     <ClCompile Include="cheats\Aimbot\AntiAim\MovingAA.cpp" />
     <ClCompile Include="cheats\Aimbot\AntiAim\StandingAA.cpp" />
     <ClCompile Include="cheats\Aimbot\Autowall.cpp" />
