@@ -1,4 +1,6 @@
-#include "backtracking.hpp"
+#include "Backtracking.hpp"
+#include "../Aimbot/AntiAim.hpp"
+#include "../Aimbot/Autowall.hpp"
 #include "../helpers/math.hpp"
 
 convars cvars;
@@ -40,10 +42,12 @@ bool Backtrack::IsValidTick(float simtime)
 
 void Backtrack::UpdateEntities()
 {
-	if (!Settings::Backtrack::Enabled || !g_LocalPlayer || !g_LocalPlayer->IsAlive())
+	if (!Settings::Backtrack::Enabled)
 	{
-		if (records->empty())
-			records->clear();
+		for (int i = 0; i < 65; i++)
+		{
+			records[i].clear();
+		}
 
 		return;
 	}
@@ -52,7 +56,7 @@ void Backtrack::UpdateEntities()
 	{
 		C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
 
-		if (!pl || pl == g_LocalPlayer || !pl->IsAlive() || pl->IsDormant())
+		if (!pl || !pl->IsPlayer() || pl == g_LocalPlayer || !pl->IsAlive() || pl->IsDormant())
 		{
 			records[i].clear();
 
@@ -72,12 +76,7 @@ void Backtrack::UpdateEntities()
 		record.angs = pl->GetAngles();
 		record.origin = pl->m_vecOrigin();
 		record.headpos = pl->GetHitboxPos(HITBOX_HEAD);
-		record.velocity = pl->m_vecVelocity();
-		record.cycle = pl->m_flCycle();
-		record.sequence = pl->m_nSequence();
-		record.flags = (EntityFlags)pl->m_fFlags();
-		record.lowerbodyyawtarget = pl->m_flLowerBodyYawTarget();
-
+		record.entity = pl;
 		record.simtime = pl->m_flSimulationTime();
 
 		pl->SetupBones(record.matrix, 128, 0x7FF00, g_GlobalVars->curtime);
@@ -100,75 +99,41 @@ void Backtrack::Run(CUserCmd* cmd)
 	if (!g_LocalPlayer)
 		return;
 
-	float best_fov = 255.f;
-	C_BasePlayer* best_target;
-	int best_target_index;
-	Vector best_head_position;
-	int best_record;
-	bool found = false;
-
-	for (int i = 0; i < g_EngineClient->GetMaxClients(); i++)
+	if (IsFiring(cmd))
 	{
-		C_BasePlayer* pl = C_BasePlayer::GetPlayerByIndex(i);
-
-		if (!pl || pl == g_LocalPlayer || pl->IsDormant() || !pl->IsAlive() || pl->m_iTeamNum() == g_LocalPlayer->m_iTeamNum())
-			continue;
-
-		Vector headpos = pl->GetBonePos(HEAD_0);
-
-		QAngle angle = Math::CalcAngle(g_LocalPlayer->GetEyePos(), headpos);
-		float fov = Math::GetFOV(cmd->viewangles, angle);
-
-		if (fov < best_fov)
+		for (int i = 0; i < 65; i++)
 		{
-			best_fov = fov;
-			best_target = pl;
-			best_target_index = i;
-			best_head_position = headpos;
-			found = true;
-		}
-	}
-
-	if (found && best_target)
-	{
-		found = false;
-
-		if (records[best_target_index].size() <= 3)
-			return;
-
-		best_fov = 255.f;
-
-		for (size_t i = 0; i < records[best_target_index].size(); i++)
-		{
-			backtrack_record_t* record = &records[best_target_index][i];
-
-			if (!record || !IsValidTick(record->simtime))
-				continue;
-
-			QAngle angle = Math::CalcAngle(g_LocalPlayer->GetEyePos(), record->headpos);
-			float fov = Math::GetFOV(cmd->viewangles, angle);
-
-			if (fov < best_fov)
+			for (int j = 0; j < records[i].size(); j++)
 			{
-				best_fov = fov;
-				best_record = i;
-				found = true;
+				backtrack_record_t record = records[i][j];
+
+				unsigned long origBoneCount = *record.entity->mostRecentModelBoneCounter();
+				matrix3x4_t* origBoneCached = *record.entity->cachedBoneData();
+
+				*record.entity->mostRecentModelBoneCounter() = 128;
+				*record.entity->cachedBoneData() = record.matrix;
+
+				Vector dst, forward;
+
+				Math::AngleVectors(cmd->viewangles, forward);
+				dst = g_LocalPlayer->GetEyePos() + (forward * 8196.f);
+				
+				Ray_t ray;
+				ray.Init(g_LocalPlayer->GetEyePos(), dst);
+				trace_t tr;
+
+				g_EngineTrace->ClipRayToEntity(ray, MASK_SHOT | CONTENTS_GRATE, record.entity, &tr);
+
+				*record.entity->mostRecentModelBoneCounter() = origBoneCount;
+				*record.entity->cachedBoneData() = origBoneCached;
+
+				if (tr.hit_entity == record.entity)
+				{
+					cmd->tick_count = TIME_TO_TICKS(record.simtime);
+
+					return;
+				}
 			}
 		}
-	}
-
-	if (found && best_record)
-	{
-		backtrack_record_t record = records[best_target_index][best_record];
-		selectedpl = best_target_index;
-		selectedr = best_record;
-
-		if (cmd->buttons & IN_ATTACK)
-			cmd->tick_count = TIME_TO_TICKS(record.simtime);
-	}
-	else
-	{
-		selectedpl = 0;
-		selectedr = 0;
 	}
 }

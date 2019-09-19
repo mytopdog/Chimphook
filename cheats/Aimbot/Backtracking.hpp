@@ -19,11 +19,7 @@ struct backtrack_record_t
 	QAngle angs;
 	Vector origin;
 	Vector headpos;
-	Vector velocity;
-	float cycle;
-	int sequence;
-	EntityFlags flags;
-	float lowerbodyyawtarget;
+	C_BasePlayer* entity;
 
 	matrix3x4_t matrix[128];
 	float simtime;
@@ -34,7 +30,7 @@ class Backtrack : public Singleton<Backtrack>
 public:
 	int selectedpl;
 	int selectedr;
-	std::deque<backtrack_record_t> records[700];
+	std::deque<backtrack_record_t> records[65];
 
 	bool IsValidTick(float simtime);
 	void Run(CUserCmd* cmd);

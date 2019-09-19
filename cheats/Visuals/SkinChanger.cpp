@@ -516,9 +516,9 @@ void SkinChanger::Run()
 			break;
 		}
 
-		weapon->m_OriginalOwnerXuidLow() = -1;
+		weapon->m_OriginalOwnerXuidLow() = g_LocalPlayer->GetPlayerInfo().xuid_low;
 		weapon->m_OriginalOwnerXuid() = g_LocalPlayer->GetPlayerInfo().xuid_low;
-		weapon->m_OriginalOwnerXuidHigh() = -1;
+		weapon->m_OriginalOwnerXuidHigh() = g_LocalPlayer->GetPlayerInfo().xuid_high;
 		weapon->m_nFallbackSeed() = 661;
 		weapon->m_iItemIDHigh() = -1;
 	}

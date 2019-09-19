@@ -245,16 +245,25 @@ public:
 	OPTION(bool, chamsplayersteammatesocc, &Settings::Visuals::Chams::Players::Teammates::DoOccluded);
 	OPTION(bool, chamsplayerslocalplayerocc, &Settings::Visuals::Chams::Players::Localplayer::DoOccluded);
 
+	OPTION(bool, chamsplayersenemiesbacktrack, &Settings::Visuals::Chams::Players::Enemies::DoBacktrack);
+	OPTION(bool, chamsplayerslocalplayerfakechams, &Settings::Visuals::Chams::Players::Localplayer::DoFakeChams);
+
 	OPTION(int, chamsplayersenemiesmat, &Settings::Visuals::Chams::Players::Enemies::Material);
 	OPTION(int, chamsplayersteammatesmat, &Settings::Visuals::Chams::Players::Teammates::Material);
 	OPTION(int, chamsplayerslocalplayermat, &Settings::Visuals::Chams::Players::Localplayer::Material);
 
 	OPTION(Color, chamsplayerscolenemiesvisible, &Settings::Visuals::Chams::Players::Enemies::Visible);
 	OPTION(Color, chamsplayerscolenemiesoccluded, &Settings::Visuals::Chams::Players::Enemies::Occluded);
+	OPTION(Color, chamsplayerscolenemiesbacktrack, &Settings::Visuals::Chams::Players::Enemies::Backtrack);
 	OPTION(Color, chamsplayerscolorteammatesvisible, &Settings::Visuals::Chams::Players::Teammates::Visible);
 	OPTION(Color, chamsplayerscolenteammatesoccluded, &Settings::Visuals::Chams::Players::Teammates::Occluded);
 	OPTION(Color, chamsplayerscolorlocalplayervisible, &Settings::Visuals::Chams::Players::Localplayer::Visible);
 	OPTION(Color, chamsplayerscolenlocalplayeroccluded, &Settings::Visuals::Chams::Players::Localplayer::Occluded);
+
+	OPTION(int, chamsplayersenemiesopacity, &Settings::Visuals::Chams::Players::Enemies::Opacity);
+	OPTION(int, chamsplayersteammatesopacity, &Settings::Visuals::Chams::Players::Teammates::Opacity);
+	OPTION(int, chamsplayerslocalplayeropacity, &Settings::Visuals::Chams::Players::Localplayer::Opacity);
+	OPTION(int, chamsplayerslocalplayerscopedopacity, &Settings::Visuals::Chams::Players::Localplayer::ScopedOpacity);
 
 	OPTION(bool, chamsviewmodelarmsenabled, &Settings::Visuals::Chams::Viewmodel::Arms::Enabled);
 	OPTION(bool, chamsviewmodelarmswireframe, &Settings::Visuals::Chams::Viewmodel::Arms::Wireframe);
@@ -305,6 +314,7 @@ public:
 	OPTION(int, antiaimairyawmanuallkey, &Settings::AntiAim::Air::Yaw::Manual::LKey);
 	OPTION(int, antiaimairyawmanualrkey, &Settings::AntiAim::Air::Yaw::Manual::RKey);
 	OPTION(int, antiaimairyawmanualbkey, &Settings::AntiAim::Air::Yaw::Manual::BKey);
+	OPTION(int, antiaimairyawspinspeed, &Settings::AntiAim::Air::Yaw::Spin::Speed);
 	OPTION(int, antiaimairyawaddtype, &Settings::AntiAim::Air::YawAdd::Type);
 	OPTION(int, antiaimairyawaddcustom, &Settings::AntiAim::Air::YawAdd::Custom::Angle);
 	OPTION(int, antiaimairyawaddjitterrange, &Settings::AntiAim::Air::YawAdd::Jitter::AngleRange);

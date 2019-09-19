@@ -285,9 +285,12 @@ namespace Settings
 				{
 					extern bool Enabled;
 					extern bool DoOccluded;
+					extern bool DoBacktrack;
 					extern int Material;
 					extern Color Visible;
 					extern Color Occluded;
+					extern Color Backtrack;
+					extern int Opacity;
 				}
 
 				namespace Teammates
@@ -297,15 +300,20 @@ namespace Settings
 					extern int Material;
 					extern Color Visible;
 					extern Color Occluded;
+					extern int Opacity;
 				}
 
 				namespace Localplayer
 				{
 					extern bool Enabled;
+					extern bool DoFakeChams;
 					extern bool DoOccluded;
 					extern int Material;
 					extern Color Visible;
 					extern Color Occluded;
+					extern Color FakeChams;
+					extern int Opacity;
+					extern int ScopedOpacity;
 				}
 			}
 
@@ -793,6 +801,13 @@ namespace Settings
 			{
 				extern int Side;
 				extern int SideKey;
+			}
+
+			namespace Rage
+			{
+				extern bool LBYBreak;
+				extern int Lean;
+				extern int LeanKey;
 			}
 		}
 	}

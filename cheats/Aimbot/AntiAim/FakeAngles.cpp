@@ -53,6 +53,10 @@ int Settings::AntiAim::Fake::Type = 0;
 int Settings::AntiAim::Fake::Legit::Side = 0;
 int Settings::AntiAim::Fake::Legit::SideKey = 0;
 
+bool Settings::AntiAim::Fake::Rage::LBYBreak = 0;
+int Settings::AntiAim::Fake::Rage::Lean = 0;
+int Settings::AntiAim::Fake::Rage::LeanKey = 0;
+
 void DoFakeAngs(CUserCmd* cmd, bool& bSendPacket)
 {
 	if (!Settings::AntiAim::Fake::Type)
@@ -113,7 +117,7 @@ void DoFakeAngs(CUserCmd* cmd, bool& bSendPacket)
 
 			return;
 		}
-
+		
 		if (!bSendPacket)
 		{
 			cmd->viewangles.yaw += g_LocalPlayer->GetMaxDesyncDelta() * (Settings::AntiAim::Fake::Legit::Side ? -1 : 1);
@@ -123,76 +127,135 @@ void DoFakeAngs(CUserCmd* cmd, bool& bSendPacket)
 	if (Settings::AntiAim::Fake::Type == 2)
 	{
 
+		// Rage AA;
+
+		static bool prebf = false;
+
+		if (GetAsyncKeyState(Settings::AntiAim::Fake::Rage::LeanKey))
+		{
+			if (!prebf)
+			{
+				Settings::AntiAim::Fake::Rage::Lean = 1 - Settings::AntiAim::Fake::Rage::Lean;
+			}
+
+			prebf = true;
+		}
+		else
+		{
+			prebf = false;
+		}
+
+		CreateMove::CurrentLBY = g_LocalPlayer->GetPlayerAnimState()->m_flCurrentFeetYaw;
+
+		if (Settings::AntiAim::Fake::Rage::LBYBreak && ShouldBreakLBY(cmd))
+		{
+			if (!Settings::AntiAim::Fake::Rage::Lean)
+			{
+				if (NormaliseQuick(cmd->viewangles.yaw - g_LocalPlayer->GetPlayerAnimState()->m_flCurrentFeetYaw) < 57.f)
+				{
+					CreateMove::GoalBreakDelta = NormaliseQuick(cmd->viewangles.yaw - 125.f);
+					cmd->viewangles.yaw -= 125.f;
+				}
+				else
+				{
+					CreateMove::GoalBreakDelta = NormaliseQuick(cmd->viewangles.yaw - 180.f);
+					cmd->viewangles.yaw -= 180.f;
+				}
+			}
+			else
+			{
+				if (NormaliseQuick(cmd->viewangles.yaw - g_LocalPlayer->GetPlayerAnimState()->m_flCurrentFeetYaw) > -57.f)
+				{
+					CreateMove::GoalBreakDelta = NormaliseQuick(cmd->viewangles.yaw + 125.f);
+					cmd->viewangles.yaw += 125.f;
+				}
+				else
+				{
+					CreateMove::GoalBreakDelta = NormaliseQuick(cmd->viewangles.yaw + 180.f);
+					cmd->viewangles.yaw += 180.f;
+				}
+			}
+
+			bSendPacket = false;
+
+			return;
+		}
+
+		if (!Settings::AntiAim::Fake::Rage::LBYBreak)
+		{
+			if (g_LocalPlayer->m_fFlags() & FL_ONGROUND && cmd->sidemove < 3 && cmd->sidemove > -3)
+			{
+				static bool switchsm = false;
+				cmd->sidemove = switchsm ? 2.f : -2.f;
+
+				switchsm = !switchsm;
+			}
+		}
+		
+		if (!bSendPacket)
+		{
+			cmd->viewangles.yaw += g_LocalPlayer->GetMaxDesyncDelta() * (Settings::AntiAim::Fake::Rage::Lean ? -1 : 1);
+		}
 	}
 }
 
 matrix3x4_t FakeMatrix[128];
-CCSGOPlayerAnimState* FakeAnimState;
+CCSGOPlayerAnimState* FakeAnimState = nullptr;
 
 void ManageFakeAnimState()
 {
-	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
+	if (!Settings::Visuals::Chams::Players::Localplayer::DoFakeChams)
 		return;
 
-	float backup_pose = g_LocalPlayer->m_flPoseParameter()[11];
-	QAngle backup_abs_angles = g_LocalPlayer->GetAngles();
-
-	g_LocalPlayer->m_flPoseParameter()[11] = 0.5f;
-	g_LocalPlayer->SetAbsAngles(QAngle(0.f, CreateMove::RealAngles.yaw, 0.f));
-
-	g_LocalPlayer->SetupBones(FakeMatrix, 128, 0x7FF00, g_GlobalVars->curtime);
-
-	g_LocalPlayer->m_flPoseParameter()[11] = backup_pose;
-	g_LocalPlayer->SetAbsAngles(backup_abs_angles);
-
-		/*
-	static CBaseHandle handle = g_LocalPlayer->GetRefEHandle();
+	if (!g_LocalPlayer || !g_LocalPlayer->IsAlive())
+		return;
+	
 	static float spawn_time = g_LocalPlayer->m_flSpawnTime();
+	static CBaseHandle* handle = const_cast<CBaseHandle*>(&g_LocalPlayer->GetRefEHandle());;
 
 	bool allocate = (!FakeAnimState),
-		change = (!allocate) && (g_LocalPlayer->GetRefEHandle() != handle),
+		change = (!allocate) && (&g_LocalPlayer->GetRefEHandle() != handle),
 		reset = (!allocate && !change) && (g_LocalPlayer->m_flSpawnTime() != spawn_time);
 
-	if (change)
+	if (allocate)
 		free(FakeAnimState);
-
-	if (reset)
-	{
-		g_LocalPlayer->ResetAnimationState(FakeAnimState);
-
-		spawn_time = g_LocalPlayer->m_flSpawnTime();
-	}
-
-	static float oldSimTime = 0;
 
 	if (allocate || change)
 	{
-		CCSGOPlayerAnimState* state = g_LocalPlayer->GetPlayerAnimState();
+		CCSGOPlayerAnimState* state = reinterpret_cast<CCSGOPlayerAnimState*>(malloc(sizeof(CCSGOPlayerAnimState)));
 
 		if (state != nullptr)
 			g_LocalPlayer->CreateAnimationState(state);
 
-		handle = g_LocalPlayer->GetRefEHandle();
+		handle = const_cast<CBaseHandle*>(&g_LocalPlayer->GetRefEHandle());;
 		spawn_time = g_LocalPlayer->m_flSpawnTime();
 
 		FakeAnimState = state;
 	}
-	else if (g_LocalPlayer->m_flSimulationTime() != oldSimTime)
+	else if (g_LocalPlayer->m_flSpawnTime() != spawn_time)
 	{
-		AnimationLayer networked_layers[13];
-		memcpy(networked_layers, g_LocalPlayer->GetAnimOverlays(), 13);
+		C_BasePlayer::ResetAnimationState(FakeAnimState);
 
-		QAngle backup_abs_angles = g_LocalPlayer->GetAngles();
-		std::array<float, 24> backup_poses = g_LocalPlayer->m_flPoseParameter();
-
-		g_LocalPlayer->UpdateAnimationState(FakeAnimState, CreateMove::RealAngles);
-		g_LocalPlayer->SetupBones(FakeMatrix, 128, 0x7FF00, g_GlobalVars->curtime);
-
-		memcpy(g_LocalPlayer->GetAnimOverlays(), networked_layers, 13);
-
-		g_LocalPlayer->m_flPoseParameter() = backup_poses;
-		g_LocalPlayer->GetAngles() = backup_abs_angles;
+		spawn_time = g_LocalPlayer->m_flSpawnTime();
 	}
+	else
+	{
+		if (FakeAnimState)
+		{
+			AnimationLayer networked_layers[13];
+			memcpy(networked_layers, g_LocalPlayer->GetAnimOverlays(), 13);
 
-	oldSimTime = g_LocalPlayer->m_flSimulationTime();*/
+			QAngle backup_abs_angles = g_LocalPlayer->GetAngles();
+			std::array<float, 24> backup_poses = g_LocalPlayer->m_flPoseParameter();
+
+			g_LocalPlayer->UpdateAnimationState(FakeAnimState, QAngle(0, 0, 0));
+			g_LocalPlayer->InvalidateBoneCache();
+			g_LocalPlayer->SetupBones(FakeMatrix, 128, 0x7FF00, g_GlobalVars->curtime);
+
+			memcpy(g_LocalPlayer->GetAnimOverlays(), networked_layers, 13);
+
+			g_LocalPlayer->m_flPoseParameter() = backup_poses;
+			g_LocalPlayer->GetAngles() = backup_abs_angles;
+		}
+	}
 }

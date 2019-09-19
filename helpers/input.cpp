@@ -4,6 +4,7 @@
 #include "../imgui/imgui.h"
 #include "../imgui/impl/imgui_impl_win32.h"
 #include "../menu.hpp"
+#include "../cheats/hotkeys.hpp"
 
 InputSys::InputSys()
 	: m_hTargetWindow(nullptr), m_ulOldWndProc(0)
@@ -36,6 +37,8 @@ LRESULT __stdcall InputSys::WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM l
 
 	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam) && Menu::Get().IsVisible())
 		return true;
+
+	Hotkeys::Begin();
 
 	return CallWindowProc((WNDPROC)Get().m_ulOldWndProc, hWnd, msg, wParam, lParam);
 }

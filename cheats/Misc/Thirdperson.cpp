@@ -92,5 +92,5 @@ void ThirdPerson::FrameStageNotify(ClientFrameStage_t stage)
 		return;
 
 	if (Settings::Misc::ThirdPerson::Enabled && Settings::Misc::ThirdPerson::_enabled && (!g_LocalPlayer->m_bIsScoped() || Settings::Misc::ThirdPerson::IgnoreScope) && Settings::Misc::ThirdPerson::RealAngles)
-		* g_LocalPlayer->GetVAngles() = CreateMove::lastTickViewAngles;
+		* g_LocalPlayer->GetVAngles() = CreateMove::FakeAngles;
 }

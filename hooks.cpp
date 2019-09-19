@@ -275,6 +275,11 @@ namespace Hooks
 	{
 		auto oPresent = direct3d_hook.get_original<decltype(&hkPresent)>(index::Present);
 
+		if (Menu::Get().shouldupdate)
+			Utils::ForceUpdate();
+
+		Menu::Get().shouldupdate = false;
+
 		return oPresent(pDevice, pSourceRect, pDestRect, hDestWindowOverride, pDirtyRegion);
 	}
 	//--------------------------------------------------------------------------------
@@ -293,9 +298,6 @@ namespace Hooks
 
 		if (!cmd || !cmd->command_number)
 			return;
-
-		static QAngle old;
-		QAngle oldang = cmd->viewangles;
 
 		AutoRevolver(cmd);
 		MoonWalk(cmd);
@@ -349,9 +351,10 @@ namespace Hooks
 			cmd->viewangles.roll = 0.f;
 		}
 
+		CreateMove::lastTickViewAngles = cmd->viewangles;
+
 		if (bSendPacket)
 		{
-			CreateMove::lastTickViewAngles = cmd->viewangles;
 			CreateMove::FakeAngles = cmd->viewangles;
 			CreateMove::lastbuttons = cmd->buttons;
 		}
@@ -360,16 +363,7 @@ namespace Hooks
 			CreateMove::RealAngles = cmd->viewangles;
 		}
 
-		if (std::abs(cmd->viewangles.yaw - old.yaw) > 32.f)
-		{
-			//cmd->upmove = NAN;
-			//cmd->sidemove = NAN;
-			///cmd->forwardmove = NAN;
-
-			//Utils::ConsolePrint("UP/SIDE/FORWARDMOVE set to NaN, %i\n", rand() % 1000);
-		}
-
-		old = cmd->viewangles;
+		ManageFakeAnimState();
 
 		for (int i = 0; i < g_EntityList->GetMaxEntities(); i++)
 		{
@@ -430,8 +424,6 @@ namespace Hooks
 		static auto oPaintTraverse = vguipanel_hook.get_original<decltype(&hkPaintTraverse)>(index::PaintTraverse);
 
 		oPaintTraverse(g_VGuiPanel, edx, panel, forceRepaint, allowForce);
-
-		Hotkeys::Begin();
 
 		if (!panelId)
 		{
@@ -561,8 +553,6 @@ namespace Hooks
 
 		if (g_EngineClient->IsInGame() && stage == FRAME_NET_UPDATE_END)
 		{
-			ManageFakeAnimState();
-
 			Backtrack::Get().UpdateEntities();
 		}
 
@@ -571,11 +561,6 @@ namespace Hooks
 		if (stage == FRAME_NET_UPDATE_POSTDATAUPDATE_START)
 		{
 			SkinChanger::Run();
-
-			if (Menu::Get().shouldupdate)
-				Utils::ForceUpdate();
-
-			Menu::Get().shouldupdate = false;
 		}
 
 		ofunc(g_CHLClient, edx, stage);
@@ -668,12 +653,8 @@ namespace Hooks
 
 		if (!g_EngineClient->IsInGame())
 			return;
-
-		bool is_arm = strstr(mdl->szName, "arms");
-		bool is_sleeves = strstr(mdl->szName, "sleeve");
-		bool is_weapon = strstr(mdl->szName, "weapons/v_"); 
 		
-		if (is_arm || is_sleeves || is_weapon) g_MdlRender->ForcedMaterialOverride(nullptr);
+		g_MdlRender->ForcedMaterialOverride(nullptr);
 	}
 	bool __fastcall hkSvCheatsGetBool(void* pConVar, void* edx)
 	{

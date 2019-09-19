@@ -112,7 +112,7 @@ bool Settings::Misc::Blockbot::Enabled = false;
 
 void Blockbot(CUserCmd* cmd)
 {
-	if (!Settings::Misc::Blockbot::Enabled && Settings::Misc::Blockbot::_enabled)
+	if (!Settings::Misc::Blockbot::Enabled || !Settings::Misc::Blockbot::_enabled)
 		return;
 
 	float bestdist = 150.f;

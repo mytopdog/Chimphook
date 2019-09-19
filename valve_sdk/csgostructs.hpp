@@ -187,6 +187,16 @@ public:
 		static SetAbsAngles_t SetAbsAnglesFn = (SetAbsAngles_t)Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "55 8B EC 83 E4 F8 83 EC 64 53 56 57 8B F1 E8");
 		SetAbsAnglesFn(this, angles);
 	}
+
+	unsigned long* mostRecentModelBoneCounter(void)
+	{
+		return (unsigned long*)((uintptr_t)this + 0x291C);
+	}
+
+	matrix3x4_t** cachedBoneData(void)
+	{
+		return (matrix3x4_t**)((uintptr_t)this + 0x2910);
+	}
 };
 
 class C_BaseGrenade : public C_BaseEntity

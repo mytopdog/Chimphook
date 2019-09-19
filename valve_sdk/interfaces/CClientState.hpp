@@ -209,20 +209,18 @@ public:
 class CClientState
 {
 public:
-	char pad_0000[156];
-	uint32_t net_channel;
-	uint32_t challenge_count;
-	double reconnect_time;
-	int32_t retry_count;
-	char pad_00A8[88];
-	int32_t signon_state_count;
-	char pad_0104[8];
-	float next_cmd_time;
-	int32_t server_count;
-	uint32_t current_sequence;
-	char pad_0118[8];
-	char pad_0120[0x4C];
-	int32_t delta_tick;
+	char pad_0000[156];             //0x0000
+	uint32_t m_NetChannel;          //0x009C
+	uint32_t m_nChallengeNr;        //0x00A0
+	char pad_00A4[100];             //0x00A4
+	uint32_t m_nSignonState;        //0x0108
+	char pad_010C[8];               //0x010C
+	float m_flNextCmdTime;          //0x0114
+	uint32_t m_nServerCount;        //0x0118
+	uint32_t m_nCurrentSequence;    //0x011C
+	char pad_0120[8];               //0x0120
+	CClockDriftMgr m_ClockDriftMgr; //0x0128
+	uint32_t m_nDeltaTick;          //0x0178
 	bool is_paused;
 	char pad_0171[3];
 	int32_t view_entity;
@@ -251,7 +249,7 @@ public:
 
 	void full_update()
 	{
-		delta_tick = -1;
+		m_nDeltaTick = -1;
 	}
 };
 

@@ -276,6 +276,10 @@ C_BasePlayer* C_BasePlayer::SelfOrObs(bool* isObs)
 
 void C_BasePlayer::UpdateAnimationState(CCSGOPlayerAnimState *state, QAngle angle)
 {
+	/*if (!state)
+		return;
+
+	static auto UpdateAnimState = Utils::PatternScan(GetModuleHandleW(L"client_panorama.dll"), "E8 ? ? ? ? E9 ? ? ? ? 83 BE ? ? ? ? ?");*/
 	static auto UpdateAnimState = Utils::PatternScan(
 		GetModuleHandleA("client_panorama.dll"), "55 8B EC 83 E4 F8 83 EC 18 56 57 8B F9 F3 0F 11 54 24");
 

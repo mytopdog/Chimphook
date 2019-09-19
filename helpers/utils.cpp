@@ -407,7 +407,7 @@ namespace Utils {
 
 	void ForceUpdate()
 	{
-		static auto fn = reinterpret_cast<std::int32_t(__thiscall*)(void*, std::int32_t)>(PatternScan(GetModuleHandleW(L"client_panorama.dll"), ("55 8B EC 51 53 56 8B 75 08 8B D9 57 6B FE 2C")));
+		static auto fn = reinterpret_cast<std::int32_t(__thiscall*)(void*, std::int32_t)>(PatternScan(GetModuleHandleW(L"client_panorama.dll"), "55 8B EC 51 53 56 8B 75 08 8B D9 57 6B FE 2C"));
 
 		auto element = FindHudElement<std::uintptr_t*>(("CCSGO_HudWeaponSelection"));
 
@@ -421,9 +421,6 @@ namespace Utils {
 		for (std::int32_t i = 0; i < *hud_weapons->get_weapon_count(); i++)
 			i = fn(hud_weapons, i);
 
-		if (g_LocalPlayer && g_LocalPlayer->m_hActiveWeapon())
-		{
-			forceItemUpdate(g_LocalPlayer->m_hActiveWeapon().Get());
-		}
+		g_ClientState->full_update();
 	}
 }

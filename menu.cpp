@@ -982,9 +982,11 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							case 0:
 								ImGui::Checkbox("Enabled", &Settings::Visuals::Chams::Players::Enemies::Enabled);
 								ImGui::Checkbox("Occluded", &Settings::Visuals::Chams::Players::Enemies::DoOccluded);
+								ImGui::Checkbox("Backtrack", &Settings::Visuals::Chams::Players::Enemies::DoBacktrack);
 								ImGui::Combo("Material", &Settings::Visuals::Chams::Players::Enemies::Material, "Regular\0Flat\0Glossy");
 								ImGuiEx::ColorEdit3("Visible", &Settings::Visuals::Chams::Players::Enemies::Visible);
 								ImGuiEx::ColorEdit3("Occluded", &Settings::Visuals::Chams::Players::Enemies::Occluded);
+								ImGui::SliderInt("Opacity", &Settings::Visuals::Chams::Players::Enemies::Opacity, 0, 100);
 								break;
 							case 1:
 								ImGui::Checkbox("Enabled", &Settings::Visuals::Chams::Players::Teammates::Enabled);
@@ -992,13 +994,18 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGui::Combo("Material", &Settings::Visuals::Chams::Players::Teammates::Material, "Regular\0Flat\0Glossy");
 								ImGuiEx::ColorEdit3("Visible", &Settings::Visuals::Chams::Players::Teammates::Visible);
 								ImGuiEx::ColorEdit3("Occluded", &Settings::Visuals::Chams::Players::Teammates::Occluded);
+								ImGui::SliderInt("Opacity", &Settings::Visuals::Chams::Players::Teammates::Opacity, 0, 100);
 								break;
 							case 2:
 								ImGui::Checkbox("Enabled", &Settings::Visuals::Chams::Players::Localplayer::Enabled);
+								ImGui::Checkbox("Fake", &Settings::Visuals::Chams::Players::Localplayer::DoFakeChams);
 								ImGui::Checkbox("Occluded", &Settings::Visuals::Chams::Players::Localplayer::DoOccluded);
 								ImGui::Combo("Material", &Settings::Visuals::Chams::Players::Localplayer::Material, "Regular\0Flat\0Glossy");
 								ImGuiEx::ColorEdit3("Visible", &Settings::Visuals::Chams::Players::Localplayer::Visible);
 								ImGuiEx::ColorEdit3("Occluded", &Settings::Visuals::Chams::Players::Localplayer::Occluded);
+								ImGuiEx::ColorEdit4("Fake", &Settings::Visuals::Chams::Players::Localplayer::FakeChams);
+								ImGui::SliderInt("Opacity", &Settings::Visuals::Chams::Players::Localplayer::Opacity, 0, 100);
+								ImGui::SliderInt("Scoped Opacity", &Settings::Visuals::Chams::Players::Localplayer::ScopedOpacity, 0, 100);
 								break;
 							}
 						}
@@ -1185,19 +1192,19 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 							{
 							case 0:
 								ImGui::Checkbox("Arms##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Enabled); ImGui::NextColumn();
-								ImGuiEx::ColorEdit3("Colour##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Colour); ImGui::NextColumn();
+								ImGuiEx::ColorEdit4("Colour##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Colour); ImGui::NextColumn();
 								ImGui::Checkbox("Wireframe##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Wireframe);
 								ImGui::Combo("Material##ArmsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Arms::Material, "Regular\0Flat\0Glossy");
 								break;
 							case 1:
 								ImGui::Checkbox("Sleeves##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Enabled); ImGui::NextColumn();
-								ImGuiEx::ColorEdit3("Colour##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Colour); ImGui::NextColumn();
+								ImGuiEx::ColorEdit4("Colour##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Colour); ImGui::NextColumn();
 								ImGui::Checkbox("Wireframe##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Wireframe);
 								ImGui::Combo("Material##SleevesVisualsChams", &Settings::Visuals::Chams::Viewmodel::Sleeves::Material, "Regular\0Flat\0Glossy");
 								break;
 							case 2:
 								ImGui::Checkbox("Weapons##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Enabled); ImGui::NextColumn();
-								ImGuiEx::ColorEdit3("Colour##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Colour); ImGui::NextColumn();
+								ImGuiEx::ColorEdit4("Colour##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Colour); ImGui::NextColumn();
 								ImGui::Checkbox("Wireframe##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Wireframe); 
 								ImGui::Combo("Material##WeaponsVisualsChams", &Settings::Visuals::Chams::Viewmodel::Weapons::Material, "Regular\0Flat\0Glossy");
 								break;
@@ -1622,7 +1629,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGui::Text("Back"); ImGui::SameLine(); ImGui::Hotkey("Back", &Settings::AntiAim::Standing::Yaw::Manual::BKey);
 								break;
 							case 7:
-								ImGui::SliderInt("Spin Speed", &Settings::AntiAim::Standing::Yaw::Spin::Speed, -130, 130);
+								ImGui::SliderInt("Spin Speed", &Settings::AntiAim::Standing::Yaw::Spin::Speed, -135, 135);
 								break;
 							case 8:
 								ImGui::SliderInt("Custom Angle", &Settings::AntiAim::Standing::Yaw::Custom::Angle, -180, 180);
@@ -1667,7 +1674,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGui::Text("Back"); ImGui::SameLine(); ImGui::Hotkey("Back", &Settings::AntiAim::Moving::Yaw::Manual::BKey);
 								break;
 							case 7:
-								ImGui::SliderInt("Spin Speed", &Settings::AntiAim::Moving::Yaw::Spin::Speed, -130, 130);
+								ImGui::SliderInt("Spin Speed", &Settings::AntiAim::Moving::Yaw::Spin::Speed, -135, 135);
 								break;
 							case 8:
 								ImGui::SliderInt("Custom Angle", &Settings::AntiAim::Moving::Yaw::Custom::Angle, -180, 180);
@@ -1711,7 +1718,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGui::Text("Back"); ImGui::SameLine(); ImGui::Hotkey("Back", &Settings::AntiAim::Air::Yaw::Manual::BKey);
 								break;
 							case 7:
-								ImGui::SliderInt("Spin Speed", &Settings::AntiAim::Air::Yaw::Spin::Speed, -130, 130);
+								ImGui::SliderInt("Spin Speed", &Settings::AntiAim::Air::Yaw::Spin::Speed, -135, 135);
 								break;
 							case 8:
 								ImGui::SliderInt("Custom Angle", &Settings::AntiAim::Air::Yaw::Custom::Angle, -180, 180);
@@ -1746,15 +1753,33 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 				{
 					ImGui::Combo("Type", &Settings::AntiAim::Fake::Type, "None\0Legit\0Rage");
 					
-					switch (Settings::AntiAim::Fake::Type)
+					static int antiaimfaketabselected = 0;
+					ImGui::BeginGroup();
+					{
+						bool issel = antiaimfaketabselected == 0;
+						if (ImGui::ToggleButton("Legit##AntiAim", &issel, ImVec2(ImGui::GetWindowSize().x / 3, 20)))
+						{
+							antiaimfaketabselected = 0;
+						}
+						issel = antiaimfaketabselected == 1;
+						ImGui::SameLine(0, 0);
+						if (ImGui::ToggleButton("Rage##AntiAim", &issel, ImVec2(ImGui::GetWindowSize().x / 3, 20)))
+						{
+							antiaimfaketabselected = 1;
+						}
+					}
+					ImGui::EndGroup();
+
+					switch (antiaimfaketabselected)
 					{
 					case 0:
+						ImGui::Combo("Side", &Settings::AntiAim::Fake::Legit::Side, "Left\0Right");
+						ImGui::Text("Switch Key"); ImGui::SameLine(); ImGui::Hotkey("Switch", &Settings::AntiAim::Fake::Legit::SideKey);
 						break;
 					case 1:
-						ImGui::Combo("Side", &Settings::AntiAim::Fake::Legit::Side, "Left\0Right");
-						ImGui::Hotkey("Switch", &Settings::AntiAim::Fake::Legit::SideKey);
-						break;
-					case 2:
+						ImGui::Combo("Learn", &Settings::AntiAim::Fake::Rage::Lean, "Left\0Right");
+						ImGui::Checkbox("Break LBY", &Settings::AntiAim::Fake::Rage::LBYBreak);
+						ImGui::Text("Lean Switch Key"); ImGui::SameLine(); ImGui::Hotkey("Switch", &Settings::AntiAim::Fake::Rage::LeanKey);
 						break;
 					}
 				}

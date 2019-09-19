@@ -71,8 +71,6 @@ void AntiAim(CUserCmd* cmd, bool& bSendPacket)
 	QAngle ang = cmd->viewangles;
 
 	QAngle oldAng = cmd->viewangles;
-	float oldFwd = cmd->forwardmove;
-	float oldSde = cmd->sidemove;
 
 	if (Settings::AntiAim::Enabled) {
 		if (g_LocalPlayer->m_fFlags() & FL_ONGROUND)
@@ -94,5 +92,5 @@ void AntiAim(CUserCmd* cmd, bool& bSendPacket)
 		DoFakeAngs(cmd, bSendPacket);
 	}
 
-	Math::CorrectMovement(oldAng, cmd, oldFwd, oldSde);
+	Math::CorrectMovement(oldAng, cmd, cmd->forwardmove, cmd->sidemove);
 }
