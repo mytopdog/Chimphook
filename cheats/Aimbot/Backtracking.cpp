@@ -94,46 +94,69 @@ void Backtrack::UpdateEntities()
 void Backtrack::Run(CUserCmd* cmd)
 {
 	if (!Settings::Backtrack::Enabled)
+	{
+		selectedpl = 0;
+		selectedr = 0;
+
 		return;
+	}
 
 	if (!g_LocalPlayer)
-		return;
-
-	if (IsFiring(cmd))
 	{
-		for (int i = 0; i < 65; i++)
+		selectedpl = 0;
+		selectedr = 0;
+
+		return;
+	}
+
+	for (int i = 0; i < 65; i++)
+	{
+		bool bfr = false;
+
+		for (int j = 0; j < records[i].size(); j++)
 		{
-			for (int j = 0; j < records[i].size(); j++)
-			{
-				backtrack_record_t record = records[i][j];
+			backtrack_record_t record = records[i][j];
 
-				unsigned long origBoneCount = *record.entity->mostRecentModelBoneCounter();
-				matrix3x4_t* origBoneCached = *record.entity->cachedBoneData();
+			unsigned long origBoneCount = *record.entity->mostRecentModelBoneCounter();
+			matrix3x4_t* origBoneCached = *record.entity->cachedBoneData();
 
-				*record.entity->mostRecentModelBoneCounter() = 128;
-				*record.entity->cachedBoneData() = record.matrix;
+			*record.entity->mostRecentModelBoneCounter() = 128;
+			*record.entity->cachedBoneData() = record.matrix;
 
-				Vector dst, forward;
+			Vector dst, forward;
 
-				Math::AngleVectors(cmd->viewangles, forward);
-				dst = g_LocalPlayer->GetEyePos() + (forward * 8196.f);
+			Math::AngleVectors(cmd->viewangles, forward);
+			dst = g_LocalPlayer->GetEyePos() + (forward * 8196.f);
 				
-				Ray_t ray;
-				ray.Init(g_LocalPlayer->GetEyePos(), dst);
-				trace_t tr;
+			Ray_t ray;
+			ray.Init(g_LocalPlayer->GetEyePos(), dst);
+			trace_t tr;
 
-				g_EngineTrace->ClipRayToEntity(ray, MASK_SHOT | CONTENTS_GRATE, record.entity, &tr);
+			g_EngineTrace->ClipRayToEntity(ray, MASK_SHOT | CONTENTS_GRATE, record.entity, &tr);
 
-				*record.entity->mostRecentModelBoneCounter() = origBoneCount;
-				*record.entity->cachedBoneData() = origBoneCached;
+			*record.entity->mostRecentModelBoneCounter() = origBoneCount;
+			*record.entity->cachedBoneData() = origBoneCached;
 
-				if (tr.hit_entity == record.entity)
-				{
-					cmd->tick_count = TIME_TO_TICKS(record.simtime);
+			if (tr.hit_entity == record.entity)
+			{
+				//if (bfr)
+				//{
+					selectedpl = i;
+					selectedr = j;
+
+					if (IsFiring(cmd))
+					{
+						cmd->tick_count = TIME_TO_TICKS(record.simtime);
+					}
 
 					return;
-				}
+				//}
+
+				bfr = true;
 			}
 		}
 	}
+
+	selectedpl = 0;
+	selectedr = 0;
 }

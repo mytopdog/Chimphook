@@ -143,6 +143,7 @@ public:
 	OPTION(bool, espenemiesboxes, &Settings::ESP::Players::Enemies::Boxes);
 	OPTION(bool, espenemiesskeletons, &Settings::ESP::Players::Enemies::Skeletons);
 	OPTION(bool, espenemiesbacktrackskeletons, &Settings::ESP::Players::Enemies::BacktrackSkeletons);
+	OPTION(bool, espenemiesbacktrackheads, &Settings::ESP::Players::Enemies::BacktrackHeads);
 	OPTION(bool, espenemiesnames, &Settings::ESP::Players::Enemies::Names);
 	OPTION(bool, espenemieshealth, &Settings::ESP::Players::Enemies::Health);
 	OPTION(bool, espenemiesweapons, &Settings::ESP::Players::Enemies::Weapons);

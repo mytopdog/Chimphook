@@ -237,15 +237,18 @@ void Chams::OnDME(
 				{
 					Color col = Settings::Visuals::Chams::Players::Enemies::Backtrack;
 
-					backtrack_record_t record = Backtrack::Get().records[ent->EntIndex()][Backtrack::Get().records[ent->EntIndex()].size() - 1];
+					if (Backtrack::Get().records[ent->EntIndex()].size())
+					{
+						backtrack_record_t record = Backtrack::Get().records[ent->EntIndex()][Backtrack::Get().records[ent->EntIndex()].size() - 1];
 
-					mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
-					mat->AlphaModulate(.2f);
-					mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
-					mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, Settings::Visuals::Chams::Players::Enemies::DoOccluded);
-					mat->IncrementReferenceCount();
+						mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
+						mat->AlphaModulate(.2f);
+						mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
+						mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, Settings::Visuals::Chams::Players::Enemies::DoOccluded);
+						mat->IncrementReferenceCount();
 
-					fnDME(g_MdlRender, 0, ctx, state, info, record.matrix);
+						fnDME(g_MdlRender, 0, ctx, state, info, record.matrix);
+					}
 				}
 
 				if (Settings::Visuals::Chams::Players::Enemies::DoOccluded)
@@ -266,7 +269,7 @@ void Chams::OnDME(
 				mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
 				mat->AlphaModulate(Settings::Visuals::Chams::Players::Enemies::Opacity / 100.f);
 				mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
-				mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
+				mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
 				mat->IncrementReferenceCount();
 			}
 		}
@@ -295,7 +298,7 @@ void Chams::OnDME(
 				mat->ColorModulate(col.r() / 255.f, col.g() / 255.f, col.b() / 255.f);
 				mat->AlphaModulate(Settings::Visuals::Chams::Players::Teammates::Opacity / 100.f);
 				mat->SetMaterialVarFlag(MATERIAL_VAR_WIREFRAME, false);
-				mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, true);
+				mat->SetMaterialVarFlag(MATERIAL_VAR_IGNOREZ, false);
 				mat->IncrementReferenceCount();
 			}
 		}

@@ -2,6 +2,45 @@
 
 #include "../Helpers/Utils.hpp"
 
+template<typename T>
+T* BruteForceCreateInterface(CreateInterfaceFn mod, const char* name)
+{
+	std::string ffs(name);
+	ffs += "0";
+
+	for (int i = 10; i < 100; i++)
+	{
+		std::string tos = std::to_string(i);
+		std::string f = ffs + tos;
+		const char* fullvname = f.c_str();
+		T* result = reinterpret_cast<T*>(mod(fullvname, nullptr));
+
+		if (result != nullptr)
+		{
+			printf("Version Number: %s\n", fullvname);
+			return result;
+		}
+	}
+
+	ffs += "0";
+	for (int i = 0; i < 10; i++)
+	{
+		std::string tos = std::to_string(i);
+		std::string f = ffs + tos;
+		const char* fullvname = f.c_str();
+		T* result = reinterpret_cast<T*>(mod(fullvname, nullptr));
+
+		if (result != nullptr)
+		{
+			printf("Version Number: %s\n", fullvname);
+			return result;
+		}
+	}
+
+	return nullptr;
+}
+
+
 namespace Interfaces
 {
     CreateInterfaceFn get_module_factory(HMODULE module)
@@ -51,7 +90,7 @@ namespace Interfaces
         g_MdlCache            = get_interface<IMDLCache>           (dataCacheFactory  , "MDLCache004");
         g_EngineClient        = get_interface<IVEngineClient>      (engineFactory     , "VEngineClient014");
 		g_GameUI              = get_interface<IGameUI>             (clientFactory     , "GameUI011");
-        g_MdlInfo             = get_interface<IVModelInfoClient>   (engineFactory     , "VModelInfoClient004");
+        g_MdlInfo             = BruteForceCreateInterface<IVModelInfoClient>   (engineFactory, "VModelInfoClient");
         g_MdlRender           = get_interface<IVModelRender>       (engineFactory     , "VEngineModel016");
         g_RenderView          = get_interface<IVRenderView>        (engineFactory     , "VEngineRenderView014");
         g_EngineTrace         = get_interface<IEngineTrace>        (engineFactory     , "EngineTraceClient004");

@@ -419,6 +419,7 @@ namespace Settings
 				extern bool Boxes;
 				extern bool Skeletons;
 				extern bool BacktrackSkeletons;
+				extern bool BacktrackHeads;
 				extern bool Names;
 				extern bool Health;
 				extern bool Weapons;

@@ -18,6 +18,7 @@ bool Settings::ESP::Players::Enemies::Boxes = false;
 bool Settings::ESP::Players::Enemies::Names = false;
 bool Settings::ESP::Players::Enemies::Skeletons = false;
 bool Settings::ESP::Players::Enemies::BacktrackSkeletons = false;
+bool Settings::ESP::Players::Enemies::BacktrackHeads = false;
 bool Settings::ESP::Players::Enemies::Health = false;
 bool Settings::ESP::Players::Enemies::Weapons = false;
 bool Settings::ESP::Players::Enemies::Snaplines = false;
@@ -137,7 +138,7 @@ RECT GetBBox(C_BaseEntity* ent)
 
 void Visuals::Player::Begin(C_BasePlayer* pl)
 {
-	if (pl->IsDormant() || !pl->IsAlive())
+	if (!pl || pl->IsDormant() || !pl->IsAlive())
 		return;
 
 	ctx.pl = pl;
@@ -159,8 +160,19 @@ void Visuals::Player::Begin(C_BasePlayer* pl)
 		return;
 	}
 
+	if (ctx.is_enemy)
+	{
+		if (Settings::ESP::Players::Enemies::BacktrackSkeletons)
+			RenderBacktrackSkeleton(Settings::ESP::Players::Enemies::Colours::BacktrackSkeletons);
+
+		if (Settings::ESP::Players::Enemies::BacktrackHeads)
+			RenderBacktrackHeads();
+	}
+
 	if (ctx.is_enemy && !ctx.is_visible && !Settings::ESP::Players::Enemies::Occluded)
+	{
 		return;
+	}
 
 	if (ctx.is_teammate && !ctx.is_visible && !Settings::ESP::Players::Teammates::Occluded)
 		return;
@@ -192,8 +204,11 @@ void Visuals::Player::Begin(C_BasePlayer* pl)
 
 	ctx.font_size = 12.f;
 
-	if (ctx.is_enemy && Settings::ESP::Players::Enemies::Snaplines)
-		RenderSnapline(Settings::ESP::Players::Enemies::Colours::Snaplines);
+	if (ctx.is_enemy)
+	{
+		if (Settings::ESP::Players::Enemies::Snaplines)
+			RenderSnapline(Settings::ESP::Players::Enemies::Colours::Snaplines);
+	}
 
 	if (ctx.is_teammate && Settings::ESP::Players::Teammates::Snaplines)
 		RenderSnapline(Settings::ESP::Players::Teammates::Colours::Snaplines);
@@ -209,9 +224,6 @@ void Visuals::Player::Begin(C_BasePlayer* pl)
 
 		if (Settings::ESP::Players::Enemies::Skeletons)
 			RenderSkeleton(Settings::ESP::Players::Enemies::Colours::Skeletons);
-
-		if (Settings::ESP::Players::Enemies::BacktrackSkeletons)
-			RenderBacktrackSkeleton(Settings::ESP::Players::Enemies::Colours::BacktrackSkeletons);
 
 		if (Settings::ESP::Players::Enemies::Names)
 			RenderName(Settings::ESP::Players::Enemies::Colours::Names);
@@ -383,29 +395,92 @@ void Visuals::Player::RenderBacktrackSkeleton(Color col)
 	if (!hdr)
 		return;
 
+	if (Backtrack::Get().records[ctx.pl->EntIndex()].size() < 1)
+		return;
+
+	backtrack_record_t record = Backtrack::Get().records[ctx.pl->EntIndex()].back();
+
+	unsigned long origBoneCount = *record.entity->mostRecentModelBoneCounter();
+	matrix3x4_t* origBoneCached = *record.entity->cachedBoneData();
+
+	*record.entity->mostRecentModelBoneCounter() = 128;
+	*record.entity->cachedBoneData() = record.matrix;
+
+	bool cansee = g_LocalPlayer->CanSeePlayer(record.entity, HITBOX_CHEST);
+
+	*record.entity->mostRecentModelBoneCounter() = origBoneCount;
+	*record.entity->cachedBoneData() = origBoneCached;
+
+	if (!cansee && !Settings::ESP::Players::Enemies::Occluded)
+		return;
+
+	Vector v_parent, v_child, s_parent, s_child;
+
+	for (int j = 0; j < hdr->numbones; j++)
+	{
+		mstudiobone_t* bone = hdr->GetBone(j);
+
+		if (!bone)
+			continue;
+
+		if ((bone->flags & BONE_USED_BY_HITBOX) && (bone->parent != -1))
+		{
+			v_child = Vector(record.matrix[j][0][3], record.matrix[j][1][3], record.matrix[j][2][3]);
+			v_parent = Vector(record.matrix[bone->parent][0][3], record.matrix[bone->parent][1][3], record.matrix[bone->parent][2][3]);
+
+			if (Math::WorldToScreen(v_parent, s_parent) && Math::WorldToScreen(v_child, s_child))
+			{
+				Render::Get().RenderLine(s_parent[0], s_parent[1], s_child[0], s_child[1], col, 1);
+			}
+		}
+	}
+}
+
+void Visuals::Player::RenderBacktrackHeads()
+{
+	if (!Settings::Backtrack::Enabled)
+		return;
+
 	for (int i = 0; i < Backtrack::Get().records[ctx.pl->EntIndex()].size(); i++)
 	{
-		Vector v_parent, v_child, s_parent, s_child;
-
 		backtrack_record_t record = Backtrack::Get().records[ctx.pl->EntIndex()][i];
 
-		for (int j = 0; j < hdr->numbones; j++)
+		unsigned long origBoneCount = *record.entity->mostRecentModelBoneCounter();
+		matrix3x4_t* origBoneCached = *record.entity->cachedBoneData();
+
+		*record.entity->mostRecentModelBoneCounter() = 128;
+		*record.entity->cachedBoneData() = record.matrix;
+
+		bool cansee = g_LocalPlayer->CanSeePlayer(record.entity, HITBOX_HEAD);
+
+		*record.entity->mostRecentModelBoneCounter() = origBoneCount;
+		*record.entity->cachedBoneData() = origBoneCached;
+
+		if (!cansee && !Settings::ESP::Players::Enemies::Occluded)
+			continue;
+
+		Vector headpos;
+
+		if (!Math::WorldToScreen(record.headpos, headpos))
+			return;
+
+		if (Backtrack::Get().IsValidTick(record.simtime))
 		{
-			mstudiobone_t* bone = hdr->GetBone(j);
-
-			if (!bone)
-				continue;
-
-			if ((bone->flags & BONE_USED_BY_HITBOX) && (bone->parent != -1))
+			if (Backtrack::Get().selectedpl == record.entity->EntIndex() && Backtrack::Get().selectedr == i)
 			{
-				v_child = Vector(record.matrix[j][0][3], record.matrix[j][1][3], record.matrix[j][2][3]);
-				v_parent = Vector(record.matrix[bone->parent][0][3], record.matrix[bone->parent][1][3], record.matrix[bone->parent][2][3]);
-
-				if (Math::WorldToScreen(v_parent, s_parent) && Math::WorldToScreen(v_child, s_child))
-				{
-					Render::Get().RenderLine(s_parent[0], s_parent[1], s_child[0], s_child[1], col, 1);
-				}
+				Render::Get().RenderLine(headpos.x - 4, headpos.y, headpos.x + 4, headpos.y, Color(255, 255, 255), 2);
+				Render::Get().RenderLine(headpos.x, headpos.y - 2, headpos.x, headpos.y + 2, Color(255, 255, 255), 2);
 			}
+			else
+			{
+				Render::Get().RenderLine(headpos.x - 2, headpos.y, headpos.x + 2, headpos.y, Color(255, 255, 255), 1);
+				Render::Get().RenderLine(headpos.x, headpos.y - 2, headpos.x, headpos.y + 2, Color(255, 255, 255), 1);
+			}
+		}
+		else
+		{
+			Render::Get().RenderLine(headpos.x - 2, headpos.y, headpos.x + 2, headpos.y, Color(255, 0, 0), 1);
+			Render::Get().RenderLine(headpos.x, headpos.y - 2, headpos.x, headpos.y + 2, Color(255, 0, 0), 1);
 		}
 	}
 }
@@ -475,7 +550,7 @@ void Visuals::Player::RenderWeapon(Color col)
 
 	ImVec2 sz = f_AndaleMono->CalcTextSizeA(ctx.font_size, FLT_MAX, 0.0f, weapon);
 
-	Render::Get().RenderText(weapon, ImVec2(ctx.cursor.x, ctx.cursor.y), ctx.font_size, col, false, true, f_AndaleMono);
+ 	Render::Get().RenderText(weapon, ImVec2(ctx.cursor.x, ctx.cursor.y), ctx.font_size, col, false, true, f_AndaleMono);
 
 	ctx.cursor.y += sz.y + 2;
 }

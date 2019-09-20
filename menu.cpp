@@ -873,6 +873,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGui::Checkbox("Boxes##ESPEnemy", &Settings::ESP::Players::Enemies::Boxes);
 								ImGui::Checkbox("Skeletons##ESPEnemy", &Settings::ESP::Players::Enemies::Skeletons);
 								ImGui::Checkbox("Backtrack Skeletons##ESPEnemy", &Settings::ESP::Players::Enemies::BacktrackSkeletons);
+								ImGui::Checkbox("Backtrack Heads##ESPEnemy", &Settings::ESP::Players::Enemies::BacktrackHeads);
 								ImGui::Checkbox("Names##ESPEnemy", &Settings::ESP::Players::Enemies::Names);
 								ImGui::Checkbox("Health##ESPEnemy", &Settings::ESP::Players::Enemies::Health);
 								ImGui::Checkbox("Weapons##ESPEnemy", &Settings::ESP::Players::Enemies::Weapons);
@@ -885,6 +886,7 @@ std::vector<ImTextureID> Menu::Render(IDirect3DDevice9 * pDevice)
 								ImGuiEx::ColorEdit4("##ESPEnemyBoxesColour", &Settings::ESP::Players::Enemies::Colours::Boxes);
 								ImGuiEx::ColorEdit4("##ESPEnemySkeletonsColour", &Settings::ESP::Players::Enemies::Colours::Skeletons);
 								ImGuiEx::ColorEdit4("##ESPEnemyBacktrackSkeletonsColour", &Settings::ESP::Players::Enemies::Colours::BacktrackSkeletons);
+								ImGui::NewLine();
 								ImGuiEx::ColorEdit4("##ESPEnemyNamesColour", &Settings::ESP::Players::Enemies::Colours::Names);
 								ImGuiEx::ColorEdit4("##ESPEnemyHealthColour", &Settings::ESP::Players::Enemies::Colours::Health);
 								ImGuiEx::ColorEdit4("##ESPEnemyWeaponsColour", &Settings::ESP::Players::Enemies::Colours::Weapons);

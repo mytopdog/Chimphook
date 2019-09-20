@@ -34,6 +34,7 @@ public:
 		void RenderPosition(Color col);
 		void RenderEyeLine(Color col);
 
+		void RenderBacktrackHeads();
 		void RenderAngles();
 	};
 public:
